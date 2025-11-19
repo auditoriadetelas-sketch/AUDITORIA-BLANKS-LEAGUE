@@ -1,294 +1,365 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Reporte de Auditoría de Blanks</title>
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f3f6fa; }
-    h2 { text-align: center; color: #003366; background: #ffffffcc; padding: 10px; border-radius: 10px; }
-    .controles { margin-bottom: 20px; text-align: center; }
-    select, .btn { padding: 8px 12px; margin: 5px; border-radius: 5px; border: 1px solid #003366; }
-    .btn { background: #0066cc; color: white; cursor: pointer; }
-    .btn:hover { background: #004c99; }
-    table { width: 100%; border-collapse: collapse; background: #ffffffcc; }
-    table, th, td { border: 1px solid #666; }
-    th, td { padding: 8px; text-align: center; vertical-align: middle; }
-    th { background: #003366; color: white; }
-    input[type="number"], input[type="text"], input[type="file"], select { width: 90%; padding: 5px; border-radius: 5px; border: 1px solid #ccc; }
-    .ar-acepta { background-color: #c8f7c5; font-weight: bold; }
-    .ar-rechaza { background-color: #f7c5c5; font-weight: bold; }
-    .small-btn { padding: 4px 8px; font-size: 12px; margin-top:6px; display:inline-block; }
-    .defect-row { margin-top:6px; display:flex; gap:6px; justify-content:center; align-items:center; }
-    .defect-row input { width: 38%; }
-    .foto-input { display:block; margin:6px auto 0; }
-  </style>
+    <meta charset="UTF-8" />
+    <title>Reporte de Auditoría de Blanks</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            /* --- INICIO: ESTILOS DE FONDO AZUL Y GRIS (Degradado) --- */
+            /* Degradado de un azul/gris muy claro a un azul más suave */
+            background: linear-gradient(to right, #eef4f9, #d0e0ed); 
+            background-attachment: fixed; /* Mantiene el fondo fijo al hacer scroll */
+            /* --- FIN: ESTILOS DE FONDO AZUL Y GRIS --- */
+        }
+        
+        /* Ajustar la opacidad de los contenedores para que el fondo se vea, pero el contenido sea legible */
+        h2, .controles, table {
+            background: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        h2 { 
+            text-align: center; 
+            color: #003366; 
+            margin-bottom: 20px;
+        }
+        .controles { margin-bottom: 20px; text-align: center; }
+        
+        /* Estilos de botones y select */
+        select, .btn { 
+            padding: 8px 12px; 
+            margin: 5px; 
+            border-radius: 5px; 
+            border: 1px solid #003366; 
+            font-weight: bold; 
+        }
+        .btn { background: #0066cc; color: white; cursor: pointer; }
+        .btn:hover { background: #004c99; }
+        
+        /* Estilos de tabla */
+        table { width: 100%; border-collapse: collapse; }
+        table, th, td { border: 1px solid #666; }
+        th, td { padding: 8px; text-align: center; vertical-align: middle; }
+        th { background: #003366; color: white; }
+        
+        /* Estilos de inputs */
+        input[type="number"], input[type="text"], select, textarea { 
+            width: 90%; 
+            padding: 5px; 
+            border-radius: 5px; 
+            border: 1px solid #ccc; 
+            box-sizing: border-box; 
+        }
+        textarea.comentarios-area {
+            min-height: 50px;
+            resize: vertical;
+        }
+
+        /* Estilos de A/R */
+        .ar-acepta { background-color: #c8f7c5; font-weight: bold; }
+        .ar-rechaza { background-color: #f7c5c5; font-weight: bold; }
+        
+        /* Estilos de la sección de defectos */
+        .small-btn { padding: 4px 8px; font-size: 12px; margin-top:6px; display:inline-block; }
+        .defect-row { margin-top:6px; display:flex; gap:6px; justify-content:center; align-items:center; }
+        .defect-row input { width: 38%; }
+    </style>
 </head>
 <body>
 
 <h2>Reporte de Auditoría de Blanks</h2>
 
 <div class="controles">
-  <label for="vendor">Proveedor:</label>
-  <select id="vendor">
-    <option value="">-- Selecciona Vendor --</option>
-    <option>Asia Caps (Thailand) Co., Ltd.</option>
-    <option>Asia Caps Co., Ltd.</option>
-    <option>ERA Fashion Accesory Co.</option>
-    <option>GOTOP TEXTILE COMPANY LIMITED</option>
-    <option>Giant Headmost Manufacturing Corp</option>
-    <option>HENAN J&F HEADWEAR CO., LTD</option>
-    <option>Jeya Headwear</option>
-    <option>Ouray Sportswear</option>
-    <option>Ratone International LTD. Loc</option>
-    <option>Shiningcrown Hats Mfg., Corp.</option>
-    <option>Unimas Sportswear Ltd.</option>
-  </select>
+    <label for="vendor">Proveedor:</label>
+    <select id="vendor">
+        <option value="">-- Selecciona Vendor --</option>
+        <option>Asia Caps (Thailand) Co., Ltd.</option>
+        <option>Asia Caps Co., Ltd.</option>
+        <option>ERA Fashion Accesory Co.</option>
+        <option>GOTOP TEXTILE COMPANY LIMITED</option>
+        <option>Giant Headmost Manufacturing Corp</option>
+        <option>HENAN J&F HEADWEAR CO., LTD</option>
+        <option>Jeya Headwear</option>
+        <option>Ouray Sportswear</option>
+        <option>Ratone International LTD. Loc</option>
+        <option>Shiningcrown Hats Mfg., Corp.</option>
+        <option>Unimas Sportswear Ltd.</option>
+    </select>
 
-  <button class="btn" onclick="agregarFila()">➕ Agregar Item</button>
-  <button class="btn" id="descargarExcel">⬇️ Descargar Excel</button>
+    <button class="btn" onclick="agregarFila()">➕ Agregar Item</button>
+    <button class="btn" id="descargarExcel">⬇️ Descargar Excel</button>
 </div>
 
 <table id="tabla">
-  <thead>
-    <tr>
-      <th>Factura</th>
-      <th>PO</th>
-      <th>Estilo</th>
-      <th>Color</th>
-      <th>Total</th>
-      <th>Muestra</th>
-      <th>Total Defectos</th>
-      <th>AQL %</th>
-      <th>A/R</th>
-      <th>Defectos (Código / Cantidad)</th>
-      <th>Fotos (nombres de archivo)</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- fila ejemplo -->
-    <tr>
-      <td><input type="text" name="factura[]"></td>
-      <td><input type="text" name="po[]"></td>
-      <td><input type="text" name="estilo[]"></td>
-      <td><input type="text" name="color[]"></td>
-      <td><input type="number" name="total[]" min="0" oninput="calcularFila(this.closest('tr'))"></td>
-      <td><input type="text" name="muestra[]" readonly></td>
-      <td><input type="text" name="totalDefectos[]" readonly></td>
-      <td><input type="text" name="aql[]" readonly></td>
-      <td><input type="text" name="ar[]" readonly></td>
+    <thead>
+        <tr>
+            <th>Factura</th>
+            <th>PO</th>
+            <th>Estilo</th>
+            <th>Color</th>
+            <th>Total</th>
+            <th>Muestra</th>
+            <th>Total Defectos</th>
+            <th>AQL %</th>
+            <th>A/R</th>
+            <th>Defectos (Código / Cantidad)</th>
+            <th>Comentarios / Observaciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><input type="text" name="factura[]"></td>
+            <td><input type="text" name="po[]"></td>
+            <td><input type="text" name="estilo[]"></td>
+            <td><input type="text" name="color[]"></td>
+            <td><input type="number" name="total[]" min="0" oninput="calcularFila(this.closest('tr'))"></td>
+            <td><input type="text" name="muestra[]" readonly></td>
+            <td><input type="text" name="totalDefectos[]" readonly></td>
+            <td><input type="text" name="aql[]" readonly></td>
+            <td><input type="text" name="ar[]" readonly></td>
 
-      <td>
-        <div class="defectos">
-          <!-- defecto base (sin wrapper extra) -->
-          <div class="defect-row">
-            <input type="text" placeholder="Código" class="codigo-defecto">
-            <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
-            <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
-          </div>
-        </div>
-        <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
-      </td>
+            <td>
+                <div class="defectos">
+                    <div class="defect-row">
+                        <input type="text" placeholder="Código" class="codigo-defecto">
+                        <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+                        <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
+                    </div>
+                </div>
+                <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
+            </td>
 
-      <td>
-        <div class="fotos">
-          <input type="file" class="foto-input" accept="image/*" />
-        </div>
-        <button type="button" class="btn small-btn" onclick="agregarFoto(this)">➕ Foto</button>
-      </td>
-    </tr>
-  </tbody>
+            <td>
+                <textarea name="comentarios[]" class="comentarios-area" placeholder="Escribe observaciones aquí..."></textarea>
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 <script>
 const rangos = [
-  {min:2, max:8, muestra:2, acepta:0, rechaza:1},
-  {min:9, max:15, muestra:3, acepta:0, rechaza:1},
-  {min:16, max:25, muestra:5, acepta:0, rechaza:1},
-  {min:26, max:50, muestra:8, acepta:0, rechaza:1},
-  {min:51, max:90, muestra:13, acepta:1, rechaza:2},
-  {min:91, max:150, muestra:20, acepta:1, rechaza:2},
-  {min:151, max:280, muestra:32, acepta:2, rechaza:3},
-  {min:281, max:500, muestra:50, acepta:3, rechaza:4},
-  {min:501, max:1200, muestra:80, acepta:5, rechaza:6},
-  {min:1201, max:3200, muestra:125, acepta:7, rechaza:8},
-  {min:3201, max:10000, muestra:200, acepta:10, rechaza:11},
-  {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
+    {min:2, max:8, muestra:2, acepta:0, rechaza:1},
+    {min:9, max:15, muestra:3, acepta:0, rechaza:1},
+    {min:16, max:25, muestra:5, acepta:0, rechaza:1},
+    {min:26, max:50, muestra:8, acepta:0, rechaza:1},
+    {min:51, max:90, muestra:13, acepta:1, rechaza:2},
+    {min:91, max:150, muestra:20, acepta:1, rechaza:2},
+    {min:151, max:280, muestra:32, acepta:2, rechaza:3},
+    {min:281, max:500, muestra:50, acepta:3, rechaza:4},
+    {min:501, max:1200, muestra:80, acepta:5, rechaza:6},
+    {min:1201, max:3200, muestra:125, acepta:7, rechaza:8},
+    {min:3201, max:10000, muestra:200, acepta:10, rechaza:11},
+    {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
 
+// --- Funciones de Interfaz ---
+
 function calcularFila(fila) {
-  let total = parseInt(fila.querySelector('[name="total[]"]').value) || 0;
-  let defectosTot = 0;
+    let total = parseInt(fila.querySelector('[name="total[]"]').value) || 0;
+    let defectosTot = 0;
 
-  // sumar todas las cantidades dentro de esa fila
-  fila.querySelectorAll('.cantidad-defecto').forEach(input => {
-    defectosTot += parseInt(input.value) || 0;
-  });
+    fila.querySelectorAll('.cantidad-defecto').forEach(input => {
+        defectosTot += parseInt(input.value) || 0;
+    });
 
-  const inputMuestra = fila.querySelector('[name="muestra[]"]');
-  const inputAR = fila.querySelector('[name="ar[]"]');
-  const inputAQL = fila.querySelector('[name="aql[]"]');
-  const inputTotalDef = fila.querySelector('[name="totalDefectos[]"]');
+    const inputMuestra = fila.querySelector('[name="muestra[]"]');
+    const inputAR = fila.querySelector('[name="ar[]"]');
+    const inputAQL = fila.querySelector('[name="aql[]"]');
+    const inputTotalDef = fila.querySelector('[name="totalDefectos[]"]');
 
-  const rango = rangos.find(r => total >= r.min && total <= r.max);
+    const rango = rangos.find(r => total >= r.min && total <= r.max);
 
-  if (rango) {
-    inputMuestra.value = rango.muestra;
-    inputTotalDef.value = defectosTot;
-    let aql = rango.muestra ? ((defectosTot / rango.muestra) * 100).toFixed(2) : "0.00";
-    inputAQL.value = aql + "%";
+    if (rango) {
+        inputMuestra.value = rango.muestra;
+        inputTotalDef.value = defectosTot;
+        let aql = rango.muestra ? ((defectosTot / rango.muestra) * 100).toFixed(2) : "0.00";
+        inputAQL.value = aql + "%";
 
-    if (defectosTot <= rango.acepta) {
-      inputAR.value = `ACEPTA (≤${rango.acepta})`;
-      inputAR.className = "ar-acepta";
+        if (defectosTot <= rango.acepta) {
+            inputAR.value = `ACEPTA (≤${rango.acepta})`;
+            inputAR.className = "ar-acepta";
+        } else {
+            inputAR.value = `RECHAZA (>${rango.acepta})`;
+            inputAR.className = "ar-rechaza";
+        }
     } else {
-      inputAR.value = `RECHAZA (>${rango.acepta})`;
-      inputAR.className = "ar-rechaza";
+        inputMuestra.value = "";
+        inputAR.value = "";
+        inputAQL.value = "";
+        inputTotalDef.value = "";
+        inputAR.className = "";
     }
-  } else {
-    inputMuestra.value = "";
-    inputAR.value = "";
-    inputAQL.value = "";
-    inputTotalDef.value = "";
-    inputAR.className = "";
-  }
 }
 
 function agregarFila() {
-  const tabla = document.querySelector("#tabla tbody");
-  const fila = document.createElement("tr");
-  fila.innerHTML = `
-    <td><input type="text" name="factura[]"></td>
-    <td><input type="text" name="po[]"></td>
-    <td><input type="text" name="estilo[]"></td>
-    <td><input type="text" name="color[]"></td>
-    <td><input type="number" name="total[]" min="0" oninput="calcularFila(this.closest('tr'))"></td>
-    <td><input type="text" name="muestra[]" readonly></td>
-    <td><input type="text" name="totalDefectos[]" readonly></td>
-    <td><input type="text" name="aql[]" readonly></td>
-    <td><input type="text" name="ar[]" readonly></td>
+    const tabla = document.querySelector("#tabla tbody");
+    const fila = document.createElement("tr");
+    fila.innerHTML = `
+        <td><input type="text" name="factura[]"></td>
+        <td><input type="text" name="po[]"></td>
+        <td><input type="text" name="estilo[]"></td>
+        <td><input type="text" name="color[]"></td>
+        <td><input type="number" name="total[]" min="0" oninput="calcularFila(this.closest('tr'))"></td>
+        <td><input type="text" name="muestra[]" readonly></td>
+        <td><input type="text" name="totalDefectos[]" readonly></td>
+        <td><input type="text" name="aql[]" readonly></td>
+        <td><input type="text" name="ar[]" readonly></td>
 
-    <td>
-      <div class="defectos">
-        <div class="defect-row">
-          <input type="text" placeholder="Código" class="codigo-defecto">
-          <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
-          <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
-        </div>
-      </div>
-      <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
-    </td>
+        <td>
+            <div class="defectos">
+                <div class="defect-row">
+                    <input type="text" placeholder="Código" class="codigo-defecto">
+                    <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+                    <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
+                </div>
+            </div>
+            <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
+        </td>
 
-    <td>
-      <div class="fotos">
-        <input type="file" class="foto-input" accept="image/*" />
-      </div>
-      <button type="button" class="btn small-btn" onclick="agregarFoto(this)">➕ Foto</button>
-    </td>
-  `;
-  tabla.appendChild(fila);
+        <td>
+            <textarea name="comentarios[]" class="comentarios-area" placeholder="Escribe observaciones aquí..."></textarea>
+        </td>
+    `;
+    tabla.appendChild(fila);
 }
 
 function agregarDefecto(btn) {
-  const cell = btn.parentNode.querySelector('.defectos') || btn.closest('td').querySelector('.defectos');
-  const div = document.createElement('div');
-  div.className = 'defect-row';
-  div.style.marginTop = '6px';
-  div.innerHTML = `
-    <input type="text" placeholder="Código" class="codigo-defecto">
-    <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
-    <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
-  `;
-  cell.appendChild(div);
+    const cell = btn.parentNode.querySelector('.defectos');
+    const div = document.createElement('div');
+    div.className = 'defect-row';
+    div.style.marginTop = '6px';
+    div.innerHTML = `
+        <input type="text" placeholder="Código" class="codigo-defecto">
+        <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+        <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
+    `;
+    cell.appendChild(div);
 }
 
 function quitarDefecto(btn) {
-  const row = btn.closest('.defect-row');
-  if (!row) return;
-  const tr = row.closest('tr');
-  row.remove();
-  // recalcular totales en caso de haber cambiado
-  if (tr) calcularFila(tr);
+    const row = btn.closest('.defect-row');
+    if (!row) return;
+    const tr = row.closest('tr');
+    row.remove();
+    if (tr) calcularFila(tr);
 }
 
-function agregarFoto(btn) {
-  const cell = btn.parentNode.querySelector('.fotos') || btn.closest('td').querySelector('.fotos');
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.className = 'foto-input';
-  input.style.marginTop = '6px';
-  cell.appendChild(input);
+// --- Función de Recolección de Datos General ---
+
+function recolectarDatos() {
+    const vendor = document.getElementById("vendor").value || "SinProveedor";
+    const filas = document.querySelectorAll("#tabla tbody tr");
+    const datos = [];
+    let primeraFactura = "";
+
+    filas.forEach(tr => {
+        const celdas = tr.querySelectorAll("td");
+        if (!celdas || celdas.length < 10) return;
+
+        const facturaValor = (celdas[0].querySelector('input') ? celdas[0].querySelector('input').value : "").trim();
+        if (primeraFactura === "" && facturaValor !== "") {
+            primeraFactura = facturaValor; // Capturar la primera factura no vacía
+        }
+
+        const defectoDatos = {};
+        const defectCell = celdas[9];
+        
+        // Recolección de defectos para exportación
+        Array.from(defectCell.querySelectorAll('.defect-row')).forEach(div => {
+            const codInput = div.querySelector('.codigo-defecto');
+            const qtyInput = div.querySelector('.cantidad-defecto');
+            const cod = codInput ? codInput.value.trim() : "";
+            const qty = parseInt(qtyInput ? qtyInput.value.trim() : "0") || 0;
+            
+            if (cod && qty > 0) {
+                defectoDatos[cod] = (defectoDatos[cod] || 0) + qty;
+            }
+        });
+
+        const defectosLista = Object.entries(defectoDatos).map(([codigo, cantidad]) => ({ codigo, cantidad }));
+
+        // Datos comunes
+        const datosComunes = {
+            Vendor: vendor,
+            Factura: facturaValor,
+            PO: (celdas[1].querySelector('input') ? celdas[1].querySelector('input').value : "").trim(),
+            Estilo: (celdas[2].querySelector('input') ? celdas[2].querySelector('input').value : "").trim(),
+            Color: (celdas[3].querySelector('input') ? celdas[3].querySelector('input').value : "").trim(),
+            Total: (celdas[4].querySelector('input') ? celdas[4].querySelector('input').value : "").trim(),
+            Muestra: (celdas[5].querySelector('input') ? celdas[5].querySelector('input').value : "").trim(),
+            "Total Defectos": (celdas[6].querySelector('input') ? celdas[6].querySelector('input').value : "").trim(),
+            "AQL %": (celdas[7].querySelector('input') ? celdas[7].querySelector('input').value : "").trim(),
+            "A/R": (celdas[8].querySelector('input') ? celdas[8].querySelector('input').value : "").trim(),
+            Comentarios: (celdas[10].querySelector('textarea') ? celdas[10].querySelector('textarea').value : "").trim()
+        };
+
+        // Exportación: una fila por defecto
+        if (defectosLista.length > 0) {
+            defectosLista.forEach(defecto => {
+                datos.push({
+                    ...datosComunes,
+                    "Código Defecto": defecto.codigo,
+                    "Cantidad Defecto": defecto.cantidad,
+                });
+            });
+        } else {
+            const filaObj = {
+                ...datosComunes,
+                "Código Defecto": "",
+                "Cantidad Defecto": "",
+            };
+            // Solo agregar si hay alguna información relevante en la fila
+            const anyData = Object.values(filaObj).some(v => v !== "" && v !== null && v !== 0);
+            if (anyData) datos.push(filaObj);
+        }
+    });
+
+    return { datos, primeraFactura, vendor };
 }
 
-// ----- Exportar a Excel (recopila valores de inputs, defectos y nombres de fotos) -----
+// --- Función para generar el nombre de archivo (Factura y Fecha) ---
+function generarNombreArchivo(factura) {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+    const yyyy = today.getFullYear();
+    const fecha = `${dd}-${mm}-${yyyy}`;
+
+    // Asegura que el nombre del archivo cumpla con el formato (Ejemplo: 2450 19-11-2025)
+    const safeFactura = factura.replace(/[^\w\-]+/g, "_") || "Reporte";
+    return `${safeFactura} ${fecha}`;
+}
+
+// --- Exportar a Excel ---
+
 document.getElementById("descargarExcel").addEventListener("click", function() {
-  const vendor = document.getElementById("vendor").value || "SinProveedor";
-  const filas = document.querySelectorAll("#tabla tbody tr");
-  const datos = [];
+    const { datos, vendor, primeraFactura } = recolectarDatos();
 
-  filas.forEach(tr => {
-    // obtener celdas (orden consistente con la tabla)
-    const celdas = tr.querySelectorAll("td");
+    if (datos.length === 0) {
+        alert("No hay datos para exportar. Agrega al menos una fila con información.");
+        return;
+    }
 
-    // defensivo: si la fila está vacía (sin inputs) la ignoramos
-    if (!celdas || celdas.length < 10) return;
-
-    // Defectos: buscar todas las filas dentro de la celda .defectos
-    const defectCell = celdas[9];
-    const defectos = Array.from(defectCell.querySelectorAll('.defect-row')).map(div => {
-      const codInput = div.querySelector('.codigo-defecto');
-      const qtyInput = div.querySelector('.cantidad-defecto');
-      const cod = codInput ? codInput.value.trim() : "";
-      const qty = qtyInput ? qtyInput.value.trim() : "";
-      return (cod || qty) ? `${cod}:${qty}` : null;
-    }).filter(Boolean);
-
-    // Fotos: obtener nombres de archivos de cada input.file de la celda fotos
-    const fotosCell = celdas[10];
-    const fotos = Array.from(fotosCell.querySelectorAll('.foto-input')).map(fi => {
-      // si hay un archivo seleccionado, use su name; si no, ignore
-      return (fi.files && fi.files[0]) ? fi.files[0].name : null;
-    }).filter(Boolean);
-
-    // crear objeto fila
-    const filaObj = {
-      Vendor: vendor,
-      Factura: (celdas[0].querySelector('input') ? celdas[0].querySelector('input').value : "").trim(),
-      PO: (celdas[1].querySelector('input') ? celdas[1].querySelector('input').value : "").trim(),
-      Estilo: (celdas[2].querySelector('input') ? celdas[2].querySelector('input').value : "").trim(),
-      Color: (celdas[3].querySelector('input') ? celdas[3].querySelector('input').value : "").trim(),
-      Total: (celdas[4].querySelector('input') ? celdas[4].querySelector('input').value : "").trim(),
-      Muestra: (celdas[5].querySelector('input') ? celdas[5].querySelector('input').value : "").trim(),
-      "Total Defectos": (celdas[6].querySelector('input') ? celdas[6].querySelector('input').value : "").trim(),
-      "AQL %": (celdas[7].querySelector('input') ? celdas[7].querySelector('input').value : "").trim(),
-      "A/R": (celdas[8].querySelector('input') ? celdas[8].querySelector('input').value : "").trim(),
-      "Defectos (Código:Cantidad)": defectos.join(", "),
-      "Fotos (nombres)": fotos.join(", ")
-    };
-
-    // agregar solo si hay datos significativos (evita filas totalmente vacías)
-    const anyData = Object.values(filaObj).some(v => v !== "" && v !== null);
-    if (anyData) datos.push(filaObj);
-  });
-
-  if (datos.length === 0) {
-    alert("No hay datos para exportar. Agrega al menos una fila con información.");
-    return;
-  }
-
-  // crear hoja y descargar
-  const ws = XLSX.utils.json_to_sheet(datos);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Auditoría");
-  const safeVendor = vendor.replace(/[^\w\-]+/g, "_") || "SinProveedor";
-  const nombreArchivo = `Auditoria_Blanks_${safeVendor}.xlsx`;
-  XLSX.writeFile(wb, nombreArchivo);
+    const ws = XLSX.utils.json_to_sheet(datos);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Auditoría");
+    
+    // Generar nombre de archivo con el formato solicitado (Factura y Fecha)
+    const nombreBase = generarNombreArchivo(primeraFactura || vendor);
+    const nombreArchivo = `${nombreBase}.xlsx`;
+    
+    XLSX.writeFile(wb, nombreArchivo);
 });
 </script>
 
 </body>
 </html>
+
 
 
 
