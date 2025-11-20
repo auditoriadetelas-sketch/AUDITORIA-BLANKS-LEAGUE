@@ -9,16 +9,14 @@
         body { 
             font-family: Arial, sans-serif; 
             margin: 20px; 
-            /* --- INICIO: ESTILOS DE FONDO AZUL Y GRIS (Degradado) --- */
-            /* Degradado de un azul/gris muy claro a un azul más suave */
+            /* Estilos de Fondo Azul y Gris */
             background: linear-gradient(to right, #eef4f9, #d0e0ed); 
-            background-attachment: fixed; /* Mantiene el fondo fijo al hacer scroll */
-            /* --- FIN: ESTILOS DE FONDO AZUL Y GRIS --- */
+            background-attachment: fixed;
         }
         
-        /* Ajustar la opacidad de los contenedores para que el fondo se vea, pero el contenido sea legible */
+        /* Contenedores semi-transparentes para legibilidad */
         h2, .controles, table {
-            background: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+            background: rgba(255, 255, 255, 0.9);
             padding: 10px;
             border-radius: 10px;
         }
@@ -47,13 +45,19 @@
         th, td { padding: 8px; text-align: center; vertical-align: middle; }
         th { background: #003366; color: white; }
         
-        /* Estilos de inputs */
+        /* Estilos de inputs y selects */
         input[type="number"], input[type="text"], select, textarea { 
             width: 90%; 
             padding: 5px; 
             border-radius: 5px; 
             border: 1px solid #ccc; 
             box-sizing: border-box; 
+        }
+        select.codigo-defecto { 
+            width: 60%; /* Ancho para el menú desplegable de defectos */
+        }
+        input.cantidad-defecto {
+             width: 30%; /* Ancho para la cantidad de defectos */
         }
         textarea.comentarios-area {
             min-height: 50px;
@@ -66,8 +70,7 @@
         
         /* Estilos de la sección de defectos */
         .small-btn { padding: 4px 8px; font-size: 12px; margin-top:6px; display:inline-block; }
-        .defect-row { margin-top:6px; display:flex; gap:6px; justify-content:center; align-items:center; }
-        .defect-row input { width: 38%; }
+        .defect-row { margin-top:6px; display:flex; gap:3px; justify-content:center; align-items:center; }
     </style>
 </head>
 <body>
@@ -104,10 +107,10 @@
             <th>Color</th>
             <th>Total</th>
             <th>Muestra</th>
+            <th>Defectos (Código / Cantidad)</th> 
             <th>Total Defectos</th>
             <th>AQL %</th>
             <th>A/R</th>
-            <th>Defectos (Código / Cantidad)</th>
             <th>Comentarios / Observaciones</th>
         </tr>
     </thead>
@@ -119,20 +122,23 @@
             <td><input type="text" name="color[]"></td>
             <td><input type="number" name="total[]" min="0" oninput="calcularFila(this.closest('tr'))"></td>
             <td><input type="text" name="muestra[]" readonly></td>
-            <td><input type="text" name="totalDefectos[]" readonly></td>
-            <td><input type="text" name="aql[]" readonly></td>
-            <td><input type="text" name="ar[]" readonly></td>
-
+            
             <td>
                 <div class="defectos">
                     <div class="defect-row">
-                        <input type="text" placeholder="Código" class="codigo-defecto">
-                        <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+                        <select class="codigo-defecto">
+                            <option value="">-- Selecciona Defecto --</option>
+                        </select>
+                        <input type="number" placeholder="Cant." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
                         <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
                     </div>
                 </div>
                 <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
             </td>
+
+            <td><input type="text" name="totalDefectos[]" readonly></td>
+            <td><input type="text" name="aql[]" readonly></td>
+            <td><input type="text" name="ar[]" readonly></td>
 
             <td>
                 <textarea name="comentarios[]" class="comentarios-area" placeholder="Escribe observaciones aquí..."></textarea>
@@ -142,6 +148,20 @@
 </table>
 
 <script>
+// Lista de defectos completa
+const DEECTOS_LISTA = [
+    "OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "OPEN SEAM",
+    "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS",
+    "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT",
+    "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS",
+    "INCORRECT CAP COLOR", "BROKEN VISOR", "UNSEWED / MISSING EYELET",
+    "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO",
+    "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR",
+    "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
+    "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"
+];
+
+// Rangos AQL
 const rangos = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -156,6 +176,19 @@ const rangos = [
     {min:3201, max:10000, muestra:200, acepta:10, rechaza:11},
     {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
+
+function crearSelectDefectos() {
+    let options = `<option value="">-- Selecciona Defecto --</option>`;
+    DEECTOS_LISTA.forEach(defecto => {
+        options += `<option value="${defecto}">${defecto}</option>`;
+    });
+    return options;
+}
+
+// Inicializa el select en la fila de ejemplo
+document.querySelectorAll('select.codigo-defecto').forEach(select => {
+    select.innerHTML = crearSelectDefectos();
+});
 
 // --- Funciones de Interfaz ---
 
@@ -199,6 +232,7 @@ function calcularFila(fila) {
 function agregarFila() {
     const tabla = document.querySelector("#tabla tbody");
     const fila = document.createElement("tr");
+    
     fila.innerHTML = `
         <td><input type="text" name="factura[]"></td>
         <td><input type="text" name="po[]"></td>
@@ -206,20 +240,23 @@ function agregarFila() {
         <td><input type="text" name="color[]"></td>
         <td><input type="number" name="total[]" min="0" oninput="calcularFila(this.closest('tr'))"></td>
         <td><input type="text" name="muestra[]" readonly></td>
-        <td><input type="text" name="totalDefectos[]" readonly></td>
-        <td><input type="text" name="aql[]" readonly></td>
-        <td><input type="text" name="ar[]" readonly></td>
 
         <td>
             <div class="defectos">
                 <div class="defect-row">
-                    <input type="text" placeholder="Código" class="codigo-defecto">
-                    <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+                    <select class="codigo-defecto">
+                        ${crearSelectDefectos()}
+                    </select>
+                    <input type="number" placeholder="Cant." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
                     <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
                 </div>
             </div>
             <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
         </td>
+
+        <td><input type="text" name="totalDefectos[]" readonly></td>
+        <td><input type="text" name="aql[]" readonly></td>
+        <td><input type="text" name="ar[]" readonly></td>
 
         <td>
             <textarea name="comentarios[]" class="comentarios-area" placeholder="Escribe observaciones aquí..."></textarea>
@@ -234,8 +271,10 @@ function agregarDefecto(btn) {
     div.className = 'defect-row';
     div.style.marginTop = '6px';
     div.innerHTML = `
-        <input type="text" placeholder="Código" class="codigo-defecto">
-        <input type="number" placeholder="Cantidad" class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+        <select class="codigo-defecto">
+            ${crearSelectDefectos()}
+        </select>
+        <input type="number" placeholder="Cant." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
         <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
     `;
     cell.appendChild(div);
@@ -249,7 +288,7 @@ function quitarDefecto(btn) {
     if (tr) calcularFila(tr);
 }
 
-// --- Función de Recolección de Datos General ---
+// --- Función de Recolección de Datos General (con lógica de no repetir datos) ---
 
 function recolectarDatos() {
     const vendor = document.getElementById("vendor").value || "SinProveedor";
@@ -259,21 +298,21 @@ function recolectarDatos() {
 
     filas.forEach(tr => {
         const celdas = tr.querySelectorAll("td");
-        if (!celdas || celdas.length < 10) return;
+        if (!celdas || celdas.length < 9) return; 
 
         const facturaValor = (celdas[0].querySelector('input') ? celdas[0].querySelector('input').value : "").trim();
         if (primeraFactura === "" && facturaValor !== "") {
-            primeraFactura = facturaValor; // Capturar la primera factura no vacía
+            primeraFactura = facturaValor;
         }
 
         const defectoDatos = {};
-        const defectCell = celdas[9];
+        const defectCell = celdas[6];
         
-        // Recolección de defectos para exportación
+        // Recolección de defectos
         Array.from(defectCell.querySelectorAll('.defect-row')).forEach(div => {
-            const codInput = div.querySelector('.codigo-defecto');
+            const codSelect = div.querySelector('.codigo-defecto');
             const qtyInput = div.querySelector('.cantidad-defecto');
-            const cod = codInput ? codInput.value.trim() : "";
+            const cod = codSelect ? codSelect.value.trim() : ""; 
             const qty = parseInt(qtyInput ? qtyInput.value.trim() : "0") || 0;
             
             if (cod && qty > 0) {
@@ -282,38 +321,66 @@ function recolectarDatos() {
         });
 
         const defectosLista = Object.entries(defectoDatos).map(([codigo, cantidad]) => ({ codigo, cantidad }));
+        const numDefectosUnicos = defectosLista.length;
 
-        // Datos comunes
-        const datosComunes = {
+        // Captura de datos de la fila
+        const muestraVal = (celdas[5].querySelector('input') ? celdas[5].querySelector('input').value : "").trim();
+        const totalDefectosVal = (celdas[7].querySelector('input') ? celdas[7].querySelector('input').value : "").trim(); 
+        const aqlVal = (celdas[8].querySelector('input') ? celdas[8].querySelector('input').value : "").trim();
+        const arVal = (celdas[9].querySelector('input') ? celdas[9].querySelector('input').value : "").trim();
+        const comentariosVal = (celdas[10].querySelector('textarea') ? celdas[10].querySelector('textarea').value : "").trim();
+        
+        // Base de datos que se copia SOLO en la primera línea de defectos
+        const datosComunesFull = {
             Vendor: vendor,
             Factura: facturaValor,
             PO: (celdas[1].querySelector('input') ? celdas[1].querySelector('input').value : "").trim(),
             Estilo: (celdas[2].querySelector('input') ? celdas[2].querySelector('input').value : "").trim(),
             Color: (celdas[3].querySelector('input') ? celdas[3].querySelector('input').value : "").trim(),
             Total: (celdas[4].querySelector('input') ? celdas[4].querySelector('input').value : "").trim(),
-            Muestra: (celdas[5].querySelector('input') ? celdas[5].querySelector('input').value : "").trim(),
-            "Total Defectos": (celdas[6].querySelector('input') ? celdas[6].querySelector('input').value : "").trim(),
-            "AQL %": (celdas[7].querySelector('input') ? celdas[7].querySelector('input').value : "").trim(),
-            "A/R": (celdas[8].querySelector('input') ? celdas[8].querySelector('input').value : "").trim(),
-            Comentarios: (celdas[10].querySelector('textarea') ? celdas[10].querySelector('textarea').value : "").trim()
+            Comentarios: comentariosVal,
+            Muestra: muestraVal,
+            "Total Defectos": totalDefectosVal,
+            "AQL %": aqlVal,
+            "A/R": arVal,
         };
-
-        // Exportación: una fila por defecto
-        if (defectosLista.length > 0) {
-            defectosLista.forEach(defecto => {
-                datos.push({
-                    ...datosComunes,
+        
+        // Base de datos vacía (usada para la segunda línea de defectos en adelante)
+        const datosComunesVacio = {
+            Vendor: "",
+            Factura: "",
+            PO: "",
+            Estilo: "",
+            Color: "",
+            Total: "",
+            Muestra: "",
+            "Total Defectos": "",
+            "AQL %": "",
+            "A/R": "",
+        };
+        
+        // Manejo de la exportación: una fila por defecto
+        if (numDefectosUnicos > 0) {
+            defectosLista.forEach((defecto, index) => {
+                let filaExportar = {
+                    // Si es la primera línea, usa todos los datos; si no, usa la base vacía.
+                    ...(index === 0 ? datosComunesFull : datosComunesVacio), 
                     "Código Defecto": defecto.codigo,
                     "Cantidad Defecto": defecto.cantidad,
-                });
+                };
+
+                // Los comentarios se mantienen en todas las líneas (si existían)
+                filaExportar.Comentarios = comentariosVal;
+
+                datos.push(filaExportar);
             });
         } else {
-            const filaObj = {
-                ...datosComunes,
+            // Si la fila tiene datos pero NO defectos, se exporta una fila única (con todos los datos)
+             const filaObj = {
+                ...datosComunesFull,
                 "Código Defecto": "",
                 "Cantidad Defecto": "",
             };
-            // Solo agregar si hay alguna información relevante en la fila
             const anyData = Object.values(filaObj).some(v => v !== "" && v !== null && v !== 0);
             if (anyData) datos.push(filaObj);
         }
@@ -326,11 +393,10 @@ function recolectarDatos() {
 function generarNombreArchivo(factura) {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); 
     const yyyy = today.getFullYear();
     const fecha = `${dd}-${mm}-${yyyy}`;
 
-    // Asegura que el nombre del archivo cumpla con el formato (Ejemplo: 2450 19-11-2025)
     const safeFactura = factura.replace(/[^\w\-]+/g, "_") || "Reporte";
     return `${safeFactura} ${fecha}`;
 }
@@ -349,7 +415,6 @@ document.getElementById("descargarExcel").addEventListener("click", function() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Auditoría");
     
-    // Generar nombre de archivo con el formato solicitado (Factura y Fecha)
     const nombreBase = generarNombreArchivo(primeraFactura || vendor);
     const nombreArchivo = `${nombreBase}.xlsx`;
     
