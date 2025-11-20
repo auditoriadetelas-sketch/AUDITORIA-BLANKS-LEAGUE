@@ -64,9 +64,23 @@
             resize: vertical;
         }
 
-        /* Estilos de A/R */
-        .ar-acepta { background-color: #c8f7c5; font-weight: bold; }
-        .ar-rechaza { background-color: #f7c5c5; font-weight: bold; }
+        /* Estilos de A/R (Acepta/Rechaza) - Ajustados para una línea */
+        .ar-acepta { 
+            background-color: #c8f7c5; 
+            font-weight: bold; 
+            font-size: 14px; /* Tamaño de fuente ligeramente más grande para una línea */
+            height: 30px; /* Reducir altura */
+            line-height: 18px;
+        }
+        .ar-rechaza { 
+            background-color: #f7c5c5; 
+            font-weight: bold; 
+            font-size: 14px;
+            height: 30px;
+            line-height: 18px;
+        }
+        
+        /* Eliminamos .ar-multiline ya que ahora debe ser una sola línea sin salto */
         
         /* Estilos de la sección de defectos */
         .small-btn { padding: 4px 8px; font-size: 12px; margin-top:6px; display:inline-block; }
@@ -196,6 +210,7 @@ function calcularFila(fila) {
     let total = parseInt(fila.querySelector('[name="total[]"]').value) || 0;
     let defectosTot = 0;
 
+    // Suma de defectos
     fila.querySelectorAll('.cantidad-defecto').forEach(input => {
         defectosTot += parseInt(input.value) || 0;
     });
@@ -214,10 +229,12 @@ function calcularFila(fila) {
         inputAQL.value = aql + "%";
 
         if (defectosTot <= rango.acepta) {
-            inputAR.value = `ACEPTA (≤${rango.acepta})`;
+            // MOSTRAR ACEPTA Y LÍMITE EN UNA SOLA LÍNEA, separados por espacio
+            inputAR.value = `ACEPTA ${rango.acepta}`;
             inputAR.className = "ar-acepta";
         } else {
-            inputAR.value = `RECHAZA (>${rango.acepta})`;
+            // MOSTRAR RECHAZA Y LÍMITE EN UNA SOLA LÍNEA, separados por espacio
+            inputAR.value = `RECHAZA ${rango.acepta}`;
             inputAR.className = "ar-rechaza";
         }
     } else {
@@ -288,10 +305,21 @@ function quitarDefecto(btn) {
     if (tr) calcularFila(tr);
 }
 
+// --- Función para obtener la fecha de hoy en formato DD-MM-YYYY ---
+function obtenerFechaHoy() {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); 
+    const yyyy = today.getFullYear();
+    return `${dd}-${mm}-${yyyy}`;
+}
+
+
 // --- Función de Recolección de Datos General (con lógica de no repetir datos) ---
 
 function recolectarDatos() {
     const vendor = document.getElementById("vendor").value || "SinProveedor";
+    const fechaAuditoria = obtenerFechaHoy(); // Captura la fecha
     const filas = document.querySelectorAll("#tabla tbody tr");
     const datos = [];
     let primeraFactura = "";
@@ -330,23 +358,25 @@ function recolectarDatos() {
         const arVal = (celdas[9].querySelector('input') ? celdas[9].querySelector('input').value : "").trim();
         const comentariosVal = (celdas[10].querySelector('textarea') ? celdas[10].querySelector('textarea').value : "").trim();
         
-        // Base de datos que se copia SOLO en la primera línea de defectos
+        // Base de datos que se copia SOLO en la primera línea de defectos (COLUMNAS DEFINIDAS EN ORDEN)
         const datosComunesFull = {
+            "Fecha Auditoría": fechaAuditoria, // NUEVA COLUMNA
             Vendor: vendor,
             Factura: facturaValor,
             PO: (celdas[1].querySelector('input') ? celdas[1].querySelector('input').value : "").trim(),
             Estilo: (celdas[2].querySelector('input') ? celdas[2].querySelector('input').value : "").trim(),
             Color: (celdas[3].querySelector('input') ? celdas[3].querySelector('input').value : "").trim(),
             Total: (celdas[4].querySelector('input') ? celdas[4].querySelector('input').value : "").trim(),
-            Comentarios: comentariosVal,
             Muestra: muestraVal,
             "Total Defectos": totalDefectosVal,
             "AQL %": aqlVal,
             "A/R": arVal,
+            Comentarios: comentariosVal, 
         };
         
         // Base de datos vacía (usada para la segunda línea de defectos en adelante)
         const datosComunesVacio = {
+            "Fecha Auditoría": "", // VACÍO
             Vendor: "",
             Factura: "",
             PO: "",
@@ -357,20 +387,32 @@ function recolectarDatos() {
             "Total Defectos": "",
             "AQL %": "",
             "A/R": "",
+            Comentarios: "", 
         };
         
         // Manejo de la exportación: una fila por defecto
         if (numDefectosUnicos > 0) {
             defectosLista.forEach((defecto, index) => {
+                let filaAuditoriaBase = (index === 0 ? datosComunesFull : datosComunesVacio);
+                
                 let filaExportar = {
-                    // Si es la primera línea, usa todos los datos; si no, usa la base vacía.
-                    ...(index === 0 ? datosComunesFull : datosComunesVacio), 
+                    "Fecha Auditoría": filaAuditoriaBase["Fecha Auditoría"], // Incluir Fecha
+                    Vendor: filaAuditoriaBase.Vendor,
+                    Factura: filaAuditoriaBase.Factura,
+                    PO: filaAuditoriaBase.PO,
+                    Estilo: filaAuditoriaBase.Estilo,
+                    Color: filaAuditoriaBase.Color,
+                    Total: filaAuditoriaBase.Total,
+                    Muestra: filaAuditoriaBase.Muestra,
+                    "Total Defectos": filaAuditoriaBase["Total Defectos"],
+                    "AQL %": filaAuditoriaBase["AQL %"],
+                    "A/R": filaAuditoriaBase["A/R"],
+                    // CAMPOS DE DEFECTO
                     "Código Defecto": defecto.codigo,
                     "Cantidad Defecto": defecto.cantidad,
+                    // COMENTARIO AL FINAL
+                    Comentarios: filaAuditoriaBase.Comentarios, 
                 };
-
-                // Los comentarios se mantienen en todas las líneas (si existían)
-                filaExportar.Comentarios = comentariosVal;
 
                 datos.push(filaExportar);
             });
@@ -382,7 +424,25 @@ function recolectarDatos() {
                 "Cantidad Defecto": "",
             };
             const anyData = Object.values(filaObj).some(v => v !== "" && v !== null && v !== 0);
-            if (anyData) datos.push(filaObj);
+            if (anyData) {
+                // Ajustar el orden para la exportación sin defectos
+                datos.push({
+                    "Fecha Auditoría": filaObj["Fecha Auditoría"], // Incluir Fecha
+                    Vendor: filaObj.Vendor,
+                    Factura: filaObj.Factura,
+                    PO: filaObj.PO,
+                    Estilo: filaObj.Estilo,
+                    Color: filaObj.Color,
+                    Total: filaObj.Total,
+                    Muestra: filaObj.Muestra,
+                    "Total Defectos": filaObj["Total Defectos"],
+                    "AQL %": filaObj["AQL %"],
+                    "A/R": filaObj["A/R"],
+                    "Código Defecto": "",
+                    "Cantidad Defecto": "",
+                    Comentarios: filaObj.Comentarios, // COMENTARIO AL FINAL
+                });
+            }
         }
     });
 
