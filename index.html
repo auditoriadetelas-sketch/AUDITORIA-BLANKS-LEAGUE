@@ -1,51 +1,74 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Reporte de Auditoría de Blanks</title>
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <title>Blanks Audit Report</title>
     
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
     <style>
         body { 
             font-family: Arial, sans-serif; 
             margin: 20px; 
-            /* Estilos de Fondo Azul y Gris */
             background: linear-gradient(to right, #eef4f9, #d0e0ed); 
             background-attachment: fixed;
         }
         
-        /* Contenedores semi-transparentes para legibilidad */
-        h2, .controles, table {
+        /* General Containers and Styles */
+        h1, .controles, table {
             background: rgba(255, 255, 255, 0.9);
             padding: 10px;
             border-radius: 10px;
         }
-
-        h2 { 
+        h1 { 
             text-align: center; 
             color: #003366; 
             margin-bottom: 20px;
+            font-size: 2em;
         }
-        .controles { margin-bottom: 20px; text-align: center; }
-        
-        /* Estilos de botones y select */
+        .controles { 
+            margin-bottom: 20px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            align-items: flex-start;
+            gap: 25px; 
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column; 
+            align-items: flex-start;
+            padding: 10px;
+            border: 1px solid #ccc; 
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        .control-group label {
+            font-weight: bold;
+            color: #003366;
+            margin-bottom: 5px;
+        }
         select, .btn { 
             padding: 8px 12px; 
-            margin: 5px; 
             border-radius: 5px; 
             border: 1px solid #003366; 
             font-weight: bold; 
         }
-        .btn { background: #0066cc; color: white; cursor: pointer; }
+        .btn { 
+            background: #0066cc; 
+            color: white; 
+            cursor: pointer; 
+            margin-top: 15px; 
+        }
         .btn:hover { background: #004c99; }
         
-        /* Estilos de tabla */
+        /* Table Styles */
         table { width: 100%; border-collapse: collapse; }
         table, th, td { border: 1px solid #666; }
         th, td { padding: 8px; text-align: center; vertical-align: middle; }
         th { background: #003366; color: white; }
         
-        /* Estilos de inputs y selects */
+        /* Input Styles */
         input[type="number"], input[type="text"], select, textarea { 
             width: 90%; 
             padding: 5px; 
@@ -53,79 +76,60 @@
             border: 1px solid #ccc; 
             box-sizing: border-box; 
         }
-        select.codigo-defecto { 
-            width: 60%; /* Ancho para el menú desplegable de defectos */
-        }
-        input.cantidad-defecto {
-             width: 30%; /* Ancho para la cantidad de defectos */
-        }
-        textarea.comentarios-area {
-            min-height: 50px;
-            resize: vertical;
-        }
+        select.codigo-defecto { width: 60%; }
+        input.cantidad-defecto { width: 30%; }
+        textarea.comentarios-area { min-height: 50px; resize: vertical; }
 
-        /* Estilos de A/R (Acepta/Rechaza) - Ajustados para una línea */
-        .ar-acepta { 
-            background-color: #c8f7c5; 
-            font-weight: bold; 
-            font-size: 14px; /* Tamaño de fuente ligeramente más grande para una línea */
-            height: 30px; /* Reducir altura */
-            line-height: 18px;
-        }
-        .ar-rechaza { 
-            background-color: #f7c5c5; 
-            font-weight: bold; 
-            font-size: 14px;
-            height: 30px;
-            line-height: 18px;
-        }
+        /* A/R (Accept/Reject) Styles */
+        .ar-acepta { background-color: #c8f7c5; font-weight: bold; font-size: 14px; height: 30px; line-height: 18px; }
+        .ar-rechaza { background-color: #f7c5c5; font-weight: bold; font-size: 14px; height: 30px; line-height: 18px; }
         
-        /* Eliminamos .ar-multiline ya que ahora debe ser una sola línea sin salto */
-        
-        /* Estilos de la sección de defectos */
+        /* Defect Section Styles */
         .small-btn { padding: 4px 8px; font-size: 12px; margin-top:6px; display:inline-block; }
         .defect-row { margin-top:6px; display:flex; gap:3px; justify-content:center; align-items:center; }
     </style>
 </head>
 <body>
 
-<h2>Reporte de Auditoría de Blanks</h2>
+<h1>Blanks Audit Report</h1>
 
 <div class="controles">
-    <label for="vendor">Proveedor:</label>
-    <select id="vendor">
-        <option value="">-- Selecciona Vendor --</option>
-        <option>Asia Caps (Thailand) Co., Ltd.</option>
-        <option>Asia Caps Co., Ltd.</option>
-        <option>ERA Fashion Accesory Co.</option>
-        <option>GOTOP TEXTILE COMPANY LIMITED</option>
-        <option>Giant Headmost Manufacturing Corp</option>
-        <option>HENAN J&F HEADWEAR CO., LTD</option>
-        <option>Jeya Headwear</option>
-        <option>Ouray Sportswear</option>
-        <option>Ratone International LTD. Loc</option>
-        <option>Shiningcrown Hats Mfg., Corp.</option>
-        <option>Unimas Sportswear Ltd.</option>
-    </select>
-
-    <button class="btn" onclick="agregarFila()">➕ Agregar Item</button>
-    <button class="btn" id="descargarExcel">⬇️ Descargar Excel</button>
+    
+    <div class="control-group">
+        <label for="product-type">Product Type:</label>
+        <select id="product-type" onchange="manejarCambioDeProducto()">
+            <option value="CAPS">🧢 Caps</option>
+            <option value="GARMENTS">👕 Garments</option>
+        </select>
+    </div>
+    
+    <div class="control-group">
+        <label for="vendor">Vendor:</label>
+        <select id="vendor">
+            <option value="">-- Select Vendor --</option>
+        </select>
+    </div>
+    
+    <div class="control-group" style="border: none; background: none; padding-top: 25px;">
+        <button class="btn" onclick="agregarFila()">➕ Add Item</button>
+        <button class="btn" id="descargarSoloExcel">⬇️ Download Excel</button>
+    </div>
 </div>
 
 <table id="tabla">
     <thead>
         <tr>
-            <th>Factura</th>
+            <th>Invoice</th>
             <th>PO</th>
-            <th>Estilo</th>
+            <th>Style</th>
             <th>Color</th>
-            <th>Total</th>
-            <th>Muestra</th>
-            <th>Defectos (Código / Cantidad)</th> 
-            <th>Total Defectos</th>
+            <th>Total Qty</th>
+            <th>Sample Size</th>
+            <th>Defects (Code / Qty)</th> 
+            <th>Total Defects</th>
             <th>AQL %</th>
             <th>A/R</th>
-            <th>Comentarios / Observaciones</th>
+            <th>Comments / Observations</th>
         </tr>
     </thead>
     <tbody>
@@ -141,13 +145,13 @@
                 <div class="defectos">
                     <div class="defect-row">
                         <select class="codigo-defecto">
-                            <option value="">-- Selecciona Defecto --</option>
+                            <option value="">-- Select Defect --</option>
                         </select>
-                        <input type="number" placeholder="Cant." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+                        <input type="number" placeholder="Qty." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
                         <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
                     </div>
                 </div>
-                <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
+                <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defect</button>
             </td>
 
             <td><input type="text" name="totalDefectos[]" readonly></td>
@@ -155,27 +159,59 @@
             <td><input type="text" name="ar[]" readonly></td>
 
             <td>
-                <textarea name="comentarios[]" class="comentarios-area" placeholder="Escribe observaciones aquí..."></textarea>
+                <textarea name="comentarios[]" class="comentarios-area" placeholder="Write observations here..."></textarea>
             </td>
         </tr>
     </tbody>
 </table>
 
 <script>
-// Lista de defectos completa
-const DEECTOS_LISTA = [
-    "OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "OPEN SEAM",
-    "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS",
-    "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT",
-    "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS",
-    "INCORRECT CAP COLOR", "BROKEN VISOR", "UNSEWED / MISSING EYELET",
-    "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO",
-    "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR",
-    "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
-    "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"
-];
+// ===========================================
+//             CONFIGURATION DATA
+// ===========================================
 
-// Rangos AQL
+const PROVEEDORES = {
+    CAPS: [ 
+        "Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.",
+        "GOTOP TEXTILE COMPANY LIMITED", "Giant Headmost Manufacturing Corp", "HENAN J&F HEADWEAR CO., LTD",
+        "Jeya Headwear", "Ratone International LTD. Loc",
+        "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear" 
+    ],
+    GARMENTS: [ 
+        "New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel",
+        "Green Valley Manufacturing", "Solis Textiles",
+        "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM",
+        "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries",
+        "Milestone Textiles", "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear" 
+    ]
+};
+
+const DEFECTOS_POR_TIPO = {
+    CAPS: [
+        "OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "OPEN SEAM",
+        "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS",
+        "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT",
+        "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS",
+        "INCORRECT CAP COLOR", "BROKEN VISOR", "UNSEWED / MISSING EYELET",
+        "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO",
+        "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR",
+        "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
+        "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"
+    ],
+    GARMENTS: [
+        "HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY",
+        "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS",
+        "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES",
+        "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES",
+        "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS",
+        "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES",
+        "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT",
+        "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN",
+        "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH",
+        "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"
+    ]
+};
+
 const rangos = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -191,21 +227,78 @@ const rangos = [
     {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
 
-function crearSelectDefectos() {
-    let options = `<option value="">-- Selecciona Defecto --</option>`;
-    DEECTOS_LISTA.forEach(defecto => {
+// ===========================================
+//             CONTROL FUNCTIONS 
+// ===========================================
+
+/**
+ * Crea las opciones HTML para el selector de defectos basado en el tipo de producto.
+ * @param {string} tipoProducto - 'CAPS' o 'GARMENTS'.
+ * @returns {string} HTML de las opciones.
+ */
+function crearSelectDefectos(tipoProducto) {
+    const lista = DEFECTOS_POR_TIPO[tipoProducto] || DEFECTOS_POR_TIPO.CAPS;
+    let options = `<option value="">-- Select Defect --</option>`;
+    lista.forEach(defecto => {
         options += `<option value="${defecto}">${defecto}</option>`;
     });
     return options;
 }
 
-// Inicializa el select en la fila de ejemplo
-document.querySelectorAll('select.codigo-defecto').forEach(select => {
-    select.innerHTML = crearSelectDefectos();
-});
+/**
+ * Actualiza todos los selectores de defectos existentes en la tabla.
+ * Mantiene el valor seleccionado si el defecto sigue siendo válido para el nuevo tipo.
+ * @param {string} tipoProducto - 'CAPS' o 'GARMENTS'.
+ */
+function actualizarSelectoresDefectos(tipoProducto) {
+    const nuevosOptions = crearSelectDefectos(tipoProducto);
+    
+    document.querySelectorAll('select.codigo-defecto').forEach(select => {
+        const valorAnterior = select.value; 
+        
+        select.innerHTML = nuevosOptions;
+        
+        // Intenta restablecer el valor anterior si es válido
+        if (select.querySelector(`option[value="${valorAnterior}"]`)) {
+            select.value = valorAnterior;
+        } else {
+            select.value = "";
+        }
+    });
+}
 
-// --- Funciones de Interfaz ---
+/**
+ * Carga los proveedores en el selector principal basándose en el tipo de producto.
+ * @param {string} tipoProducto - 'CAPS' o 'GARMENTS'.
+ */
+function cargarProveedores(tipoProducto) {
+    const selectorVendor = document.getElementById("vendor");
+    
+    selectorVendor.innerHTML = '<option value="">-- Select Vendor --</option>';
+    
+    const lista = PROVEEDORES[tipoProducto] || [];
+    
+    lista.forEach(vendor => {
+        const option = document.createElement('option');
+        option.value = vendor;
+        option.textContent = vendor;
+        selectorVendor.appendChild(option);
+    });
+}
 
+/**
+ * Función principal llamada al cambiar el tipo de producto (CAPS/GARMENTS).
+ */
+function manejarCambioDeProducto() {
+    const tipoProducto = document.getElementById("product-type").value;
+    cargarProveedores(tipoProducto);
+    actualizarSelectoresDefectos(tipoProducto);
+}
+
+/**
+ * Calcula la muestra, los defectos totales y el A/R para una fila.
+ * @param {HTMLElement} fila - La fila de la tabla a calcular.
+ */
 function calcularFila(fila) {
     let total = parseInt(fila.querySelector('[name="total[]"]').value) || 0;
     let defectosTot = 0;
@@ -228,16 +321,16 @@ function calcularFila(fila) {
         let aql = rango.muestra ? ((defectosTot / rango.muestra) * 100).toFixed(2) : "0.00";
         inputAQL.value = aql + "%";
 
+        // Determinar Aceptar/Rechazar
         if (defectosTot <= rango.acepta) {
-            // MOSTRAR ACEPTA Y LÍMITE EN UNA SOLA LÍNEA, separados por espacio
-            inputAR.value = `ACEPTA ${rango.acepta}`;
+            inputAR.value = `ACCEPT ${rango.acepta}`;
             inputAR.className = "ar-acepta";
         } else {
-            // MOSTRAR RECHAZA Y LÍMITE EN UNA SOLA LÍNEA, separados por espacio
-            inputAR.value = `RECHAZA ${rango.acepta}`;
+            inputAR.value = `REJECT ${rango.acepta}`;
             inputAR.className = "ar-rechaza";
         }
     } else {
+        // Limpiar campos si no hay rango (Total Qty es 0 o fuera de rango)
         inputMuestra.value = "";
         inputAR.value = "";
         inputAQL.value = "";
@@ -246,9 +339,14 @@ function calcularFila(fila) {
     }
 }
 
+/**
+ * Agrega una nueva fila de auditoría a la tabla.
+ */
 function agregarFila() {
     const tabla = document.querySelector("#tabla tbody");
     const fila = document.createElement("tr");
+    
+    const tipoProductoActual = document.getElementById("product-type").value;
     
     fila.innerHTML = `
         <td><input type="text" name="factura[]"></td>
@@ -262,13 +360,13 @@ function agregarFila() {
             <div class="defectos">
                 <div class="defect-row">
                     <select class="codigo-defecto">
-                        ${crearSelectDefectos()}
+                        ${crearSelectDefectos(tipoProductoActual)}
                     </select>
-                    <input type="number" placeholder="Cant." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+                    <input type="number" placeholder="Qty." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
                     <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
                 </div>
             </div>
-            <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defecto</button>
+            <button type="button" class="btn small-btn" onclick="agregarDefecto(this)">➕ Defect</button>
         </td>
 
         <td><input type="text" name="totalDefectos[]" readonly></td>
@@ -276,27 +374,38 @@ function agregarFila() {
         <td><input type="text" name="ar[]" readonly></td>
 
         <td>
-            <textarea name="comentarios[]" class="comentarios-area" placeholder="Escribe observaciones aquí..."></textarea>
+            <textarea name="comentarios[]" class="comentarios-area" placeholder="Write observations here..."></textarea>
         </td>
     `;
     tabla.appendChild(fila);
 }
 
+/**
+ * Agrega un nuevo campo de defecto (Código/Cantidad) a una fila existente.
+ * @param {HTMLElement} btn - El botón "➕ Defect" que se presionó.
+ */
 function agregarDefecto(btn) {
     const cell = btn.parentNode.querySelector('.defectos');
     const div = document.createElement('div');
     div.className = 'defect-row';
     div.style.marginTop = '6px';
+    
+    const tipoProductoActual = document.getElementById("product-type").value;
+    
     div.innerHTML = `
         <select class="codigo-defecto">
-            ${crearSelectDefectos()}
+            ${crearSelectDefectos(tipoProductoActual)}
         </select>
-        <input type="number" placeholder="Cant." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
+        <input type="number" placeholder="Qty." class="cantidad-defecto" min="0" oninput="calcularFila(this.closest('tr'))">
         <button type="button" class="btn small-btn" onclick="quitarDefecto(this)">−</button>
     `;
     cell.appendChild(div);
 }
 
+/**
+ * Quita un campo de defecto de una fila y recalcula.
+ * @param {HTMLElement} btn - El botón "−" que se presionó.
+ */
 function quitarDefecto(btn) {
     const row = btn.closest('.defect-row');
     if (!row) return;
@@ -305,7 +414,11 @@ function quitarDefecto(btn) {
     if (tr) calcularFila(tr);
 }
 
-// --- Función para obtener la fecha de hoy en formato DD-MM-YYYY ---
+
+// ===========================================
+//             EXCEL DOWNLOAD FUNCTION
+// ===========================================
+
 function obtenerFechaHoy() {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -314,12 +427,20 @@ function obtenerFechaHoy() {
     return `${dd}-${mm}-${yyyy}`;
 }
 
+function generarNombreArchivo(factura) {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); 
+    const yyyy = today.getFullYear();
+    const fecha = `${dd}-${mm}-${yyyy}`;
 
-// --- Función de Recolección de Datos General (con lógica de no repetir datos) ---
+    const safeFactura = factura.replace(/[^\w\-]+/g, "_") || "Report";
+    return `${safeFactura}_${fecha}`;
+}
 
 function recolectarDatos() {
-    const vendor = document.getElementById("vendor").value || "SinProveedor";
-    const fechaAuditoria = obtenerFechaHoy(); // Captura la fecha
+    const vendor = document.getElementById("vendor").value || "NoVendor";
+    const fechaAuditoria = obtenerFechaHoy(); 
     const filas = document.querySelectorAll("#tabla tbody tr");
     const datos = [];
     let primeraFactura = "";
@@ -336,7 +457,6 @@ function recolectarDatos() {
         const defectoDatos = {};
         const defectCell = celdas[6];
         
-        // Recolección de defectos
         Array.from(defectCell.querySelectorAll('.defect-row')).forEach(div => {
             const codSelect = div.querySelector('.codigo-defecto');
             const qtyInput = div.querySelector('.cantidad-defecto');
@@ -351,135 +471,78 @@ function recolectarDatos() {
         const defectosLista = Object.entries(defectoDatos).map(([codigo, cantidad]) => ({ codigo, cantidad }));
         const numDefectosUnicos = defectosLista.length;
 
-        // Captura de datos de la fila
-        const muestraVal = (celdas[5].querySelector('input') ? celdas[5].querySelector('input').value : "").trim();
-        const totalDefectosVal = (celdas[7].querySelector('input') ? celdas[7].querySelector('input').value : "").trim(); 
-        const aqlVal = (celdas[8].querySelector('input') ? celdas[8].querySelector('input').value : "").trim();
-        const arVal = (celdas[9].querySelector('input') ? celdas[9].querySelector('input').value : "").trim();
-        const comentariosVal = (celdas[10].querySelector('textarea') ? celdas[10].querySelector('textarea').value : "").trim();
-        
-        // Base de datos que se copia SOLO en la primera línea de defectos (COLUMNAS DEFINIDAS EN ORDEN)
         const datosComunesFull = {
-            "Fecha Auditoría": fechaAuditoria, // NUEVA COLUMNA
-            Vendor: vendor,
-            Factura: facturaValor,
-            PO: (celdas[1].querySelector('input') ? celdas[1].querySelector('input').value : "").trim(),
-            Estilo: (celdas[2].querySelector('input') ? celdas[2].querySelector('input').value : "").trim(),
-            Color: (celdas[3].querySelector('input') ? celdas[3].querySelector('input').value : "").trim(),
-            Total: (celdas[4].querySelector('input') ? celdas[4].querySelector('input').value : "").trim(),
-            Muestra: muestraVal,
-            "Total Defectos": totalDefectosVal,
-            "AQL %": aqlVal,
-            "A/R": arVal,
-            Comentarios: comentariosVal, 
+            "Audit Date": fechaAuditoria, "Vendor": vendor, "Invoice": (celdas[0].querySelector('input') ? celdas[0].querySelector('input').value : "").trim(), 
+            "PO": (celdas[1].querySelector('input') ? celdas[1].querySelector('input').value : "").trim(), "Style": (celdas[2].querySelector('input') ? celdas[2].querySelector('input').value : "").trim(), 
+            "Color": (celdas[3].querySelector('input') ? celdas[3].querySelector('input').value : "").trim(), "Total Qty": (celdas[4].querySelector('input') ? celdas[4].querySelector('input').value : "").trim(), 
+            "Sample Size": (celdas[5].querySelector('input') ? celdas[5].querySelector('input').value : "").trim(), "Total Defects": (celdas[7].querySelector('input') ? celdas[7].querySelector('input').value : "").trim(), 
+            "AQL %": (celdas[8].querySelector('input') ? celdas[8].querySelector('input').value : "").trim(), "A/R": (celdas[9].querySelector('input') ? celdas[9].querySelector('input').value : "").trim(),
+            "Comments": (celdas[10].querySelector('textarea') ? celdas[10].querySelector('textarea').value : "").trim(), 
         };
         
-        // Base de datos vacía (usada para la segunda línea de defectos en adelante)
         const datosComunesVacio = {
-            "Fecha Auditoría": "", // VACÍO
-            Vendor: "",
-            Factura: "",
-            PO: "",
-            Estilo: "",
-            Color: "",
-            Total: "",
-            Muestra: "",
-            "Total Defectos": "",
-            "AQL %": "",
-            "A/R": "",
-            Comentarios: "", 
+            "Audit Date": "", "Vendor": "", "Invoice": "", "PO": "", "Style": "", "Color": "", "Total Qty": "",
+            "Sample Size": "", "Total Defects": "", "AQL %": "", "A/R": "", "Comments": "", 
         };
         
-        // Manejo de la exportación: una fila por defecto
         if (numDefectosUnicos > 0) {
             defectosLista.forEach((defecto, index) => {
                 let filaAuditoriaBase = (index === 0 ? datosComunesFull : datosComunesVacio);
                 
-                let filaExportar = {
-                    "Fecha Auditoría": filaAuditoriaBase["Fecha Auditoría"], // Incluir Fecha
-                    Vendor: filaAuditoriaBase.Vendor,
-                    Factura: filaAuditoriaBase.Factura,
-                    PO: filaAuditoriaBase.PO,
-                    Estilo: filaAuditoriaBase.Estilo,
-                    Color: filaAuditoriaBase.Color,
-                    Total: filaAuditoriaBase.Total,
-                    Muestra: filaAuditoriaBase.Muestra,
-                    "Total Defectos": filaAuditoriaBase["Total Defectos"],
-                    "AQL %": filaAuditoriaBase["AQL %"],
-                    "A/R": filaAuditoriaBase["A/R"],
-                    // CAMPOS DE DEFECTO
-                    "Código Defecto": defecto.codigo,
-                    "Cantidad Defecto": defecto.cantidad,
-                    // COMENTARIO AL FINAL
-                    Comentarios: filaAuditoriaBase.Comentarios, 
-                };
-
-                datos.push(filaExportar);
+                datos.push({
+                    ...filaAuditoriaBase,
+                    "Defect Code": defecto.codigo,
+                    "Defect Quantity": defecto.cantidad,
+                });
             });
         } else {
-            // Si la fila tiene datos pero NO defectos, se exporta una fila única (con todos los datos)
-             const filaObj = {
-                ...datosComunesFull,
-                "Código Defecto": "",
-                "Cantidad Defecto": "",
-            };
-            const anyData = Object.values(filaObj).some(v => v !== "" && v !== null && v !== 0);
-            if (anyData) {
-                // Ajustar el orden para la exportación sin defectos
+              const anyData = Object.values(datosComunesFull).some(v => v !== "" && v !== null && v !== 0);
+              if (anyData) {
                 datos.push({
-                    "Fecha Auditoría": filaObj["Fecha Auditoría"], // Incluir Fecha
-                    Vendor: filaObj.Vendor,
-                    Factura: filaObj.Factura,
-                    PO: filaObj.PO,
-                    Estilo: filaObj.Estilo,
-                    Color: filaObj.Color,
-                    Total: filaObj.Total,
-                    Muestra: filaObj.Muestra,
-                    "Total Defectos": filaObj["Total Defectos"],
-                    "AQL %": filaObj["AQL %"],
-                    "A/R": filaObj["A/R"],
-                    "Código Defecto": "",
-                    "Cantidad Defecto": "",
-                    Comentarios: filaObj.Comentarios, // COMENTARIO AL FINAL
+                    ...datosComunesFull,
+                    "Defect Code": "",
+                    "Defect Quantity": "",
                 });
-            }
+              }
         }
     });
 
     return { datos, primeraFactura, vendor };
 }
 
-// --- Función para generar el nombre de archivo (Factura y Fecha) ---
-function generarNombreArchivo(factura) {
-    const today = new Date();
-    const dd = String(today.getDate()).padStart(2, '0');
-    const mm = String(today.getMonth() + 1).padStart(2, '0'); 
-    const yyyy = today.getFullYear();
-    const fecha = `${dd}-${mm}-${yyyy}`;
-
-    const safeFactura = factura.replace(/[^\w\-]+/g, "_") || "Reporte";
-    return `${safeFactura} ${fecha}`;
-}
-
-// --- Exportar a Excel ---
-
-document.getElementById("descargarExcel").addEventListener("click", function() {
+/**
+ * Función que genera y descarga el archivo Excel.
+ */
+function descargarSoloExcel() {
     const { datos, vendor, primeraFactura } = recolectarDatos();
 
     if (datos.length === 0) {
-        alert("No hay datos para exportar. Agrega al menos una fila con información.");
+        alert("No data to export. Please add at least one row with information.");
         return;
     }
 
     const ws = XLSX.utils.json_to_sheet(datos);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Auditoría");
+    XLSX.utils.book_append_sheet(wb, ws, "Audit");
     
     const nombreBase = generarNombreArchivo(primeraFactura || vendor);
     const nombreArchivo = `${nombreBase}.xlsx`;
     
+    // Ejecuta la descarga del archivo
     XLSX.writeFile(wb, nombreArchivo);
-});
+    alert(`The Excel file "${nombreArchivo}" has been downloaded.`);
+}
+
+// Attach the function to the button
+document.getElementById("descargarSoloExcel").addEventListener("click", descargarSoloExcel);
+
+// Initialization
+window.onload = function() {
+    manejarCambioDeProducto(); // Carga CAPS y sus proveedores/defectos al iniciar
+    // Recalcula la fila de ejemplo inicial (si tiene datos)
+    const primeraFila = document.querySelector("#tabla tbody tr");
+    if (primeraFila) calcularFila(primeraFila); 
+};
 </script>
 
 </body>
