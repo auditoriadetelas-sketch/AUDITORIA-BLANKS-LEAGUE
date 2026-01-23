@@ -94,14 +94,16 @@
             <option value="Guillermo Ortega">Guillermo Ortega</option>
             <option value="Griselda Garcia">Griselda Garcia</option>
             <option value="Jacquelinne Zepeda">Jacquelinne Zepeda</option>
+            <option value="Mackinzie Keller">Mackinzie Keller</option>
+            <option value="Jacy Crouse">Jacy Crouse</option>
         </select>
     </div>
 
     <div class="control-group">
         <label for="product-type">Product Type:</label>
         <select id="product-type" onchange="manejarCambioDeProducto()">
-            <option value="CAPS">🧢 Caps</option>
-            <option value="GARMENTS">👕 Garments</option>
+            <option value="HEADWEAR">🧢 HEADWEAR</option>
+            <option value="APPAREL">👕 APPAREL</option>
         </select>
     </div>
     
@@ -163,16 +165,15 @@
 
 <script>
 const PROVEEDORES = {
-    CAPS: ["Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.", "GOTOP TEXTILE COMPANY LIMITED", "Giant Headmost Manufacturing Corp", "HENAN J&F HEADWEAR CO., LTD", "Jeya Headwear", "Ratone International LTD. Loc", "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear"],
-    GARMENTS: ["New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel", "Green Valley Manufacturing", "Solis Textiles", "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM", "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries", "Milestone Textiles", "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear", "Kay & Emms Pvt ltd", "NG TEXTILES GUATEMALA S.A."]
+    HEADWEAR: ["Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.", "GOTOP TEXTILE COMPANY LIMITED", "Giant Headmost Manufacturing Corp", "HENAN J&F HEADWEAR CO., LTD", "Jeya Headwear", "Ratone International LTD. Loc", "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear"],
+    APPAREL: ["New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel", "Green Valley Manufacturing", "Solis Textiles", "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM", "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries", "Milestone Textiles", "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear", "Kay & Emms Pvt ltd", "NG TEXTILES GUATEMALA S.A."]
 };
 
 const DEFECTOS_POR_TIPO = {
-    CAPS: ["OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "OPEN SEAM", "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS", "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS", "INCORRECT CAP COLOR", "BROKEN VISOR", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION", "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"],
-    GARMENTS: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
+    HEADWEAR: ["OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "OPEN SEAM", "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS", "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS", "INCORRECT CAP COLOR", "VISORS CROOKED/OFF-CENTER", "STITCHING ON BRIM", "POOR CONSTRUCTION ", "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION", "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"],
+    APPAREL: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
 };
 
-// TABLA ANSI ASIGNADA
 const rangos = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -189,7 +190,7 @@ const rangos = [
 ];
 
 function crearSelectDefectos(tipoProducto) {
-    const lista = DEFECTOS_POR_TIPO[tipoProducto] || DEFECTOS_POR_TIPO.CAPS;
+    const lista = DEFECTOS_POR_TIPO[tipoProducto] || DEFECTOS_POR_TIPO.HEADWEAR;
     let options = `<option value="">-- Defect --</option>`;
     lista.forEach(def => { options += `<option value="${def}">${def}</option>`; });
     return options;
@@ -221,7 +222,6 @@ function calcularFila(fila) {
         inputTotalDef.value = defectosTot;
         inputAQL.value = ((defectosTot / rango.muestra) * 100).toFixed(2) + "%";
         
-        // El formato SIEMPRE muestra (Acepta/Rechaza) del estándar, sin importar cuántos defectos se encuentren
         const baseTexto = `(${rango.acepta}/${rango.rechaza})`;
         
         if (defectosTot <= rango.acepta) {
@@ -327,10 +327,11 @@ function recolectarDatos() {
 
 function descargarSoloExcel() {
     const { datos, vendor, primeraFactura } = recolectarDatos();
+    const productType = document.getElementById("product-type").value;
     const ws = XLSX.utils.json_to_sheet(datos);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Audit");
-    XLSX.writeFile(wb, `${primeraFactura || vendor}_${obtenerFechaHoy()}.xlsx`);
+    XLSX.writeFile(wb, `${productType}_${primeraFactura || vendor}_${obtenerFechaHoy()}.xlsx`);
 }
 
 function descargarPDF() {
@@ -338,16 +339,38 @@ function descargarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
     
-    doc.setFontSize(18); doc.text("Blanks Audit Report", 14, 15);
+    // CAPTURAR EL TIPO DE PRODUCTO SELECCIONADO
+    const productType = document.getElementById("product-type").value;
+    
+    // TÍTULO DINÁMICO
+    doc.setFontSize(18); 
+    doc.text(`${productType} BLANKS AUDIT REPORT`, 14, 15);
+    
     doc.setFontSize(10); 
     doc.text(`Auditor: ${auditor} | Vendor: ${vendor} | Date: ${obtenerFechaHoy()}`, 14, 22);
 
     const cols = ["Invoice", "PO", "Style", "Color", "Total", "Sample", "Defect Code", "Qty", "Tot Def", "AQL%", "A/R"];
-    const rows = datos.map(d => [d.Invoice||"", d.PO||"", d.Style||"", d.Color||"", d["Total Qty"]||"", d.Sample||"", d["Defect Code"]||"", d.Qty||"", d["Total Def"]||"", d["AQL %"]||"", d["A/R"]||""]);
+    const rows = datos.map(d => [
+        d.Invoice || "", 
+        d.PO || "", 
+        d.Style || "", 
+        d.Color || "", 
+        d["Total Qty"] || "", 
+        d.Sample || "", 
+        d["Defect Code"] || "", 
+        d.Qty || "", 
+        d["Total Def"] || "", 
+        d["AQL %"] || "", 
+        d["A/R"] || ""
+    ]);
 
     doc.autoTable({
-        startY: 28, head: [cols], body: rows, theme: 'grid',
-        headStyles: { fillColor: '#003366', fontSize: 8 }, styles: { fontSize: 7, halign: 'center' },
+        startY: 28, 
+        head: [cols], 
+        body: rows, 
+        theme: 'grid',
+        headStyles: { fillColor: '#003366', fontSize: 8 }, 
+        styles: { fontSize: 7, halign: 'center' },
         didParseCell: function(data) {
             if (data.column.index === 10 && data.cell.section === 'body') {
                 if (data.cell.raw?.includes("REJECTED")) data.cell.styles.textColor = [200, 0, 0];
@@ -355,7 +378,9 @@ function descargarPDF() {
             }
         }
     });
-    doc.save(`${primeraFactura || vendor}_${obtenerFechaHoy()}.pdf`);
+
+    // NOMBRE DEL ARCHIVO CON TIPO DE PRODUCTO
+    doc.save(`${productType}_${primeraFactura || vendor}_${obtenerFechaHoy()}.pdf`);
 }
 
 document.getElementById("descargarSoloExcel").addEventListener("click", descargarSoloExcel);
