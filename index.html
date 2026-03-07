@@ -9,34 +9,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
     <style>
-        /* --- Estilos Globales y Paleta de Colores --- */
         :root {
-            --primary-color: #003366;    /* Azul Marino Corporativo */
-            --secondary-color: #0066cc;  /* Azul Botones */
-            --background-color: #f4f7f6; /* Gris Azulado muy suave */
-            --card-background: #ffffff;  /* Blanco */
-            --text-color: #333333;       /* Gris Oscuro */
-            --border-color: #e0e0e0;     /* Gris Claro Bordes */
-            --success-color: #28a745;    /* Verde Approved */
-            --danger-color: #dc3545;     /* Rojo Rejected */
-            --warning-color: #ffc107;    /* Amarillo */
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+            --primary-color: #003366;
+            --secondary-color: #0066cc;
+            --background-color: #f4f7f6;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
-            padding: 20px; 
+            margin: 0; padding: 20px; 
             background-color: var(--background-color); 
             color: var(--text-color);
             line-height: 1.6;
         }
 
-        /* --- Contenedores Principales (Cards) --- */
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
+        .container { max-width: 100%; margin: 0 auto; }
 
         .card {
             background-color: var(--card-background);
@@ -50,13 +44,11 @@
         h1 { 
             text-align: center; 
             color: var(--primary-color); 
-            margin-top: 0;
-            margin-bottom: 25px;
+            margin: 0 0 25px 0;
             font-size: 2.5em;
             font-weight: 600;
         }
 
-        /* --- Sección de Controles (Header) --- */
         .controles { 
             display: flex; 
             flex-wrap: wrap; 
@@ -68,7 +60,7 @@
         .control-group { 
             display: flex; 
             flex-direction: column; 
-            flex: 1 1 200px; /* Ancho base flexible */
+            flex: 1 1 200px;
             max-width: 300px;
         }
 
@@ -79,7 +71,6 @@
             font-size: 0.95em;
         }
 
-        /* --- Inputs, Selects y Textareas Globales --- */
         select, input[type="text"], input[type="number"], textarea { 
             padding: 10px 12px; 
             border-radius: 6px; 
@@ -87,22 +78,10 @@
             font-size: 1em;
             color: var(--text-color);
             background-color: #fff;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            box-sizing: border-box; /* Importante para el padding */
+            box-sizing: border-box;
         }
 
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
-        }
-
-        /* --- Botones --- */
-        .actions {
-            display: flex;
-            gap: 12px;
-            margin-left: auto; /* Empuja los botones a la derecha si hay espacio */
-        }
+        .actions { display: flex; gap: 12px; margin-left: auto; }
 
         .btn { 
             padding: 10px 20px; 
@@ -111,183 +90,30 @@
             font-weight: 600; 
             cursor: pointer; 
             color: white; 
-            font-size: 0.95em;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: opacity 0.2s;
         }
 
-        .btn:active {
-            transform: translateY(1px);
-            box-shadow: none;
-        }
-
+        .btn:hover { opacity: 0.9; }
         .btn-add { background-color: var(--success-color); }
-        .btn-add:hover { background-color: #218838; }
-
         .btn-excel { background-color: #1f7244; }
-        .btn-excel:hover { background-color: #185c37; }
-
         .btn-pdf { background-color: var(--danger-color); }
-        .btn-pdf:hover { background-color: #c82333; }
+        .btn-small { padding: 5px 10px; font-size: 0.85em; }
 
-        .btn-small {
-            padding: 5px 10px;
-            font-size: 0.85em;
-            border-radius: 4px;
-        }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        th { background-color: var(--primary-color); color: white; padding: 15px 10px; font-size: 0.85em; text-transform: uppercase; }
+        td { border-bottom: 1px solid var(--border-color); padding: 10px; text-align: center; background-color: #fff; }
 
-        /* --- Estilos de la Tabla --- */
-        .table-responsive {
-            overflow-x: auto; /* Scroll horizontal si es necesario */
-        }
+        .defectos-cont { background-color: #f9f9f9; border-radius: 8px; padding: 10px; border: 1px dashed #ccc; margin-bottom: 8px; }
+        .defect-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background-color: #fff; padding: 5px; border-radius: 6px; border: 1px solid #eee; }
 
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            font-size: 0.9em;
-            min-width: 1200px; /* Asegura espacio mínimo */
-        }
+        .ar-acepta { background-color: #d4edda !important; color: #155724 !important; font-weight: 700; }
+        .ar-rechaza { background-color: #f8d7da !important; color: #721c24 !important; font-weight: 700; }
 
-        th { 
-            background-color: var(--primary-color); 
-            color: white; 
-            padding: 15px 10px; 
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.85em;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        td { 
-            border-bottom: 1px solid var(--border-color); 
-            padding: 10px; 
-            text-align: center; 
-            vertical-align: middle;
-            background-color: #fff;
-        }
-
-        tr:nth-child(even) td {
-            background-color: #fcfcfc; /* Efecto cebra muy sutil */
-        }
-
-        tr:hover td {
-            background-color: #f1f8ff; /* Highlight al pasar el mouse */
-        }
-
-        /* Inputs dentro de la tabla */
-        table input, table select, table textarea {
-            width: 100%;
-            border: 1px solid transparent; /* Invisibles por defecto */
-            padding: 6px;
-            background-color: transparent;
-            text-align: center;
-        }
-
-        table input:hover, table select:hover, table textarea:hover {
-            border-color: #ddd;
-            background-color: #fff;
-        }
-
-        table input:focus, table select:focus, table textarea:focus {
-            border-bottom-color: var(--secondary-color);
-            background-color: #fff;
-        }
-
-        input[readonly] { 
-            background-color: #f5f5f5 !important; 
-            color: #666;
-            border: none !important;
-        }
-
-        textarea { 
-            height: 50px; 
-            resize: vertical; /* Permitir redimensionar solo verticalmente */
-        }
-
-        /* Columnas específicas */
-        .col-invoice { width: 80px; }
-        .col-po { width: 80px; }
-        .col-qty { width: 70px; }
-        .col-defects { width: 380px; text-align: left; } /* Más ancho y alineado izquierda */
-        .col-stats { width: 50px; }
-        .col-aql { width: 70px; }
-        .col-result { width: 150px; }
-
-        /* --- Sección de Defectos (Dins de la tabla) --- */
-        .defectos-cont {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding: 10px;
-            border: 1px dashed #ccc;
-            margin-bottom: 8px;
-        }
-
-        .defect-row { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 8px; 
-            align-items: center; 
-            background-color: #fff;
-            padding: 5px;
-            border-radius: 6px;
-            border: 1px solid #eee;
-        }
-
-        .defect-row:last-child { margin-bottom: 0; }
-
-        .codigo-defecto { flex-grow: 1; text-align: left !important; }
-
-        .sel-cat { 
-            font-weight: 700; 
-            width: 90px !important; 
-            padding: 5px !important;
-            border-radius: 4px !important;
-        }
-        
-        /* Colores manuales para MAJOR/MINOR */
-        .cat-major { 
-            background-color: rgba(220, 53, 69, 0.1) !important; 
-            color: #dc3545 !important; 
-            border: 1px solid rgba(220, 53, 69, 0.3) !important;
-        }
-        .cat-minor { 
-            background-color: rgba(108, 117, 125, 0.1) !important; 
-            color: #6c757d !important; 
-            border: 1px solid rgba(108, 117, 125, 0.3) !important;
-        }
-
-        .cantidad-defecto { width: 60px !important; text-align: center !important; }
-
-        /* --- Estado AQL (Approved/Rejected) --- */
-        .ar-acepta { 
-            background-color: #d4edda !important; 
-            color: #155724 !important; 
-            font-weight: 700; 
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-size: 0.9em;
-        }
-        .ar-rechaza { 
-            background-color: #f8d7da !important; 
-            color: #721c24 !important; 
-            font-weight: 700; 
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-size: 0.9em;
-        }
-
-        /* --- Footer --- */
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #888;
-            font-size: 0.85em;
-        }
-
+        .footer { text-align: center; margin-top: 30px; color: #888; font-size: 0.85em; }
     </style>
 </head>
 <body>
@@ -295,7 +121,6 @@
 <div class="container">
     <div class="card">
         <h1>Blanks Audit Report</h1>
-
         <div class="controles">
             <div class="control-group">
                 <label>👷 Auditor:</label>
@@ -316,14 +141,14 @@
                     <option value="APPAREL">👕 APPAREL</option>
                 </select>
             </div>
-            
+
             <div class="control-group">
                 <label>🏢 Vendor:</label>
                 <select id="vendor">
                     <option value="">-- Select Vendor --</option>
                 </select>
             </div>
-            
+
             <div class="actions">
                 <button class="btn btn-add" onclick="agregarFila()">➕ Add Item</button>
                 <button class="btn btn-excel" onclick="descargarExcel()">⬇️ Excel</button>
@@ -336,32 +161,18 @@
         <table id="tabla">
             <thead>
                 <tr>
-                    <th class="col-invoice">Invoice</th>
-                    <th class="col-po">PO</th>
-                    <th>Style</th>
-                    <th>Color</th>
-                    <th class="col-qty">Tot Qty</th>
-                    <th class="col-qty">Spl</th>
-                    <th class="col-defects">Defect / Category / Qty</th> 
-                    <th class="col-stats">Maj</th>
-                    <th class="col-stats">Min</th>
-                    <th class="col-aql">AQL%</th>
-                    <th class="col-result">Result</th>
-                    <th>Comments</th>
+                    <th>Invoice</th><th>PO</th><th>Style</th><th>Color</th>
+                    <th>Tot Qty</th><th>Spl</th><th>Defect / Category / Qty</th>
+                    <th>Maj</th><th>Min</th><th>AQL%</th><th>Result</th><th>Comments</th>
                 </tr>
             </thead>
-            <tbody>
-                </tbody>
+            <tbody></tbody>
         </table>
     </div>
-
-    <div class="footer">
-        Quality Assurance Department • Internal Audit Tool
-    </div>
+    <div class="footer">Quality Assurance Department • Internal Audit Tool</div>
 </div>
 
 <script>
-// --- DATOS (PROVEEDORES Y DEFECTOS) ---
 const PROVEEDORES = {
     HEADWEAR: ["Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.", "GOTOP TEXTILE COMPANY LIMITED", "Giant Headmost Manufacturing Corp", "HENAN J&F HEADWEAR CO., LTD", "Jeya Headwear", "Ratone International LTD. Loc", "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear"],
     APPAREL: ["New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel", "Eastwood Outdoor Enterprise (EOE)", "Green Valley Manufacturing", "Solis Textiles", "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM", "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries", "Milestone Textiles", "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear", "Kay & Emms Pvt ltd", "NG TEXTILES GUATEMALA S.A."]
@@ -372,7 +183,6 @@ const LISTA_DEFECTOS = {
     APPAREL: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
 };
 
-// Tabla MIL-STD-105E (AQL 2.5)
 const rangos = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -388,8 +198,6 @@ const rangos = [
     {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
 
-// --- FUNCIONES LÓGICAS ---
-
 function manejarCambioDeProducto() {
     const tipo = document.getElementById("product-type").value;
     const vendorSel = document.getElementById("vendor");
@@ -397,39 +205,25 @@ function manejarCambioDeProducto() {
     PROVEEDORES[tipo].forEach(v => {
         let opt = document.createElement('option'); opt.value = v; opt.textContent = v; vendorSel.appendChild(opt);
     });
-    // Limpiar tabla al cambiar tipo
     document.querySelector("#tabla tbody").innerHTML = "";
-    agregarFila(); // Agregar una fila vacía inicial
+    agregarFila();
 }
 
 function calcularFila(tr) {
     let total = parseInt(tr.querySelector('[name="total[]"]').value) || 0;
     let major = 0, minor = 0;
-    
-    // Sumar defectos según categoría manual
     tr.querySelectorAll('.defect-row').forEach(row => {
         let q = parseInt(row.querySelector('.cantidad-defecto').value) || 0;
         let c = row.querySelector('.sel-cat').value;
         if(c === "MAJOR") major += q; else if(c === "MINOR") minor += q;
-        
-        // Cambiar estilo visual del select de categoría
-        row.querySelector('.sel-cat').className = `sel-cat ${c === 'MAJOR' ? 'cat-major' : 'cat-minor'}`;
     });
-
-    // Actualizar totales de fila
     tr.querySelector('[name="totalMajor[]"]').value = major;
     tr.querySelector('[name="totalMinor[]"]').value = minor;
-    
-    // Buscar rango AQL
     const rango = rangos.find(r => total >= r.min && total <= r.max);
     const arInput = tr.querySelector('[name="ar[]"]');
-    
     if (rango) {
         tr.querySelector('[name="muestra[]"]').value = rango.muestra;
-        // Calcular % AQL basado en MAJOR
         tr.querySelector('[name="aql[]"]').value = ((major / rango.muestra) * 100).toFixed(1) + "%";
-        
-        // Decisión A/R (Solo MAJOR)
         if (major <= rango.acepta) {
             arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
             arInput.className = "ar-acepta";
@@ -438,123 +232,101 @@ function calcularFila(tr) {
             arInput.className = "ar-rechaza";
         }
     } else {
-        // Limpiar si no hay total válido
         tr.querySelector('[name="muestra[]"]').value = "";
         tr.querySelector('[name="aql[]"]').value = "";
-        arInput.value = "";
-        arInput.className = "";
+        arInput.value = ""; arInput.className = "";
     }
-}
-
-function obtenerDefectOptions(tipoProducto) {
-    return LISTA_DEFECTOS[tipoProducto].map(d => `<option value="${d}">${d}</option>`).join('');
 }
 
 function agregarFila() {
     const tbody = document.querySelector("#tabla tbody");
     const tr = document.createElement("tr");
-    const tipo = document.getElementById("product-type").value;
-    const defOptions = obtenerDefectOptions(tipo);
-    
     tr.innerHTML = `
         <td><input type="text" name="factura[]" placeholder="..."></td>
         <td><input type="text" name="po[]" placeholder="..."></td>
         <td><input type="text" name="estilo[]" placeholder="..."></td>
         <td><input type="text" name="color[]" placeholder="..."></td>
-        <td><input type="number" name="total[]" placeholder="0" oninput="calcularFila(this.closest('tr'))"></td>
+        <td><input type="number" name="total[]" oninput="calcularFila(this.closest('tr'))"></td>
         <td><input type="text" name="muestra[]" readonly></td>
-        <td class="col-defects">
-            <div class="defectos-cont">
-                <div class="defect-row">
-                    <select class="codigo-defecto"><option value="">-- Defect --</option>${defOptions}</select>
-                    <select class="sel-cat cat-major" onchange="calcularFila(this.closest('tr'))">
-                        <option value="MAJOR">MAJOR</option>
-                        <option value="MINOR">MINOR</option>
-                    </select>
-                    <input type="number" placeholder="Qty" class="cantidad-defecto" oninput="calcularFila(this.closest('tr'))">
-                    <button class="btn btn-pdf btn-small" title="Remove defect" onclick="this.parentElement.remove(); calcularFila(this.closest('tr'))">×</button>
-                </div>
-            </div>
-            <button class="btn btn-add btn-small" style="width:100%; justify-content:center;" onclick="agregarDefectoManual(this)">+ Add Defect</button>
+        <td style="width:380px">
+            <div class="defectos-cont"></div>
+            <button class="btn btn-add btn-small" style="width:100%; justify-content:center" onclick="agregarDefectoManual(this)">+ Add Defect</button>
         </td>
         <td><input type="text" name="totalMajor[]" readonly></td>
         <td><input type="text" name="totalMinor[]" readonly></td>
         <td><input type="text" name="aql[]" readonly></td>
-        <td class="col-result"><input type="text" name="ar[]" readonly></td>
+        <td><input type="text" name="ar[]" readonly></td>
         <td><textarea name="comentarios[]" placeholder="Notes..."></textarea></td>
     `;
     tbody.appendChild(tr);
 }
 
 function agregarDefectoManual(btn) {
-    const cont = btn.previousElementSibling; // El div .defectos-cont
+    const cont = btn.previousElementSibling;
     const tipo = document.getElementById("product-type").value;
-    const defOptions = obtenerDefectOptions(tipo);
+    const defOptions = LISTA_DEFECTOS[tipo].map(d => `<option value="${d}">${d}</option>`).join('');
     const div = document.createElement("div");
     div.className = "defect-row";
     div.innerHTML = `
         <select class="codigo-defecto"><option value="">-- Defect --</option>${defOptions}</select>
-        <select class="sel-cat cat-major" onchange="calcularFila(this.closest('tr'))">
+        <select class="sel-cat" onchange="calcularFila(this.closest('tr'))">
             <option value="MAJOR">MAJOR</option>
             <option value="MINOR">MINOR</option>
         </select>
-        <input type="number" placeholder="Qty" class="cantidad-defecto" oninput="calcularFila(this.closest('tr'))">
-        <button class="btn btn-pdf btn-small" title="Remove defect" onclick="this.parentElement.remove(); calcularFila(this.closest('tr'))">×</button>
+        <input type="number" class="cantidad-defecto" placeholder="Qty" oninput="calcularFila(this.closest('tr'))">
+        <button class="btn btn-pdf btn-small" onclick="this.parentElement.remove(); calcularFila(this.closest('tr'))">×</button>
     `;
     cont.appendChild(div);
-}
-
-// --- EXPORTACIÓN ---
-
-function obtenerFechaHoy() {
-    const d = new Date();
-    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth()+1).padStart(2, '0')}/${d.getFullYear()}`;
 }
 
 function recolectarDatosParaExportar() {
     const vendor = document.getElementById("vendor").value || "N/A";
     const auditor = document.getElementById("auditor").value || "N/A";
-    const fecha = obtenerFechaHoy();
+    const fecha = new Date().toLocaleDateString();
     const data = [];
 
     document.querySelectorAll("#tabla tbody tr").forEach(tr => {
         const totalQty = tr.querySelector('[name="total[]"]').value;
-        if (!totalQty) return; // Saltar filas vacías
+        if (!totalQty || totalQty === "0") return;
 
         const base = {
             "Date": fecha, "Auditor": auditor, "Vendor": vendor,
-            "Invoice": tr.querySelector('[name="factura[]"]').value,
-            "PO": tr.querySelector('[name="po[]"]').value,
-            "Style": tr.querySelector('[name="estilo[]"]').value,
-            "Color": tr.querySelector('[name="color[]"]').value,
+            "Invoice": tr.querySelector('[name="factura[]"]').value || "",
+            "PO": tr.querySelector('[name="po[]"]').value || "",
+            "Style": tr.querySelector('[name="estilo[]"]').value || "",
+            "Color": tr.querySelector('[name="color[]"]').value || "",
             "Total Qty": totalQty,
-            "Sample": tr.querySelector('[name="muestra[]"]').value,
-            "Tot Major": tr.querySelector('[name="totalMajor[]"]').value,
-            "Tot Minor": tr.querySelector('[name="totalMinor[]"]').value,
-            "AQL%": tr.querySelector('[name="aql[]"]').value,
-            "Result": tr.querySelector('[name="ar[]"]').value,
-            "Comments": tr.querySelector('[name="comentarios[]"]').value
+            "Sample": tr.querySelector('[name="muestra[]"]').value || "0",
+            "Tot Major": tr.querySelector('[name="totalMajor[]"]').value || "0",
+            "Tot Minor": tr.querySelector('[name="totalMinor[]"]').value || "0",
+            "AQL%": tr.querySelector('[name="aql[]"]').value || "0%",
+            "Result": tr.querySelector('[name="ar[]"]').value || "APPROVED",
+            "Comments": tr.querySelector('[name="comentarios[]"]').value || ""
         };
-        
-        // Recolectar cada defecto individualmente para filas expandidas en Excel
+
         const defectRows = tr.querySelectorAll('.defect-row');
-        if (defectRows.length > 0) {
-            defectRows.forEach((dr, index) => {
-                const defName = dr.querySelector('.codigo-defecto').value;
-                const defQty = dr.querySelector('.cantidad-defecto').value;
-                if (defName && defQty) {
-                    // En Excel, la primera fila tiene datos base, las siguientes solo el defecto
-                    data.push({
-                        ...(index === 0 ? base : { Invoice: `-> (PO ${base.PO})` }), 
-                        "Defect Description": defName,
-                        "Def Cat": dr.querySelector('.sel-cat').value,
-                        "Def Qty": defQty
-                    });
-                }
-            });
-        } else {
-            // Sin defectos
-            data.push({ ...base, "Defect Description": "No defects found", "Def Cat": "-", "Def Qty": "0" });
+        let tieneDefectosValidos = false;
+
+        defectRows.forEach((dr, index) => {
+            const defName = dr.querySelector('.codigo-defecto').value;
+            const defQty = dr.querySelector('.cantidad-defecto').value;
+            if (defName && defQty && parseInt(defQty) > 0) {
+                tieneDefectosValidos = true;
+                // SI ES LA SEGUNDA FILA DE DEFECTO, DEJAMOS TODO VACÍO (NO REPETIR)
+                data.push({
+                    ...(index === 0 ? base : {
+                        "Date": "", "Auditor": "", "Vendor": "", "Invoice": "", "PO": "", "Style": "", "Color": "",
+                        "Total Qty": "", "Sample": "", "Tot Major": "", "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
+                    }),
+                    "Defect Description": defName,
+                    "Def Cat": dr.querySelector('.sel-cat').value,
+                    "Def Qty": defQty
+                });
+            }
+        });
+
+        if (!tieneDefectosValidos) {
+            data.push({ ...base, "Defect Description": "", "Def Cat": "", "Def Qty": "" });
         }
     });
     return data;
@@ -562,91 +334,60 @@ function recolectarDatosParaExportar() {
 
 function descargarExcel() {
     const datos = recolectarDatosParaExportar();
-    if (datos.length === 0) { alert("No data to export."); return; }
+    if (datos.length === 0) return alert("No data to export.");
+    const productType = document.getElementById("product-type").value;
+    const vendorName = document.getElementById("vendor").value || "Vendor";
     
-    const tipo = document.getElementById("product-type").value;
     const ws = XLSX.utils.json_to_sheet(datos);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "AuditReport");
-    
-    // Ajustar anchos de columna básicos
-    ws['!cols'] = [{wch:10}, {wch:20}, {wch:25}, {wch:12}, {wch:12}, {wch:15}, {wch:15}, {wch:8}, {wch:6}, {wch:6}, {wch:6}, {wch:8}, {wch:15}, {wch:20}, {wch:35}, {wch:8}, {wch:6}];
-
-    XLSX.writeFile(wb, `${tipo}_Audit_${obtenerFechaHoy().replace(/\//g,'-')}.xlsx`);
+    // Nombre corregido para Excel
+    XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.xlsx`);
 }
 
 function descargarPDF() {
     const rawData = recolectarDatosParaExportar();
-    if (rawData.length === 0) { alert("No data to export."); return; }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4'); // Horizontal
-    const tipo = document.getElementById("product-type").value;
-    const vendor = document.getElementById("vendor").value || "N/A";
-    const fecha = obtenerFechaHoy();
-
-    // Título y Encabezado
-    doc.setFontSize(20); doc.setTextColor(0, 51, 102);
-    doc.text(`${tipo} BLANKS AUDIT REPORT`, 14, 15);
+    if (rawData.length === 0) return alert("No data to export.");
     
-    doc.setFontSize(10); doc.setTextColor(100);
-    doc.text(`Vendor: ${vendor} | Date: ${fecha} | AQL Standard: MIL-STD-105E (2.5)`, 14, 21);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', 'a4');
+    
+    const productType = document.getElementById("product-type").value;
+    const vendorName = document.getElementById("vendor").value || "N/A";
+    const dateStr = new Date().toLocaleDateString('es-ES');
 
-    // Mapear datos para la tabla PDF (agrupando defectos por PO para que se vea limpio)
-    const tableBody = [];
-    let currentPO = null;
+    doc.setFontSize(18);
+    doc.setTextColor(0, 51, 102);
+    doc.text(`${productType} BLANKS AUDIT REPORT`, 14, 15);
 
-    rawData.forEach(d => {
-        // Formatear el defecto para que quepa en una línea
-        const defStr = d["Defect Description"] ? `${d["Defect Description"]} (${d["Def Cat"]}: ${d["Def Qty"]})` : "-";
-        
-        if (d.PO !== currentPO && !d.Invoice.includes("->")) {
-            // Nueva fila de PO principal
-            tableBody.push([
-                d.Invoice, d.PO, d.Style, d.Color, d["Total Qty"], d.Sample, 
-                defStr, d["Tot Major"], d["Tot Minor"], d["AQL%"], d.Result
-            ]);
-            currentPO = d.PO;
-        } else {
-            // Defectos adicionales para la misma PO (solo mostrar PO y Defecto)
-            tableBody.push([
-                "", "", "", "", "", "", defStr, "", "", "", ""
-            ]);
-        }
-    });
+    doc.setFontSize(11);
+    doc.setTextColor(50, 50, 50);
+    doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: MIL-STD-105E (2.5)`, 14, 22);
+    
+    doc.setDrawColor(0, 51, 102);
+    doc.line(14, 25, 283, 25);
+
+    const tableBody = rawData.map(d => [
+        d.Invoice, d.PO, d.Style, d.Color, d["Total Qty"], d.Sample,
+        d["Defect Description"] ? `${d["Defect Description"]} (${d["Def Cat"]}: ${d["Def Qty"]})` : "",
+        d["Tot Major"], d["Tot Minor"], d["AQL%"], d.Result
+    ]);
 
     doc.autoTable({
-        startY: 25,
-        head: [['Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl', 'Defect Breakdown (Cat: Qty)', 'Maj', 'Min', 'AQL%', 'Result']],
+        startY: 30,
+        head: [['Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl', 'Defect Details', 'Maj', 'Min', 'AQL%', 'Result']],
         body: tableBody,
         theme: 'grid',
-        headStyles: { fillColor: [0, 51, 102], fontSize: 8, halign: 'center' },
-        styles: { fontSize: 7, halign: 'center', valign: 'middle' },
-        columnStyles: {
-            6: { halign: 'left', cellWidth: 80 }, // Defectos alineados izquierda y más anchos
-            10: { fontStyle: 'bold' } // Resultado en negrita
-        },
-        didParseCell: function(data) {
-            // Colorear Approved/Rejected
-            if (data.column.index === 10 && data.cell.section === 'body') {
-                if (data.cell.raw && data.cell.raw.includes("REJECTED")) data.cell.styles.textColor = [200, 0, 0];
-                if (data.cell.raw && data.cell.raw.includes("APPROVED")) data.cell.styles.textColor = [0, 120, 0];
-            }
-            // Colorear MAJOR/MINOR dentro del desglose
-            if (data.column.index === 6 && data.cell.section === 'body' && data.cell.raw) {
-                if (data.cell.raw.includes("(MAJOR:")) data.cell.styles.textColor = [200, 0, 0];
-            }
-        }
+        styles: { fontSize: 7.5, halign: 'center', cellPadding: 2 },
+        columnStyles: { 6: { halign: 'left', cellWidth: 50 } },
+        headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255] }
     });
 
-    doc.save(`${tipo}_Report_${fecha.replace(/\//g,'-')}.pdf`);
+    // Nombre corregido para PDF
+    doc.save(`${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.pdf`);
 }
 
-// Inicialización
-window.onload = () => {
-    manejarCambioDeProducto(); // Carga proveedores iniciales y primera fila
-};
-
+window.onload = manejarCambioDeProducto;
 </script>
 </body>
 </html>
