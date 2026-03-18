@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Professional Blanks Audit Report</title>
+    <title>Professional Blanks Audit Report - Kay & Emms Special</title>
     
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -144,7 +144,7 @@
 
             <div class="control-group">
                 <label>🏢 Vendor:</label>
-                <select id="vendor">
+                <select id="vendor" onchange="actualizarTablaAQL()">
                     <option value="">-- Select Vendor --</option>
                 </select>
             </div>
@@ -183,11 +183,12 @@ const LISTA_DEFECTOS = {
     APPAREL: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
 };
 
-const rangos = [
+// TABLA ESTANDAR (AQL 2.5)
+const RANGOS_ESTANDAR = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
     {min:16, max:25, muestra:5, acepta:0, rechaza:1},
-    {min:26, max:50, muestra:8, acepta:0, rechaza:1},
+    {min:26, max:50, muestra:8, acepta:1, rechaza:2},
     {min:51, max:90, muestra:13, acepta:1, rechaza:2},
     {min:91, max:150, muestra:20, acepta:1, rechaza:2},
     {min:151, max:280, muestra:32, acepta:2, rechaza:3},
@@ -196,6 +197,21 @@ const rangos = [
     {min:1201, max:3200, muestra:125, acepta:7, rechaza:8},
     {min:3201, max:10000, muestra:200, acepta:10, rechaza:11},
     {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
+];
+
+// TABLA ESPECIAL KAY & EMMS (AQL 4.0 según imagen)
+const RANGOS_KAY_EMMS = [
+    {min:2, max:8, muestra:2, acepta:0, rechaza:1},
+    {min:9, max:15, muestra:3, acepta:0, rechaza:1},
+    {min:16, max:25, muestra:5, acepta:0, rechaza:1},
+    {min:26, max:50, muestra:8, acepta:1, rechaza:2},
+    {min:51, max:90, muestra:13, acepta:1, rechaza:2},
+    {min:91, max:150, muestra:20, acepta:2, rechaza:3},
+    {min:151, max:280, muestra:32, acepta:3, rechaza:4},
+    {min:281, max:500, muestra:50, acepta:5, rechaza:6},
+    {min:501, max:1200, muestra:80, acepta:7, rechaza:8},
+    {min:1201, max:3200, muestra:125, acepta:10, rechaza:11},
+    {min:3201, max:10000, muestra:200, acepta:14, rechaza:15}
 ];
 
 function manejarCambioDeProducto() {
@@ -209,21 +225,34 @@ function manejarCambioDeProducto() {
     agregarFila();
 }
 
+function actualizarTablaAQL() {
+    document.querySelectorAll("#tabla tbody tr").forEach(tr => calcularFila(tr));
+}
+
 function calcularFila(tr) {
+    const vendorActual = document.getElementById("vendor").value;
+    const tablaAUsar = (vendorActual === "Kay & Emms Pvt ltd") ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
+    
     let total = parseInt(tr.querySelector('[name="total[]"]').value) || 0;
     let major = 0, minor = 0;
+    
     tr.querySelectorAll('.defect-row').forEach(row => {
         let q = parseInt(row.querySelector('.cantidad-defecto').value) || 0;
         let c = row.querySelector('.sel-cat').value;
         if(c === "MAJOR") major += q; else if(c === "MINOR") minor += q;
     });
+    
     tr.querySelector('[name="totalMajor[]"]').value = major;
     tr.querySelector('[name="totalMinor[]"]').value = minor;
-    const rango = rangos.find(r => total >= r.min && total <= r.max);
+    
+    const rango = tablaAUsar.find(r => total >= r.min && total <= r.max);
     const arInput = tr.querySelector('[name="ar[]"]');
+    
     if (rango) {
         tr.querySelector('[name="muestra[]"]').value = rango.muestra;
         tr.querySelector('[name="aql[]"]').value = ((major / rango.muestra) * 100).toFixed(1) + "%";
+        
+        // Formato solicitado: APPROVED (7/8) o REJECTED (7/8)
         if (major <= rango.acepta) {
             arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
             arInput.className = "ar-acepta";
@@ -312,7 +341,6 @@ function recolectarDatosParaExportar() {
             const defQty = dr.querySelector('.cantidad-defecto').value;
             if (defName && defQty && parseInt(defQty) > 0) {
                 tieneDefectosValidos = true;
-                // SI ES LA SEGUNDA FILA DE DEFECTO, DEJAMOS TODO VACÍO (NO REPETIR)
                 data.push({
                     ...(index === 0 ? base : {
                         "Date": "", "Auditor": "", "Vendor": "", "Invoice": "", "PO": "", "Style": "", "Color": "",
@@ -337,11 +365,9 @@ function descargarExcel() {
     if (datos.length === 0) return alert("No data to export.");
     const productType = document.getElementById("product-type").value;
     const vendorName = document.getElementById("vendor").value || "Vendor";
-    
     const ws = XLSX.utils.json_to_sheet(datos);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "AuditReport");
-    // Nombre corregido para Excel
     XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.xlsx`);
 }
 
@@ -355,6 +381,7 @@ function descargarPDF() {
     const productType = document.getElementById("product-type").value;
     const vendorName = document.getElementById("vendor").value || "N/A";
     const dateStr = new Date().toLocaleDateString('es-ES');
+    const aqlStr = (vendorName === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 
     doc.setFontSize(18);
     doc.setTextColor(0, 51, 102);
@@ -362,7 +389,7 @@ function descargarPDF() {
 
     doc.setFontSize(11);
     doc.setTextColor(50, 50, 50);
-    doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: MIL-STD-105E (2.5)`, 14, 22);
+    doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: ${aqlStr}`, 14, 22);
     
     doc.setDrawColor(0, 51, 102);
     doc.line(14, 25, 283, 25);
@@ -383,7 +410,6 @@ function descargarPDF() {
         headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255] }
     });
 
-    // Nombre corregido para PDF
     doc.save(`${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.pdf`);
 }
 
