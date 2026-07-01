@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Professional Blanks Audit Report - Kay & Emms Special</title>
+    <title>Professional Blanks Audit Report - 100% Inspection Enabled</title>
     
+    <!-- Librerías de Exportación -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -60,8 +61,8 @@
         .control-group { 
             display: flex; 
             flex-direction: column; 
-            flex: 1 1 200px;
-            max-width: 300px;
+            flex: 1 1 180px;
+            max-width: 280px;
         }
 
         .control-group label { 
@@ -81,7 +82,46 @@
             box-sizing: border-box;
         }
 
-        .actions { display: flex; gap: 12px; margin-left: auto; }
+        /* Estilos para Selección Múltiple (Auditores y Product Type) */
+        .multiselect-box {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            max-height: 115px;
+            overflow-y: auto;
+            padding: 6px 10px;
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+        .multiselect-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+            padding: 3px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .multiselect-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 42px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .actions { display: flex; gap: 12px; margin-left: auto; align-items: flex-end; }
 
         .btn { 
             padding: 10px 20px; 
@@ -100,6 +140,7 @@
         .btn-add { background-color: var(--success-color); }
         .btn-excel { background-color: #1f7244; }
         .btn-pdf { background-color: var(--danger-color); }
+        .btn-clear { background-color: #6c757d; }
         .btn-small { padding: 5px 10px; font-size: 0.85em; }
 
         .table-responsive { overflow-x: auto; }
@@ -112,6 +153,8 @@
 
         .ar-acepta { background-color: #d4edda !important; color: #155724 !important; font-weight: 700; }
         .ar-rechaza { background-color: #f8d7da !important; color: #721c24 !important; font-weight: 700; }
+        
+        .badge-100 { background-color: #6f42c1; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold; display: block; margin-top: 4px; }
 
         .footer { text-align: center; margin-top: 30px; color: #888; font-size: 0.85em; }
     </style>
@@ -122,24 +165,25 @@
     <div class="card">
         <h1>Blanks Audit Report</h1>
         <div class="controles">
+            <!-- Selección Múltiple de Auditores -->
             <div class="control-group">
-                <label>👷 Auditor:</label>
-                <select id="auditor">
-                    <option value="">-- Select Auditor --</option>
-                    <option value="Guillermo Ortega">Guillermo Ortega</option>
-                    <option value="Griselda Garcia">Griselda Garcia</option>
-                    <option value="Jacquelinne Zepeda">Jacquelinne Zepeda</option>
-                    <option value="Mackinzie Keller">Mackinzie Keller</option>
-                    <option value="Jacy Crouse">Jacy Crouse</option>
-                </select>
+                <label>👷 Auditors:</label>
+                <div class="multiselect-box" id="auditores-container">
+                    <label class="multiselect-item"><input type="checkbox" value="Guillermo Ortega" onchange="guardarEstado()"> Guillermo Ortega</label>
+                    <label class="multiselect-item"><input type="checkbox" value="Griselda Garcia" onchange="guardarEstado()"> Griselda Garcia</label>
+                    <label class="multiselect-item"><input type="checkbox" value="Jacquelinne Zepeda" onchange="guardarEstado()"> Jacquelinne Zepeda</label>
+                    <label class="multiselect-item"><input type="checkbox" value="Mackinzie Keller" onchange="guardarEstado()"> Mackinzie Keller</label>
+                    <label class="multiselect-item"><input type="checkbox" value="Jacy Crouse" onchange="guardarEstado()"> Jacy Crouse</label>
+                </div>
             </div>
 
+            <!-- Selección Múltiple de Product Type -->
             <div class="control-group">
                 <label>📦 Product Type:</label>
-                <select id="product-type" onchange="manejarCambioDeProducto()">
-                    <option value="HEADWEAR">🧢 HEADWEAR</option>
-                    <option value="APPAREL">👕 APPAREL</option>
-                </select>
+                <div class="multiselect-box" id="products-container">
+                    <label class="multiselect-item"><input type="checkbox" value="HEADWEAR" onchange="manejarCambioDeProducto()"> 🧢 HEADWEAR</label>
+                    <label class="multiselect-item"><input type="checkbox" value="APPAREL" onchange="manejarCambioDeProducto()"> 👕 APPAREL</label>
+                </div>
             </div>
 
             <div class="control-group">
@@ -149,10 +193,16 @@
                 </select>
             </div>
 
+            <div class="control-group checkbox-group">
+                <input type="checkbox" id="forced-100" onchange="actualizarTablaAQL()">
+                <label for="forced-100" style="margin:0; cursor:pointer;">🔍 Force 100% Audit</label>
+            </div>
+
             <div class="actions">
-                <button class="btn btn-add" onclick="agregarFila()">➕ Add Item</button>
+                <button class="btn btn-add" onclick="agregarFilaManual()">➕ Add Item</button>
                 <button class="btn btn-excel" onclick="descargarExcel()">⬇️ Excel</button>
                 <button class="btn btn-pdf" onclick="descargarPDF()">📄 PDF</button>
+                <button class="btn btn-clear" onclick="limpiarPantallaActual()">🧹 Clear Screen</button>
             </div>
         </div>
     </div>
@@ -162,8 +212,8 @@
             <thead>
                 <tr>
                     <th>Invoice</th><th>PO</th><th>Style</th><th>Color</th>
-                    <th>Tot Qty</th><th>Spl</th><th>Defect / Category / Qty</th>
-                    <th>Maj</th><th>Min</th><th>AQL%</th><th>Result</th><th>Comments</th>
+                    <th>Tot Qty</th><th>Spl (Qty)</th><th>Defect / Category / Qty</th>
+                    <th>Maj</th><th>Min</th><th>Defect %</th><th>Result</th><th>Comments</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -180,10 +230,9 @@ const PROVEEDORES = {
 
 const LISTA_DEFECTOS = {
     HEADWEAR: ["OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "MISSING PARACORD", "OPEN SEAM" , "INCORRECT PARACORD COLOR" , "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS", "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS", "INCORRECT CAP COLOR", "VISORS CROOKED/OFF-CENTER", "STITCHING ON BRIM", "POOR CONSTRUCTION ", "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION", "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"],
-    APPAREL: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
+    APPAREL: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH of STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
 };
 
-// TABLA ESTANDAR (AQL 2.5)
 const RANGOS_ESTANDAR = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -199,7 +248,6 @@ const RANGOS_ESTANDAR = [
     {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
 
-// TABLA ESPECIAL KAY & EMMS (AQL 4.0 según imagen)
 const RANGOS_KAY_EMMS = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -214,28 +262,86 @@ const RANGOS_KAY_EMMS = [
     {min:3201, max:10000, muestra:200, acepta:14, rechaza:15}
 ];
 
+function obtenerAuditoresSeleccionados() {
+    const checkboxes = document.querySelectorAll('#auditores-container input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function obtenerProductosSeleccionados() {
+    const checkboxes = document.querySelectorAll('#products-container input[type="checkbox"]:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
 function manejarCambioDeProducto() {
-    const tipo = document.getElementById("product-type").value;
+    const tiposSeleccionados = obtenerProductosSeleccionados();
     const vendorSel = document.getElementById("vendor");
+    
+    const vendorActual = vendorSel.value;
     vendorSel.innerHTML = '<option value="">-- Select Vendor --</option>';
-    PROVEEDORES[tipo].forEach(v => {
-        let opt = document.createElement('option'); opt.value = v; opt.textContent = v; vendorSel.appendChild(opt);
+    
+    let proveedoresUnificados = [];
+    tiposSeleccionados.forEach(tipo => {
+        PROVEEDORES[tipo].forEach(v => {
+            if (!proveedoresUnificados.includes(v)) {
+                proveedoresUnificados.push(v);
+            }
+        });
     });
-    document.querySelector("#tabla tbody").innerHTML = "";
-    agregarFila();
+
+    proveedoresUnificados.sort().forEach(v => {
+        let opt = document.createElement('option');
+        opt.value = v;
+        opt.textContent = v;
+        vendorSel.appendChild(opt);
+    });
+
+    if (proveedoresUnificados.includes(vendorActual)) {
+        vendorSel.value = vendorActual;
+    }
+
+    document.querySelectorAll(".defect-row").forEach(dr => {
+        const selectDefecto = dr.querySelector(".codigo-defecto");
+        const valorActualDefecto = selectDefecto.value;
+        
+        let nuevasOpciones = '<option value="">-- Defect --</option>';
+        let defectosUnificados = [];
+        
+        tiposSeleccionados.forEach(tipo => {
+            LISTA_DEFECTOS[tipo].forEach(d => {
+                if(!defectosUnificados.includes(d)) defectosUnificados.push(d);
+            });
+        });
+
+        defectosUnificados.sort().forEach(d => {
+            nuevasOpciones += `<option value="${d}">${d}</option>`;
+        });
+        
+        selectDefecto.innerHTML = nuevasOpciones;
+        selectDefecto.value = valorActualDefecto;
+    });
+
+    actualizarTablaAQL();
 }
 
 function actualizarTablaAQL() {
     document.querySelectorAll("#tabla tbody tr").forEach(tr => calcularFila(tr));
+    guardarEstado();
 }
 
 function calcularFila(tr) {
     const vendorActual = document.getElementById("vendor").value;
+    const force100 = document.getElementById("forced-100").checked;
     const tablaAUsar = (vendorActual === "Kay & Emms Pvt ltd") ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
     
-    let total = parseInt(tr.querySelector('[name="total[]"]').value) || 0;
-    let major = 0, minor = 0;
+    let totalInput = tr.querySelector('[name="total[]"]');
+    let muestraInput = tr.querySelector('[name="muestra[]"]');
     
+    let total = parseInt(totalInput.value) || 0;
+    let muestraManual = parseInt(muestraInput.value);
+    
+    let esAuditoria100 = force100 || (muestraManual === total && total > 0);
+    
+    let major = 0, minor = 0;
     tr.querySelectorAll('.defect-row').forEach(row => {
         let q = parseInt(row.querySelector('.cantidad-defecto').value) || 0;
         let c = row.querySelector('.sel-cat').value;
@@ -245,38 +351,67 @@ function calcularFila(tr) {
     tr.querySelector('[name="totalMajor[]"]').value = major;
     tr.querySelector('[name="totalMinor[]"]').value = minor;
     
-    const rango = tablaAUsar.find(r => total >= r.min && total <= r.max);
     const arInput = tr.querySelector('[name="ar[]"]');
+    const badge = tr.querySelector('.badge-100');
     
-    if (rango) {
-        tr.querySelector('[name="muestra[]"]').value = rango.muestra;
-        tr.querySelector('[name="aql[]"]').value = ((major / rango.muestra) * 100).toFixed(1) + "%";
+    if (esAuditoria100 && total > 0) {
+        muestraInput.value = total;
+        badge.style.display = "block";
         
-        // Formato solicitado: APPROVED (7/8) o REJECTED (7/8)
-        if (major <= rango.acepta) {
-            arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
+        let porcDefectos = ((major / total) * 100).toFixed(1) + "%";
+        tr.querySelector('[name="aql[]"]').value = porcDefectos;
+        
+        if (major === 0) {
+            arInput.value = `APPROVED (0/1)`;
             arInput.className = "ar-acepta";
         } else {
-            arInput.value = `REJECTED (${rango.acepta}/${rango.rechaza})`;
+            arInput.value = `REJECTED (0/1)`;
             arInput.className = "ar-rechaza";
         }
     } else {
-        tr.querySelector('[name="muestra[]"]').value = "";
-        tr.querySelector('[name="aql[]"]').value = "";
-        arInput.value = ""; arInput.className = "";
+        badge.style.display = "none";
+        const rango = tablaAUsar.find(r => total >= r.min && total <= r.max);
+        
+        if (rango) {
+            if (isNaN(muestraManual) || muestraManual === rango.muestra || tr.dataset.lastTotal !== totalInput.value) {
+                muestraInput.value = rango.muestra;
+            }
+            let muestraFinal = parseInt(muestraInput.value) || rango.muestra;
+            tr.querySelector('[name="aql[]"]').value = ((major / muestraFinal) * 100).toFixed(1) + "%";
+            
+            if (major <= rango.acepta) {
+                arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
+                arInput.className = "ar-acepta";
+            } else {
+                arInput.value = `REJECTED (${rango.acepta}/${rango.rechaza})`;
+                arInput.className = "ar-rechaza";
+            }
+        } else {
+            tr.querySelector('[name="aql[]"]').value = "";
+            arInput.value = ""; arInput.className = "";
+        }
     }
+    tr.dataset.lastTotal = totalInput.value;
 }
 
-function agregarFila() {
+function agregarFilaManual() {
+    agregarFila();
+    guardarEstado();
+}
+
+function agregarFila(datosFila = null) {
     const tbody = document.querySelector("#tabla tbody");
     const tr = document.createElement("tr");
     tr.innerHTML = `
-        <td><input type="text" name="factura[]" placeholder="..."></td>
-        <td><input type="text" name="po[]" placeholder="..."></td>
-        <td><input type="text" name="estilo[]" placeholder="..."></td>
-        <td><input type="text" name="color[]" placeholder="..."></td>
-        <td><input type="number" name="total[]" oninput="calcularFila(this.closest('tr'))"></td>
-        <td><input type="text" name="muestra[]" readonly></td>
+        <td><input type="text" name="factura[]" placeholder="Inv" onchange="verificarEHistorial(this)"></td>
+        <td><input type="text" name="po[]" placeholder="PO" onchange="verificarEHistorial(this)"></td>
+        <td><input type="text" name="estilo[]" placeholder="..." oninput="guardarEstado()"></td>
+        <td><input type="text" name="color[]" placeholder="..." oninput="guardarEstado()"></td>
+        <td><input type="number" name="total[]" oninput="calcularFila(this.closest('tr')); guardarEstado()"></td>
+        <td>
+            <input type="number" name="muestra[]" placeholder="Spl Qty" oninput="calcularFila(this.closest('tr')); guardarEstado()">
+            <span class="badge-100" style="display:none;">100% AUDIT</span>
+        </td>
         <td style="width:380px">
             <div class="defectos-cont"></div>
             <button class="btn btn-add btn-small" style="width:100%; justify-content:center" onclick="agregarDefectoManual(this)">+ Add Defect</button>
@@ -285,32 +420,107 @@ function agregarFila() {
         <td><input type="text" name="totalMinor[]" readonly></td>
         <td><input type="text" name="aql[]" readonly></td>
         <td><input type="text" name="ar[]" readonly></td>
-        <td><textarea name="comentarios[]" placeholder="Notes..."></textarea></td>
+        <td><textarea name="comentarios[]" placeholder="Notes..." oninput="guardarEstado()"></textarea></td>
     `;
     tbody.appendChild(tr);
+
+    if(datosFila) {
+        tr.querySelector('[name="factura[]"]').value = datosFila.factura || "";
+        tr.querySelector('[name="po[]"]').value = datosFila.po || "";
+        tr.querySelector('[name="estilo[]"]').value = datosFila.estilo || "";
+        tr.querySelector('[name="color[]"]').value = datosFila.color || "";
+        tr.querySelector('[name="total[]"]').value = datosFila.total || "";
+        tr.querySelector('[name="muestra[]"]').value = datosFila.muestra || "";
+        tr.querySelector('[name="comentarios[]"]').value = datosFila.comentarios || "";
+        
+        if(datosFila.defectos) {
+            datosFila.defectos.forEach(def => {
+                agregarDefecto(tr.querySelector('.btn-small'), def);
+            });
+        }
+        calcularFila(tr);
+    }
 }
 
 function agregarDefectoManual(btn) {
+    agregarDefecto(btn);
+    guardarEstado();
+}
+
+function agregarDefecto(btn, datosDefecto = null) {
     const cont = btn.previousElementSibling;
-    const tipo = document.getElementById("product-type").value;
-    const defOptions = LISTA_DEFECTOS[tipo].map(d => `<option value="${d}">${d}</option>`).join('');
+    const tiposSeleccionados = obtenerProductosSeleccionados();
+    
+    let defectosUnificados = [];
+    tiposSeleccionados.forEach(tipo => {
+        LISTA_DEFECTOS[tipo].forEach(d => {
+            if(!defectosUnificados.includes(d)) defectosUnificados.push(d);
+        });
+    });
+    defectosUnificados.sort();
+
+    const defOptions = defectosUnificados.map(d => `<option value="${d}">${d}</option>`).join('');
     const div = document.createElement("div");
     div.className = "defect-row";
     div.innerHTML = `
-        <select class="codigo-defecto"><option value="">-- Defect --</option>${defOptions}</select>
-        <select class="sel-cat" onchange="calcularFila(this.closest('tr'))">
+        <select class="codigo-defecto" onchange="guardarEstado()"><option value="">-- Defect --</option>${defOptions}</select>
+        <select class="sel-cat" onchange="calcularFila(this.closest('tr')); guardarEstado()">
             <option value="MAJOR">MAJOR</option>
             <option value="MINOR">MINOR</option>
         </select>
-        <input type="number" class="cantidad-defecto" placeholder="Qty" oninput="calcularFila(this.closest('tr'))">
-        <button class="btn btn-pdf btn-small" onclick="this.parentElement.remove(); calcularFila(this.closest('tr'))">×</button>
+        <input type="number" class="cantidad-defecto" placeholder="Qty" oninput="calcularFila(this.closest('tr')); guardarEstado()">
+        <button class="btn btn-pdf btn-small" onclick="this.parentElement.remove(); calcularFila(this.closest('tr')); guardarEstado()">×</button>
     `;
     cont.appendChild(div);
+
+    if(datosDefecto) {
+        div.querySelector('.codigo-defecto').value = datosDefecto.codigo;
+        div.querySelector('.sel-cat').value = datosDefecto.categoria;
+        div.querySelector('.cantidad-defecto').value = datosDefecto.cantidad;
+    }
+}
+
+// NUEVA FUNCIÓN: Verifica si el Invoice o el PO ingresado ya existen en el historial global guardado en el navegador
+function verificarEHistorial(input) {
+    const tr = input.closest('tr');
+    const valorBuscado = input.value.trim();
+    if (!valorBuscado) return;
+
+    // Cargar todo el historial global
+    const historialGlobal = JSON.parse(localStorage.getItem("blanks_audit_global_history") || "{}");
+    
+    // Buscar si existe esa llave en la base de datos local
+    if (historialGlobal[valorBuscado]) {
+        const datosEncontrados = historialGlobal[valorBuscado];
+        
+        // Rellenar la fila actual con los datos del historial
+        tr.querySelector('[name="factura[]"]').value = datosEncontrados.factura || "";
+        tr.querySelector('[name="po[]"]').value = datosEncontrados.po || "";
+        tr.querySelector('[name="estilo[]"]').value = datosEncontrados.estilo || "";
+        tr.querySelector('[name="color[]"]').value = datosEncontrados.color || "";
+        tr.querySelector('[name="total[]"]').value = datosEncontrados.total || "";
+        tr.querySelector('[name="muestra[]"]').value = datosEncontrados.muestra || "";
+        tr.querySelector('[name="comentarios[]"]').value = datosEncontrados.comentarios || "";
+        
+        // Limpiar los defectos viejos visuales antes de inyectar los recuperados
+        tr.querySelector('.defectos-cont').innerHTML = "";
+        if(datosEncontrados.defectos) {
+            datosEncontrados.defectos.forEach(def => {
+                agregarDefecto(tr.querySelector('.btn-small'), def);
+            });
+        }
+        calcularFila(tr);
+        guardarEstado();
+        alert(`✨ Found match! Loaded saved audit data for: ${valorBuscado}`);
+    } else {
+        // Si no existe, guarda los datos iniciales que vayas escribiendo
+        guardarEstado();
+    }
 }
 
 function recolectarDatosParaExportar() {
     const vendor = document.getElementById("vendor").value || "N/A";
-    const auditor = document.getElementById("auditor").value || "N/A";
+    const auditors = obtenerAuditoresSeleccionados().join(', ') || "N/A";
     const fecha = new Date().toLocaleDateString();
     const data = [];
 
@@ -319,7 +529,7 @@ function recolectarDatosParaExportar() {
         if (!totalQty || totalQty === "0") return;
 
         const base = {
-            "Date": fecha, "Auditor": auditor, "Vendor": vendor,
+            "Date": fecha, "Auditor": auditors, "Vendor": vendor,
             "Invoice": tr.querySelector('[name="factura[]"]').value || "",
             "PO": tr.querySelector('[name="po[]"]').value || "",
             "Style": tr.querySelector('[name="estilo[]"]').value || "",
@@ -328,7 +538,7 @@ function recolectarDatosParaExportar() {
             "Sample": tr.querySelector('[name="muestra[]"]').value || "0",
             "Tot Major": tr.querySelector('[name="totalMajor[]"]').value || "0",
             "Tot Minor": tr.querySelector('[name="totalMinor[]"]').value || "0",
-            "AQL%": tr.querySelector('[name="aql[]"]').value || "0%",
+            "Defect %": tr.querySelector('[name="aql[]"]').value || "0%",
             "Result": tr.querySelector('[name="ar[]"]').value || "APPROVED",
             "Comments": tr.querySelector('[name="comentarios[]"]').value || ""
         };
@@ -344,7 +554,7 @@ function recolectarDatosParaExportar() {
                 data.push({
                     ...(index === 0 ? base : {
                         "Date": "", "Auditor": "", "Vendor": "", "Invoice": "", "PO": "", "Style": "", "Color": "",
-                        "Total Qty": "", "Sample": "", "Tot Major": "", "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
+                        "Total Qty": "", "Sample": "", "Tot Major": "", "Tot Minor": "", "Defect %": "", "Result": "", "Comments": ""
                     }),
                     "Defect Description": defName,
                     "Def Cat": dr.querySelector('.sel-cat').value,
@@ -363,12 +573,12 @@ function recolectarDatosParaExportar() {
 function descargarExcel() {
     const datos = recolectarDatosParaExportar();
     if (datos.length === 0) return alert("No data to export.");
-    const productType = document.getElementById("product-type").value;
+    const productTypes = obtenerProductosSeleccionados().join('_') || "PRODUCTS";
     const vendorName = document.getElementById("vendor").value || "Vendor";
     const ws = XLSX.utils.json_to_sheet(datos);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "AuditReport");
-    XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.xlsx`);
+    XLSX.writeFile(wb, `${productTypes}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.xlsx`);
 }
 
 function descargarPDF() {
@@ -378,18 +588,24 @@ function descargarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
     
-    const productType = document.getElementById("product-type").value;
+    const productTypes = obtenerProductosSeleccionados().join(', ') || "N/A";
     const vendorName = document.getElementById("vendor").value || "N/A";
+    const force100 = document.getElementById("forced-100").checked;
     const dateStr = new Date().toLocaleDateString('es-ES');
-    const aqlStr = (vendorName === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+    
+    let aqlStr = (vendorName === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+    if(force100) aqlStr = "100% FULL INSPECTION";
 
-    doc.setFontSize(18);
+    doc.setFontSize(14);
     doc.setTextColor(0, 51, 102);
-    doc.text(`${productType} BLANKS AUDIT REPORT`, 14, 15);
+    doc.text(`BLANKS AUDIT REPORT (${productTypes})`, 14, 12);
 
-    doc.setFontSize(11);
+    doc.setFontSize(9);
     doc.setTextColor(50, 50, 50);
-    doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: ${aqlStr}`, 14, 22);
+    
+    const auditoresTexto = "Auditors: " + (obtenerAuditoresSeleccionados().join(', ') || "N/A");
+    doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | Mode: ${aqlStr}`, 14, 18);
+    doc.text(auditoresTexto, 14, 23);
     
     doc.setDrawColor(0, 51, 102);
     doc.line(14, 25, 283, 25);
@@ -397,23 +613,129 @@ function descargarPDF() {
     const tableBody = rawData.map(d => [
         d.Invoice, d.PO, d.Style, d.Color, d["Total Qty"], d.Sample,
         d["Defect Description"] ? `${d["Defect Description"]} (${d["Def Cat"]}: ${d["Def Qty"]})` : "",
-        d["Tot Major"], d["Tot Minor"], d["AQL%"], d.Result
+        d["Tot Major"], d["Tot Minor"], d["Defect %"], d.Result
     ]);
 
     doc.autoTable({
-        startY: 30,
-        head: [['Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl', 'Defect Details', 'Maj', 'Min', 'AQL%', 'Result']],
+        startY: 28,
+        head: [['Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl', 'Defect Details', 'Maj', 'Min', 'Def %', 'Result']],
         body: tableBody,
         theme: 'grid',
-        styles: { fontSize: 7.5, halign: 'center', cellPadding: 2 },
-        columnStyles: { 6: { halign: 'left', cellWidth: 50 } },
+        styles: { fontSize: 7, halign: 'center', cellPadding: 1.5 },
+        columnStyles: { 6: { halign: 'left', cellWidth: 45 } },
         headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255] }
     });
 
-    doc.save(`${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.pdf`);
+    doc.save(`${productTypes.replace(/\s+/g, '')}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.pdf`);
 }
 
-window.onload = manejarCambioDeProducto;
+// LOGICA DE PERSISTENCIA Y GUARDADO LOCAL AVANZADO
+function guardarEstado() {
+    const estadoPantalla = {
+        auditores: obtenerAuditoresSeleccionados(),
+        productTypes: obtenerProductosSeleccionados(),
+        vendor: document.getElementById("vendor").value,
+        forced100: document.getElementById("forced-100").checked,
+        filas: []
+    };
+
+    // Cargamos el mapa de historial global para actualizarlo
+    const historialGlobal = JSON.parse(localStorage.getItem("blanks_audit_global_history") || "{}");
+
+    document.querySelectorAll("#tabla tbody tr").forEach(tr => {
+        const facturaVal = tr.querySelector('[name="factura[]"]').value.trim();
+        const poVal = tr.querySelector('[name="po[]"]').value.trim();
+
+        const filaData = {
+            factura: facturaVal,
+            po: poVal,
+            estilo: tr.querySelector('[name="estilo[]"]').value,
+            color: tr.querySelector('[name="color[]"]').value,
+            total: tr.querySelector('[name="total[]"]').value,
+            muestra: tr.querySelector('[name="muestra[]"]').value,
+            comentarios: tr.querySelector('[name="comentarios[]"]').value,
+            defectos: []
+        };
+
+        tr.querySelectorAll('.defect-row').forEach(dr => {
+            filaData.defectos.push({
+                codigo: dr.querySelector('.codigo-defecto').value,
+                categoria: dr.querySelector('.sel-cat').value,
+                cantidad: dr.querySelector('.cantidad-defecto').value
+            });
+        });
+        
+        estadoPantalla.filas.push(filaData);
+
+        // Si la fila tiene número de Factura o PO, indexamos este item de forma independiente en la base de datos histórica
+        if (facturaVal) historialGlobal[facturaVal] = filaData;
+        if (poVal) historialGlobal[poVal] = filaData;
+    });
+
+    // Guardamos tanto la vista de la pantalla actual como el historial indexado independiente
+    localStorage.setItem("blanks_audit_report_screen", JSON.stringify(estadoPantalla));
+    localStorage.setItem("blanks_audit_global_history", JSON.stringify(historialGlobal));
+}
+
+function cargarEstado() {
+    const datosPantalla = localStorage.getItem("blanks_audit_report_screen");
+    if (!datosPantalla) {
+        const cbHeadwear = document.querySelector('#products-container input[value="HEADWEAR"]');
+        if(cbHeadwear) cbHeadwear.checked = true;
+        manejarCambioDeProducto(); 
+        agregarFila();
+        return;
+    }
+
+    const estado = JSON.parse(datosPantalla);
+
+    if(estado.auditores) {
+        document.querySelectorAll('#auditores-container input[type="checkbox"]').forEach(cb => {
+            cb.checked = estado.auditores.includes(cb.value);
+        });
+    }
+
+    if(estado.productTypes) {
+        document.querySelectorAll('#products-container input[type="checkbox"]').forEach(cb => {
+            cb.checked = estado.productTypes.includes(cb.value);
+        });
+    }
+
+    const tiposSeleccionados = obtenerProductosSeleccionados();
+    const vendorSel = document.getElementById("vendor");
+    vendorSel.innerHTML = '<option value="">-- Select Vendor --</option>';
+    
+    let proveedoresUnificados = [];
+    tiposSeleccionados.forEach(tipo => {
+        PROVEEDORES[tipo].forEach(v => {
+            if (!proveedoresUnificados.includes(v)) proveedoresUnificados.push(v);
+        });
+    });
+    proveedoresUnificados.sort().forEach(v => {
+        let opt = document.createElement('option'); opt.value = v; opt.textContent = v; vendorSel.appendChild(opt);
+    });
+    vendorSel.value = estado.vendor;
+    
+    document.getElementById("forced-100").checked = estado.forced100;
+
+    document.querySelector("#tabla tbody").innerHTML = "";
+    if (estado.filas && estado.filas.length > 0) {
+        estado.filas.forEach(f => agregarFila(f));
+    } else {
+        agregarFila();
+    }
+}
+
+// Limpia las celdas visibles de la pantalla para empezar un reporte en blanco, pero NO borra la base de datos histórica del navegador.
+function limpiarPantallaActual() {
+    if (confirm("Clear current table data? (Your historically saved items will remain accessible via Invoice/PO search)")) {
+        document.querySelector("#tabla tbody").innerHTML = "";
+        agregarFila();
+        guardarEstado();
+    }
+}
+
+window.onload = cargarEstado;
 </script>
 </body>
 </html>
