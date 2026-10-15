@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Professional Blanks Audit Report - Kay & Emms Special</title>
-    
+
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -21,98 +22,31 @@
             --warning-color: #ffc107;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; padding: 20px; 
-            background-color: var(--background-color); 
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
         .container { max-width: 100%; margin: 0 auto; }
-
-        .card {
-            background-color: var(--card-background);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
-        }
-
-        h1 { 
-            text-align: center; 
-            color: var(--primary-color); 
-            margin: 0 0 25px 0;
-            font-size: 2.5em;
-            font-weight: 600;
-        }
-
-        .controles { 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 20px; 
-            align-items: flex-end; 
-        }
-
-        .control-group { 
-            display: flex; 
-            flex-direction: column; 
-            flex: 1 1 200px;
-            max-width: 300px;
-        }
-
-        .control-group label { 
-            font-weight: 600; 
-            margin-bottom: 8px; 
-            color: var(--primary-color); 
-            font-size: 0.95em;
-        }
-
-        select, input[type="text"], input[type="number"], textarea { 
-            padding: 10px 12px; 
-            border-radius: 6px; 
-            border: 1px solid var(--border-color); 
-            font-size: 1em;
-            color: var(--text-color);
-            background-color: #fff;
-            box-sizing: border-box;
-        }
-
-        .actions { display: flex; gap: 12px; margin-left: auto; }
-
-        .btn { 
-            padding: 10px 20px; 
-            border-radius: 6px; 
-            border: none; 
-            font-weight: 600; 
-            cursor: pointer; 
-            color: white; 
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s;
-        }
-
+        .card { background-color: var(--card-background); border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
+        h1 { text-align: center; color: var(--primary-color); margin: 0 0 25px 0; font-size: 2.5em; font-weight: 600; }
+        .controles { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: flex-end; }
+        .control-group { display: flex; flex-direction: column; flex: 1 1 200px; max-width: 300px; }
+        .control-group label { font-weight: 600; margin-bottom: 8px; color: var(--primary-color); font-size: 0.95em; }
+        select, input[type="text"], input[type="number"], textarea { padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 1em; color: var(--text-color); background-color: #fff; box-sizing: border-box; }
+        .actions { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
         .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-add { background-color: var(--success-color); }
         .btn-excel { background-color: #1f7244; }
         .btn-pdf { background-color: var(--danger-color); }
+        .btn-save { background-color: #6f42c1; }
         .btn-small { padding: 5px 10px; font-size: 0.85em; }
-
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
         th { background-color: var(--primary-color); color: white; padding: 15px 10px; font-size: 0.85em; text-transform: uppercase; }
         td { border-bottom: 1px solid var(--border-color); padding: 10px; text-align: center; background-color: #fff; }
-
         .defectos-cont { background-color: #f9f9f9; border-radius: 8px; padding: 10px; border: 1px dashed #ccc; margin-bottom: 8px; }
         .defect-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background-color: #fff; padding: 5px; border-radius: 6px; border: 1px solid #eee; }
-
         .ar-acepta { background-color: #d4edda !important; color: #155724 !important; font-weight: 700; }
         .ar-rechaza { background-color: #f8d7da !important; color: #721c24 !important; font-weight: 700; }
-
         .footer { text-align: center; margin-top: 30px; color: #888; font-size: 0.85em; }
     </style>
 </head>
@@ -131,7 +65,7 @@
                     <option value="Jacquelinne Zepeda">Jacquelinne Zepeda</option>
                     <option value="Mackinzie Keller">Mackinzie Keller</option>
                     <option value="Jacy Crouse">Jacy Crouse</option>
-                     <option value="Jacy Crouse">Sonia Contreras</option>
+                    <option value="Sonia Contreras">Sonia Contreras</option>
                 </select>
             </div>
 
@@ -152,6 +86,7 @@
 
             <div class="actions">
                 <button class="btn btn-add" onclick="agregarFila()">➕ Add Item</button>
+                <button class="btn btn-save" onclick="guardarAuditoria(this)">💾 Save Audit</button>
                 <button class="btn btn-excel" onclick="descargarExcel()">⬇️ Excel</button>
                 <button class="btn btn-pdf" onclick="descargarPDF()">📄 PDF</button>
             </div>
@@ -174,6 +109,9 @@
 </div>
 
 <script>
+// ⚠️ PEGA AQUÍ LA URL DE TU APPS SCRIPT (termina en /exec)
+const URL_GUARDADO = "https://script.google.com/macros/s/AKfycbxZOseesR_bAlqZqh_E6AEfh47e3zNTQcw1NW5Lfjp7j4A9nzcLl7YeiTYI_eLNurbM/exec";
+
 const PROVEEDORES = {
     HEADWEAR: ["Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.", "GOTOP TEXTILE COMPANY LIMITED", "Eastwood ", "Giant Headmost Manufacturing Corp", "HENAN J&F HEADWEAR CO., LTD", "Jeya Headwear", "Ratone International LTD. Loc", "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear"],
     APPAREL: ["New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel", "Eastwood Outdoor Enterprise (EOE)", "Green Valley Manufacturing", "Solis Textiles", "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM", "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries", "Milestone Textiles", "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear", "Kay & Emms Pvt ltd", "GILDAN", "NG TEXTILES GUATEMALA S.A."]
@@ -200,7 +138,7 @@ const RANGOS_ESTANDAR = [
     {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
 
-// TABLA ESPECIAL KAY & EMMS (AQL 4.0 según imagen)
+// TABLA ESPECIAL KAY & EMMS (AQL 4.0)
 const RANGOS_KAY_EMMS = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -233,27 +171,26 @@ function actualizarTablaAQL() {
 function calcularFila(tr) {
     const vendorActual = document.getElementById("vendor").value;
     const tablaAUsar = (vendorActual === "Kay & Emms Pvt ltd") ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
-    
+
     let total = parseInt(tr.querySelector('[name="total[]"]').value) || 0;
     let major = 0, minor = 0;
-    
+
     tr.querySelectorAll('.defect-row').forEach(row => {
         let q = parseInt(row.querySelector('.cantidad-defecto').value) || 0;
         let c = row.querySelector('.sel-cat').value;
         if(c === "MAJOR") major += q; else if(c === "MINOR") minor += q;
     });
-    
+
     tr.querySelector('[name="totalMajor[]"]').value = major;
     tr.querySelector('[name="totalMinor[]"]').value = minor;
-    
+
     const rango = tablaAUsar.find(r => total >= r.min && total <= r.max);
     const arInput = tr.querySelector('[name="ar[]"]');
-    
+
     if (rango) {
         tr.querySelector('[name="muestra[]"]').value = rango.muestra;
         tr.querySelector('[name="aql[]"]').value = ((major / rango.muestra) * 100).toFixed(1) + "%";
-        
-        // Formato solicitado: APPROVED (7/8) o REJECTED (7/8)
+
         if (major <= rango.acepta) {
             arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
             arInput.className = "ar-acepta";
@@ -304,7 +241,7 @@ function agregarDefectoManual(btn) {
             <option value="MINOR">MINOR</option>
         </select>
         <input type="number" class="cantidad-defecto" placeholder="Qty" oninput="calcularFila(this.closest('tr'))">
-        <button class="btn btn-pdf btn-small" onclick="this.parentElement.remove(); calcularFila(this.closest('tr'))">×</button>
+        <button class="btn btn-pdf btn-small" onclick="const t=this.closest('tr'); this.parentElement.remove(); calcularFila(t)">×</button>
     `;
     cont.appendChild(div);
 }
@@ -336,14 +273,15 @@ function recolectarDatosParaExportar() {
 
         const defectRows = tr.querySelectorAll('.defect-row');
         let tieneDefectosValidos = false;
+        let primero = true;
 
-        defectRows.forEach((dr, index) => {
+        defectRows.forEach(dr => {
             const defName = dr.querySelector('.codigo-defecto').value;
             const defQty = dr.querySelector('.cantidad-defecto').value;
             if (defName && defQty && parseInt(defQty) > 0) {
                 tieneDefectosValidos = true;
                 data.push({
-                    ...(index === 0 ? base : {
+                    ...(primero ? base : {
                         "Date": "", "Auditor": "", "Vendor": "", "Invoice": "", "PO": "", "Style": "", "Color": "",
                         "Total Qty": "", "Sample": "", "Tot Major": "", "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
                     }),
@@ -351,6 +289,7 @@ function recolectarDatosParaExportar() {
                     "Def Cat": dr.querySelector('.sel-cat').value,
                     "Def Qty": defQty
                 });
+                primero = false;
             }
         });
 
@@ -359,6 +298,56 @@ function recolectarDatosParaExportar() {
         }
     });
     return data;
+}
+
+async function guardarAuditoria(btn) {
+    const auditor = document.getElementById("auditor").value;
+    const vendor = document.getElementById("vendor").value;
+    if (!auditor) return alert("Select an auditor first.");
+    if (!vendor) return alert("Select a vendor first.");
+    if (URL_GUARDADO.includes("PEGA_AQUI")) return alert("Configura primero la URL_GUARDADO en el código.");
+
+    const datos = recolectarDatosParaExportar();
+    if (datos.length === 0) return alert("No data to save.");
+
+    // Las filas de defectos adicionales vienen vacías (para Excel).
+    // Para la base de datos las rellenamos con los datos de su ítem.
+    const camposBase = ["Auditor","Vendor","Invoice","PO","Style","Color","Total Qty",
+                        "Sample","Tot Major","Tot Minor","AQL%","Result","Comments"];
+    const auditId = "AUD-" + Date.now();
+    const timestamp = new Date().toISOString();
+    const tipo = document.getElementById("product-type").value;
+    const aqlStd = (vendor === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+
+    let previa = null;
+    const rows = datos.map(d => {
+        const fila = { ...d };
+        if (d["Invoice"] === "" && d["Total Qty"] === "" && previa) {
+            camposBase.forEach(c => fila[c] = previa[c]);
+        } else {
+            previa = d;
+        }
+        return {
+            "Audit ID": auditId, "Timestamp": timestamp, "Product Type": tipo,
+            "AQL Standard": aqlStd, ...fila
+        };
+    });
+
+    btn.disabled = true; btn.textContent = "Saving...";
+    try {
+        const resp = await fetch(URL_GUARDADO, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // evita el preflight CORS
+            body: JSON.stringify({ rows })
+        });
+        const res = await resp.json();
+        if (res.ok) alert(`✅ Audit saved (${res.saved} rows). ID: ${auditId}`);
+        else throw new Error(res.error);
+    } catch (e) {
+        alert("❌ Could not save: " + e.message);
+    } finally {
+        btn.disabled = false; btn.textContent = "💾 Save Audit";
+    }
 }
 
 function descargarExcel() {
@@ -375,10 +364,10 @@ function descargarExcel() {
 function descargarPDF() {
     const rawData = recolectarDatosParaExportar();
     if (rawData.length === 0) return alert("No data to export.");
-    
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
-    
+
     const productType = document.getElementById("product-type").value;
     const vendorName = document.getElementById("vendor").value || "N/A";
     const dateStr = new Date().toLocaleDateString('es-ES');
@@ -391,7 +380,7 @@ function descargarPDF() {
     doc.setFontSize(11);
     doc.setTextColor(50, 50, 50);
     doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: ${aqlStr}`, 14, 22);
-    
+
     doc.setDrawColor(0, 51, 102);
     doc.line(14, 25, 283, 25);
 
