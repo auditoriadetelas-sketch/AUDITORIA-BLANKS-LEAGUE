@@ -110,3 +110,300 @@
 
 <script>
 // ⚠️ PEGA AQUÍ LA URL DE TU APPS SCRIPT (termina en /exec)
+const URL_GUARDADO = "https://script.google.com/macros/s/AKfycbzKkULUrnHlHSojf6egebh9NximXyyKfLDdGAQPQhJN3K49Xf7gJ0qR55x3rW_qQdol/exec";
+
+const PROVEEDORES = {
+    HEADWEAR: ["Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.", "GOTOP TEXTILE COMPANY LIMITED", "Eastwood ", "Giant Headmost Manufacturing Corp", "HENAN J&F HEADWEAR CO., LTD", "Jeya Headwear", "Ratone International LTD. Loc", "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear"],
+    APPAREL: ["New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel", "Eastwood Outdoor Enterprise (EOE)", "Green Valley Manufacturing", "Solis Textiles", "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM", "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries", "Milestone Textiles", "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear", "Kay & Emms Pvt ltd", "GILDAN", "NG TEXTILES GUATEMALA S.A."]
+};
+
+const LISTA_DEFECTOS = {
+    HEADWEAR: ["OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "MISSING PARACORD", "OPEN SEAM" , "INCORRECT PARACORD COLOR" , "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS", "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS", "INCORRECT CAP COLOR", "VISORS CROOKED/OFF-CENTER", "STITCHING ON BRIM", "POOR CONSTRUCTION ", "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION", "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"],
+    APPAREL: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
+};
+
+// TABLA ESTANDAR (AQL 2.5)
+const RANGOS_ESTANDAR = [
+    {min:2, max:8, muestra:2, acepta:0, rechaza:1},
+    {min:9, max:15, muestra:3, acepta:0, rechaza:1},
+    {min:16, max:25, muestra:5, acepta:0, rechaza:1},
+    {min:26, max:50, muestra:8, acepta:1, rechaza:2},
+    {min:51, max:90, muestra:13, acepta:1, rechaza:2},
+    {min:91, max:150, muestra:20, acepta:1, rechaza:2},
+    {min:151, max:280, muestra:32, acepta:2, rechaza:3},
+    {min:281, max:500, muestra:50, acepta:3, rechaza:4},
+    {min:501, max:1200, muestra:80, acepta:5, rechaza:6},
+    {min:1201, max:3200, muestra:125, acepta:7, rechaza:8},
+    {min:3201, max:10000, muestra:200, acepta:10, rechaza:11},
+    {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
+];
+
+// TABLA ESPECIAL KAY & EMMS (AQL 4.0)
+const RANGOS_KAY_EMMS = [
+    {min:2, max:8, muestra:2, acepta:0, rechaza:1},
+    {min:9, max:15, muestra:3, acepta:0, rechaza:1},
+    {min:16, max:25, muestra:5, acepta:0, rechaza:1},
+    {min:26, max:50, muestra:8, acepta:1, rechaza:2},
+    {min:51, max:90, muestra:13, acepta:1, rechaza:2},
+    {min:91, max:150, muestra:20, acepta:2, rechaza:3},
+    {min:151, max:280, muestra:32, acepta:3, rechaza:4},
+    {min:281, max:500, muestra:50, acepta:5, rechaza:6},
+    {min:501, max:1200, muestra:80, acepta:7, rechaza:8},
+    {min:1201, max:3200, muestra:125, acepta:10, rechaza:11},
+    {min:3201, max:10000, muestra:200, acepta:14, rechaza:15}
+];
+
+function manejarCambioDeProducto() {
+    const tipo = document.getElementById("product-type").value;
+    const vendorSel = document.getElementById("vendor");
+    vendorSel.innerHTML = '<option value="">-- Select Vendor --</option>';
+    PROVEEDORES[tipo].forEach(v => {
+        let opt = document.createElement('option'); opt.value = v; opt.textContent = v; vendorSel.appendChild(opt);
+    });
+    document.querySelector("#tabla tbody").innerHTML = "";
+    agregarFila();
+}
+
+function actualizarTablaAQL() {
+    document.querySelectorAll("#tabla tbody tr").forEach(tr => calcularFila(tr));
+}
+
+function calcularFila(tr) {
+    const vendorActual = document.getElementById("vendor").value;
+    const tablaAUsar = (vendorActual === "Kay & Emms Pvt ltd") ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
+
+    let total = parseInt(tr.querySelector('[name="total[]"]').value) || 0;
+    let major = 0, minor = 0;
+
+    tr.querySelectorAll('.defect-row').forEach(row => {
+        let q = parseInt(row.querySelector('.cantidad-defecto').value) || 0;
+        let c = row.querySelector('.sel-cat').value;
+        if(c === "MAJOR") major += q; else if(c === "MINOR") minor += q;
+    });
+
+    tr.querySelector('[name="totalMajor[]"]').value = major;
+    tr.querySelector('[name="totalMinor[]"]').value = minor;
+
+    const rango = tablaAUsar.find(r => total >= r.min && total <= r.max);
+    const arInput = tr.querySelector('[name="ar[]"]');
+
+    if (rango) {
+        tr.querySelector('[name="muestra[]"]').value = rango.muestra;
+        tr.querySelector('[name="aql[]"]').value = ((major / rango.muestra) * 100).toFixed(1) + "%";
+
+        if (major <= rango.acepta) {
+            arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
+            arInput.className = "ar-acepta";
+        } else {
+            arInput.value = `REJECTED (${rango.acepta}/${rango.rechaza})`;
+            arInput.className = "ar-rechaza";
+        }
+    } else {
+        tr.querySelector('[name="muestra[]"]').value = "";
+        tr.querySelector('[name="aql[]"]').value = "";
+        arInput.value = ""; arInput.className = "";
+    }
+}
+
+function agregarFila() {
+    const tbody = document.querySelector("#tabla tbody");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+        <td><input type="text" name="factura[]" placeholder="..."></td>
+        <td><input type="text" name="po[]" placeholder="..."></td>
+        <td><input type="text" name="estilo[]" placeholder="..."></td>
+        <td><input type="text" name="color[]" placeholder="..."></td>
+        <td><input type="number" name="total[]" oninput="calcularFila(this.closest('tr'))"></td>
+        <td><input type="text" name="muestra[]" readonly></td>
+        <td style="width:380px">
+            <div class="defectos-cont"></div>
+            <button class="btn btn-add btn-small" style="width:100%; justify-content:center" onclick="agregarDefectoManual(this)">+ Add Defect</button>
+        </td>
+        <td><input type="text" name="totalMajor[]" readonly></td>
+        <td><input type="text" name="totalMinor[]" readonly></td>
+        <td><input type="text" name="aql[]" readonly></td>
+        <td><input type="text" name="ar[]" readonly></td>
+        <td><textarea name="comentarios[]" placeholder="Notes..."></textarea></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function agregarDefectoManual(btn) {
+    const cont = btn.previousElementSibling;
+    const tipo = document.getElementById("product-type").value;
+    const defOptions = LISTA_DEFECTOS[tipo].map(d => `<option value="${d}">${d}</option>`).join('');
+    const div = document.createElement("div");
+    div.className = "defect-row";
+    div.innerHTML = `
+        <select class="codigo-defecto"><option value="">-- Defect --</option>${defOptions}</select>
+        <select class="sel-cat" onchange="calcularFila(this.closest('tr'))">
+            <option value="MAJOR">MAJOR</option>
+            <option value="MINOR">MINOR</option>
+        </select>
+        <input type="number" class="cantidad-defecto" placeholder="Qty" oninput="calcularFila(this.closest('tr'))">
+        <button class="btn btn-pdf btn-small" onclick="const t=this.closest('tr'); this.parentElement.remove(); calcularFila(t)">×</button>
+    `;
+    cont.appendChild(div);
+}
+
+function recolectarDatosParaExportar() {
+    const vendor = document.getElementById("vendor").value || "N/A";
+    const auditor = document.getElementById("auditor").value || "N/A";
+    const fecha = new Date().toLocaleDateString();
+    const data = [];
+
+    document.querySelectorAll("#tabla tbody tr").forEach(tr => {
+        const totalQty = tr.querySelector('[name="total[]"]').value;
+        if (!totalQty || totalQty === "0") return;
+
+        const base = {
+            "Date": fecha, "Auditor": auditor, "Vendor": vendor,
+            "Invoice": tr.querySelector('[name="factura[]"]').value || "",
+            "PO": tr.querySelector('[name="po[]"]').value || "",
+            "Style": tr.querySelector('[name="estilo[]"]').value || "",
+            "Color": tr.querySelector('[name="color[]"]').value || "",
+            "Total Qty": totalQty,
+            "Sample": tr.querySelector('[name="muestra[]"]').value || "0",
+            "Tot Major": tr.querySelector('[name="totalMajor[]"]').value || "0",
+            "Tot Minor": tr.querySelector('[name="totalMinor[]"]').value || "0",
+            "AQL%": tr.querySelector('[name="aql[]"]').value || "0%",
+            "Result": tr.querySelector('[name="ar[]"]').value || "APPROVED",
+            "Comments": tr.querySelector('[name="comentarios[]"]').value || ""
+        };
+
+        const defectRows = tr.querySelectorAll('.defect-row');
+        let tieneDefectosValidos = false;
+        let primero = true;
+
+        defectRows.forEach(dr => {
+            const defName = dr.querySelector('.codigo-defecto').value;
+            const defQty = dr.querySelector('.cantidad-defecto').value;
+            if (defName && defQty && parseInt(defQty) > 0) {
+                tieneDefectosValidos = true;
+                data.push({
+                    ...(primero ? base : {
+                        "Date": "", "Auditor": "", "Vendor": "", "Invoice": "", "PO": "", "Style": "", "Color": "",
+                        "Total Qty": "", "Sample": "", "Tot Major": "", "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
+                    }),
+                    "Defect Description": defName,
+                    "Def Cat": dr.querySelector('.sel-cat').value,
+                    "Def Qty": defQty
+                });
+                primero = false;
+            }
+        });
+
+        if (!tieneDefectosValidos) {
+            data.push({ ...base, "Defect Description": "", "Def Cat": "", "Def Qty": "" });
+        }
+    });
+    return data;
+}
+
+async function guardarAuditoria(btn) {
+    const auditor = document.getElementById("auditor").value;
+    const vendor = document.getElementById("vendor").value;
+    if (!auditor) return alert("Select an auditor first.");
+    if (!vendor) return alert("Select a vendor first.");
+    if (URL_GUARDADO.includes("PEGA_AQUI")) return alert("Configura primero la URL_GUARDADO en el código.");
+
+    const datos = recolectarDatosParaExportar();
+    if (datos.length === 0) return alert("No data to save.");
+
+    // Las filas de defectos adicionales vienen vacías (para Excel).
+    // Para la base de datos las rellenamos con los datos de su ítem.
+    const camposBase = ["Auditor","Vendor","Invoice","PO","Style","Color","Total Qty",
+                        "Sample","Tot Major","Tot Minor","AQL%","Result","Comments"];
+    const auditId = "AUD-" + Date.now();
+    const timestamp = new Date().toISOString();
+    const tipo = document.getElementById("product-type").value;
+    const aqlStd = (vendor === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+
+    let previa = null;
+    const rows = datos.map(d => {
+        const fila = { ...d };
+        if (d["Invoice"] === "" && d["Total Qty"] === "" && previa) {
+            camposBase.forEach(c => fila[c] = previa[c]);
+        } else {
+            previa = d;
+        }
+        return {
+            "Audit ID": auditId, "Timestamp": timestamp, "Product Type": tipo,
+            "AQL Standard": aqlStd, ...fila
+        };
+    });
+
+    btn.disabled = true; btn.textContent = "Saving...";
+    try {
+        // no-cors: el navegador envía los datos sin intentar leer la respuesta de Google
+        await fetch(URL_GUARDADO, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ rows })
+        });
+        alert(`✅ Audit sent (${rows.length} rows). ID: ${auditId}\nVerifica la pestaña "Audits" en Google Sheets.`);
+    } catch (e) {
+        alert("❌ Could not save: " + e.message);
+    } finally {
+        btn.disabled = false; btn.textContent = "💾 Save Audit";
+    }
+}
+
+function descargarExcel() {
+    const datos = recolectarDatosParaExportar();
+    if (datos.length === 0) return alert("No data to export.");
+    const productType = document.getElementById("product-type").value;
+    const vendorName = document.getElementById("vendor").value || "Vendor";
+    const ws = XLSX.utils.json_to_sheet(datos);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "AuditReport");
+    XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.xlsx`);
+}
+
+function descargarPDF() {
+    const rawData = recolectarDatosParaExportar();
+    if (rawData.length === 0) return alert("No data to export.");
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'mm', 'a4');
+
+    const productType = document.getElementById("product-type").value;
+    const vendorName = document.getElementById("vendor").value || "N/A";
+    const dateStr = new Date().toLocaleDateString('es-ES');
+    const aqlStr = (vendorName === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+
+    doc.setFontSize(18);
+    doc.setTextColor(0, 51, 102);
+    doc.text(`${productType} BLANKS AUDIT REPORT`, 14, 15);
+
+    doc.setFontSize(11);
+    doc.setTextColor(50, 50, 50);
+    doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: ${aqlStr}`, 14, 22);
+
+    doc.setDrawColor(0, 51, 102);
+    doc.line(14, 25, 283, 25);
+
+    const tableBody = rawData.map(d => [
+        d.Invoice, d.PO, d.Style, d.Color, d["Total Qty"], d.Sample,
+        d["Defect Description"] ? `${d["Defect Description"]} (${d["Def Cat"]}: ${d["Def Qty"]})` : "",
+        d["Tot Major"], d["Tot Minor"], d["AQL%"], d.Result
+    ]);
+
+    doc.autoTable({
+        startY: 30,
+        head: [['Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl', 'Defect Details', 'Maj', 'Min', 'AQL%', 'Result']],
+        body: tableBody,
+        theme: 'grid',
+        styles: { fontSize: 7.5, halign: 'center', cellPadding: 2 },
+        columnStyles: { 6: { halign: 'left', cellWidth: 50 } },
+        headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255] }
+    });
+
+    doc.save(`${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.pdf`);
+}
+
+window.onload = manejarCambioDeProducto;
+</script>
+</body>
+</html>
