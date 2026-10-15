@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,40 +23,265 @@
             --warning-color: #ffc107;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: var(--background-color); color: var(--text-color); line-height: 1.6; }
-        .container { max-width: 100%; margin: 0 auto; }
-        .card { background-color: var(--card-background); border-radius: 10px; padding: 20px; margin-bottom: 20px; box-shadow: var(--shadow); border: 1px solid var(--border-color); }
-        h1 { text-align: center; color: var(--primary-color); margin: 0 0 25px 0; font-size: 2.5em; font-weight: 600; }
-        .controles { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; align-items: flex-end; }
-        .control-group { display: flex; flex-direction: column; flex: 1 1 200px; max-width: 300px; }
-        .control-group label { font-weight: 600; margin-bottom: 8px; color: var(--primary-color); font-size: 0.95em; }
-        select, input[type="text"], input[type="number"], textarea { padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-color); font-size: 1em; color: var(--text-color); background-color: #fff; box-sizing: border-box; }
-        .actions { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
-        .btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
-        .btn:hover { opacity: 0.9; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-add { background-color: var(--success-color); }
-        .btn-excel { background-color: #1f7244; }
-        .btn-pdf { background-color: var(--danger-color); }
-        .btn-save { background-color: #6f42c1; }
-        .btn-small { padding: 5px 10px; font-size: 0.85em; }
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-        th { background-color: var(--primary-color); color: white; padding: 15px 10px; font-size: 0.85em; text-transform: uppercase; }
-        td { border-bottom: 1px solid var(--border-color); padding: 10px; text-align: center; background-color: #fff; }
-        .defectos-cont { background-color: #f9f9f9; border-radius: 8px; padding: 10px; border: 1px dashed #ccc; margin-bottom: 8px; }
-        .defect-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; background-color: #fff; padding: 5px; border-radius: 6px; border: 1px solid #eee; }
-        .ar-acepta { background-color: #d4edda !important; color: #155724 !important; font-weight: 700; }
-        .ar-rechaza { background-color: #f8d7da !important; color: #721c24 !important; font-weight: 700; }
-        .footer { text-align: center; margin-top: 30px; color: #888; font-size: 0.85em; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin: 0 0 25px 0;
+            font-size: 2.5em;
+            font-weight: 600;
+        }
+
+        .controles {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1 1 200px;
+            max-width: 300px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-size: 0.95em;
+        }
+
+        select,
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 1em;
+            color: var(--text-color);
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-add {
+            background-color: var(--success-color);
+        }
+
+        .btn-excel {
+            background-color: #1f7244;
+        }
+
+        .btn-pdf {
+            background-color: var(--danger-color);
+        }
+
+        .btn-save {
+            background-color: #6f42c1;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 0.85em;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 10px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+        }
+
+        td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+            background-color: #fff;
+        }
+
+        .defectos-cont {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px dashed #ccc;
+            margin-bottom: 8px;
+        }
+
+        .defect-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+            background-color: #fff;
+            padding: 5px;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+
+        .ar-acepta {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+            font-weight: 700;
+        }
+
+        .ar-rechaza {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            font-weight: 700;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .photo-upload {
+            display: block;
+            width: 100%;
+            max-width: 260px;
+            font-size: 0.8em;
+            margin-top: 6px;
+        }
+
+        .photo-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 6px;
+        }
+
+        .photo-preview img {
+            width: 58px;
+            height: 58px;
+            object-fit: cover;
+            border: 1px solid #bbb;
+            border-radius: 4px;
+        }
+
+        .measurement-box {
+            margin-top: 18px;
+            padding: 15px;
+            border: 1px dashed #8aa;
+            border-radius: 8px;
+            background: #f8fbff;
+        }
+
+        .measurement-box label {
+            display: block;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .measurement-box input {
+            max-width: 100%;
+        }
+
+        .measurement-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .measurement-preview .photo-card {
+            width: 130px;
+            font-size: 0.8em;
+            overflow-wrap: anywhere;
+        }
+
+        .measurement-preview img {
+            width: 125px;
+            height: 100px;
+            object-fit: cover;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+        }
+
+        .photo-count {
+            display: block;
+            font-size: 0.75em;
+            color: #555;
+        }
     </style>
 </head>
-<body>
 
+<body>
 <div class="container">
+
     <div class="card">
         <h1>Blanks Audit Report</h1>
+
         <div class="controles">
+
             <div class="control-group">
                 <label>👷 Auditor:</label>
                 <select id="auditor">
@@ -90,6 +316,26 @@
                 <button class="btn btn-excel" onclick="descargarExcel()">⬇️ Excel</button>
                 <button class="btn btn-pdf" onclick="descargarPDF()">📄 PDF</button>
             </div>
+
+        </div>
+    </div>
+
+    <div class="card measurement-box">
+        <label for="fotos-medicion">📏 Fotos de las hojas de medición (puedes seleccionar varias):</label>
+
+        <input
+            id="fotos-medicion"
+            type="file"
+            accept="image/*"
+            multiple
+            onchange="cargarFotosMedicion(this)"
+        >
+
+        <div id="vista-fotos-medicion" class="measurement-preview"></div>
+
+        <div class="photo-count">
+            Las fotos seleccionadas se incluirán al final del PDF.
+            Se mantienen en esta página mientras no la cierres o recargues.
         </div>
     </div>
 
@@ -97,32 +343,156 @@
         <table id="tabla">
             <thead>
                 <tr>
-                    <th>Invoice</th><th>PO</th><th>Style</th><th>Color</th>
-                    <th>Tot Qty</th><th>Spl</th><th>Defect / Category / Qty</th>
-                    <th>Maj</th><th>Min</th><th>AQL%</th><th>Result</th><th>Comments</th>
+                    <th>Invoice</th>
+                    <th>PO</th>
+                    <th>Style</th>
+                    <th>Color</th>
+                    <th>Tot Qty</th>
+                    <th>Spl</th>
+                    <th>Defect / Category / Qty</th>
+                    <th>Maj</th>
+                    <th>Min</th>
+                    <th>AQL%</th>
+                    <th>Result</th>
+                    <th>Comments</th>
                 </tr>
             </thead>
             <tbody></tbody>
         </table>
     </div>
-    <div class="footer">Quality Assurance Department • Internal Audit Tool</div>
+
+    <div class="footer">
+        Quality Assurance Department • Internal Audit Tool
+    </div>
+
 </div>
 
 <script>
-// ⚠️ PEGA AQUÍ LA URL DE TU APPS SCRIPT (termina en /exec)
 const URL_GUARDADO = "https://script.google.com/macros/s/AKfycbzKkULUrnHlHSojf6egebh9NximXyyKfLDdGAQPQhJN3K49Xf7gJ0qR55x3rW_qQdol/exec";
 
 const PROVEEDORES = {
-    HEADWEAR: ["Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.", "GOTOP TEXTILE COMPANY LIMITED", "Eastwood ", "Giant Headmost Manufacturing Corp", "HENAN J&F HEADWEAR CO., LTD", "Jeya Headwear", "Ratone International LTD. Loc", "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear"],
-    APPAREL: ["New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel", "Eastwood Outdoor Enterprise (EOE)", "Green Valley Manufacturing", "Solis Textiles", "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM", "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries", "Milestone Textiles", "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear", "Kay & Emms Pvt ltd", "GILDAN", "NG TEXTILES GUATEMALA S.A."]
+    HEADWEAR: [
+        "Asia Caps (Thailand) Co., Ltd.",
+        "Asia Caps Co., Ltd.",
+        "ERA Fashion Accesory Co.",
+        "GOTOP TEXTILE COMPANY LIMITED",
+        "Eastwood ",
+        "Giant Headmost Manufacturing Corp",
+        "HENAN J&F HEADWEAR CO., LTD",
+        "Jeya Headwear",
+        "Ratone International LTD. Loc",
+        "Shiningcrown Hats Mfg., Corp.",
+        "Unimas Sportswear Ltd.",
+        "Ouray Sportswear"
+    ],
+
+    APPAREL: [
+        "New Trend Vietnam Co. Ltd.",
+        "Global Knitwear Limited",
+        "New Wave Apparel",
+        "Eastwood Outdoor Enterprise (EOE)",
+        "Green Valley Manufacturing",
+        "Solis Textiles",
+        "Al-Ameera (Pvt) Ltd.",
+        "E.W. YEN JOINT STOCK COMPANY",
+        "FRUIT OF THE LOOM",
+        "M/S.J-WIN FASHIONS",
+        "Marva Exports",
+        "Metrotex Industries",
+        "Milestone Textiles",
+        "Ningbo Wollomtex Apparel Co. Ltd.",
+        "Ouray Sportswear",
+        "Kay & Emms Pvt ltd",
+        "GILDAN",
+        "NG TEXTILES GUATEMALA S.A."
+    ]
 };
 
 const LISTA_DEFECTOS = {
-    HEADWEAR: ["OIL / GREASE", "STAIN / DIRT", "HOLES", "MISSING UNSEWN LABEL", "MISSING PARACORD", "OPEN SEAM" , "INCORRECT PARACORD COLOR" , "PUCKERING SEAM", "FABRIC DEFECT", "LONG THREAD", "INCORRECT MEASUREMENTS", "MISSING STITCH", "RAID EDGE", "NEEDLE HOLES", "TAB", "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS", "INCORRECT CAP COLOR", "VISORS CROOKED/OFF-CENTER", "STITCHING ON BRIM", "POOR CONSTRUCTION ", "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK", "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS", "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION", "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"],
-    APPAREL: ["HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY", "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS", "INCORRECT PATCH OF STITCHES", "INCORRET COMPONENT", "LOOSE TENSION STITCHES", "MISPLACED COMPONENT", "MISSING COMPONENT", "MISSING OPERATION", "NEEDLE HOLES", "OIL / GREASE", "PILLING", "PLEAT", "POINTING MARKS", "PRESS MARKS", "PUCKERING SEAM", "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE", "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS", "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD", "VISSIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"]
+    HEADWEAR: [
+        "OIL / GREASE",
+        "STAIN / DIRT",
+        "HOLES",
+        "MISSING UNSEWN LABEL",
+        "MISSING PARACORD",
+        "OPEN SEAM",
+        "INCORRECT PARACORD COLOR",
+        "PUCKERING SEAM",
+        "FABRIC DEFECT",
+        "LONG THREAD",
+        "INCORRECT MEASUREMENTS",
+        "MISSING STITCH",
+        "RAID EDGE",
+        "NEEDLE HOLES",
+        "TAB",
+        "PLEAT",
+        "DROPPED STITCH",
+        "BROKEN STITCH",
+        "SKIPPED STITCH",
+        "SHADE BETWEEN PARTS",
+        "INCORRECT CAP COLOR",
+        "VISORS CROOKED/OFF-CENTER",
+        "STITCHING ON BRIM",
+        "POOR CONSTRUCTION ",
+        "BROKEN VISOR",
+        "RIPPLING ON SEAMS",
+        "UNSEWED / MISSING EYELET",
+        "DEFECTIVE PLASTIC SNAP BACK",
+        "DEFECTIVE STRAP BUCKLE",
+        "DEFECTIVE STRAP VELCRO",
+        "INCORRECT WASH EFFECT",
+        "WASH UNSIGHTLY STREAKS",
+        "DISALIGNED VISOR",
+        "STICKER RESIDUE",
+        "DAMAGED CAUSED BY HANGTAG",
+        "IMPROPER ROPE TENSION",
+        "SWEATBAND SHOWING",
+        "SHOWING MESH BELOW CROWN EDGE"
+    ],
+
+    APPAREL: [
+        "HOLES",
+        "CUTS",
+        "OPEN SEAM",
+        "BAD APPEARANCE",
+        "BROKEN STITCHES",
+        "DIRTY",
+        "DROPPED STITCHES",
+        "EXCESSIVE FULLNESS",
+        "FABRIC FLAW",
+        "INCORRECT MEASUREMENTS",
+        "INCORRECT PATCH OF STITCHES",
+        "INCORRET COMPONENT",
+        "LOOSE TENSION STITCHES",
+        "MISPLACED COMPONENT",
+        "MISSING COMPONENT",
+        "MISSING OPERATION",
+        "NEEDLE HOLES",
+        "OIL / GREASE",
+        "PILLING",
+        "PLEAT",
+        "POINTING MARKS",
+        "PRESS MARKS",
+        "PUCKERING SEAM",
+        "SHADDING PARTS",
+        "SHORES",
+        "SKIPPED STITCHES",
+        "SPI OUT OF TOLERANE",
+        "TIGHT TENSION STITCHES",
+        "TWISTED GARMENT",
+        "UNEVEN GATERING",
+        "UNEVEN PARTS",
+        "UNEVEN STITCHES MARGEN",
+        "UNSECURE COMPONENT",
+        "UNTRIMMED THREAD",
+        "VISSIBLE TACK STITCH",
+        "WEAVY SEAM",
+        "WRONG COLOR THREAD",
+        "OTHER"
+    ]
 };
 
-// TABLA ESTANDAR (AQL 2.5)
+// TABLA ESTANDAR AQL 2.5
 const RANGOS_ESTANDAR = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -138,7 +508,7 @@ const RANGOS_ESTANDAR = [
     {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
 
-// TABLA ESPECIAL KAY & EMMS (AQL 4.0)
+// TABLA ESPECIAL KAY & EMMS AQL 4.0
 const RANGOS_KAY_EMMS = [
     {min:2, max:8, muestra:2, acepta:0, rechaza:1},
     {min:9, max:15, muestra:3, acepta:0, rechaza:1},
@@ -156,58 +526,89 @@ const RANGOS_KAY_EMMS = [
 function manejarCambioDeProducto() {
     const tipo = document.getElementById("product-type").value;
     const vendorSel = document.getElementById("vendor");
+
     vendorSel.innerHTML = '<option value="">-- Select Vendor --</option>';
+
     PROVEEDORES[tipo].forEach(v => {
-        let opt = document.createElement('option'); opt.value = v; opt.textContent = v; vendorSel.appendChild(opt);
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        vendorSel.appendChild(opt);
     });
+
     document.querySelector("#tabla tbody").innerHTML = "";
     agregarFila();
 }
 
 function actualizarTablaAQL() {
-    document.querySelectorAll("#tabla tbody tr").forEach(tr => calcularFila(tr));
+    document.querySelectorAll("#tabla tbody tr").forEach(tr => {
+        calcularFila(tr);
+    });
 }
 
 function calcularFila(tr) {
     const vendorActual = document.getElementById("vendor").value;
-    const tablaAUsar = (vendorActual === "Kay & Emms Pvt ltd") ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
 
-    let total = parseInt(tr.querySelector('[name="total[]"]').value) || 0;
-    let major = 0, minor = 0;
+    const tablaAUsar =
+        vendorActual === "Kay & Emms Pvt ltd"
+            ? RANGOS_KAY_EMMS
+            : RANGOS_ESTANDAR;
 
-    tr.querySelectorAll('.defect-row').forEach(row => {
-        let q = parseInt(row.querySelector('.cantidad-defecto').value) || 0;
-        let c = row.querySelector('.sel-cat').value;
-        if(c === "MAJOR") major += q; else if(c === "MINOR") minor += q;
+    const total =
+        parseInt(tr.querySelector('[name="total[]"]').value) || 0;
+
+    let major = 0;
+    let minor = 0;
+
+    tr.querySelectorAll(".defect-row").forEach(row => {
+        const q =
+            parseInt(row.querySelector(".cantidad-defecto").value) || 0;
+
+        const categoria = row.querySelector(".sel-cat").value;
+
+        if (categoria === "MAJOR") {
+            major += q;
+        } else if (categoria === "MINOR") {
+            minor += q;
+        }
     });
 
     tr.querySelector('[name="totalMajor[]"]').value = major;
     tr.querySelector('[name="totalMinor[]"]').value = minor;
 
-    const rango = tablaAUsar.find(r => total >= r.min && total <= r.max);
+    const rango = tablaAUsar.find(
+        r => total >= r.min && total <= r.max
+    );
+
     const arInput = tr.querySelector('[name="ar[]"]');
 
     if (rango) {
         tr.querySelector('[name="muestra[]"]').value = rango.muestra;
-        tr.querySelector('[name="aql[]"]').value = ((major / rango.muestra) * 100).toFixed(1) + "%";
+
+        tr.querySelector('[name="aql[]"]').value =
+            ((major / rango.muestra) * 100).toFixed(1) + "%";
 
         if (major <= rango.acepta) {
-            arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
+            arInput.value =
+                `APPROVED (${rango.acepta}/${rango.rechaza})`;
             arInput.className = "ar-acepta";
         } else {
-            arInput.value = `REJECTED (${rango.acepta}/${rango.rechaza})`;
+            arInput.value =
+                `REJECTED (${rango.acepta}/${rango.rechaza})`;
             arInput.className = "ar-rechaza";
         }
     } else {
         tr.querySelector('[name="muestra[]"]').value = "";
         tr.querySelector('[name="aql[]"]').value = "";
-        arInput.value = ""; arInput.className = "";
+        arInput.value = "";
+        arInput.className = "";
     }
 }
 
 function agregarFila() {
     const tbody = document.querySelector("#tabla tbody");
     const tr = document.createElement("tr");
+
     tr.innerHTML = `
         <td><input type="text" name="factura[]" placeholder="..."></td>
         <td><input type="text" name="po[]" placeholder="..."></td>
@@ -215,49 +616,366 @@ function agregarFila() {
         <td><input type="text" name="color[]" placeholder="..."></td>
         <td><input type="number" name="total[]" oninput="calcularFila(this.closest('tr'))"></td>
         <td><input type="text" name="muestra[]" readonly></td>
+
         <td style="width:380px">
             <div class="defectos-cont"></div>
-            <button class="btn btn-add btn-small" style="width:100%; justify-content:center" onclick="agregarDefectoManual(this)">+ Add Defect</button>
+
+            <button
+                type="button"
+                class="btn btn-add btn-small"
+                style="width:100%; justify-content:center"
+                onclick="agregarDefectoManual(this)">
+                + Add Defect
+            </button>
         </td>
+
         <td><input type="text" name="totalMajor[]" readonly></td>
         <td><input type="text" name="totalMinor[]" readonly></td>
         <td><input type="text" name="aql[]" readonly></td>
         <td><input type="text" name="ar[]" readonly></td>
         <td><textarea name="comentarios[]" placeholder="Notes..."></textarea></td>
     `;
+
     tbody.appendChild(tr);
 }
 
 function agregarDefectoManual(btn) {
     const cont = btn.previousElementSibling;
     const tipo = document.getElementById("product-type").value;
-    const defOptions = LISTA_DEFECTOS[tipo].map(d => `<option value="${d}">${d}</option>`).join('');
+
+    const defOptions = LISTA_DEFECTOS[tipo]
+        .map(d => `<option value="${d}">${d}</option>`)
+        .join("");
+
     const div = document.createElement("div");
     div.className = "defect-row";
+
     div.innerHTML = `
-        <select class="codigo-defecto"><option value="">-- Defect --</option>${defOptions}</select>
+        <select class="codigo-defecto">
+            <option value="">-- Defect --</option>
+            ${defOptions}
+        </select>
+
         <select class="sel-cat" onchange="calcularFila(this.closest('tr'))">
             <option value="MAJOR">MAJOR</option>
             <option value="MINOR">MINOR</option>
         </select>
-        <input type="number" class="cantidad-defecto" placeholder="Qty" oninput="calcularFila(this.closest('tr'))">
-        <button class="btn btn-pdf btn-small" onclick="const t=this.closest('tr'); this.parentElement.remove(); calcularFila(t)">×</button>
+
+        <input
+            type="number"
+            class="cantidad-defecto"
+            placeholder="Qty"
+            oninput="calcularFila(this.closest('tr'))">
+
+        <div style="min-width:125px">
+            <input
+                type="file"
+                class="photo-upload fotos-defecto"
+                accept="image/*"
+                multiple
+                onchange="cargarFotosDefecto(this)"
+                title="Adjuntar fotos del defecto">
+
+            <div class="photo-preview"></div>
+        </div>
+
+        <button
+            type="button"
+            class="btn btn-pdf btn-small"
+            onclick="const t=this.closest('tr'); this.parentElement.remove(); calcularFila(t)">
+            ×
+        </button>
     `;
+
     cont.appendChild(div);
 }
 
+// ======================================================
+// CARGA Y REDUCCIÓN DE FOTOGRAFÍAS
+// ======================================================
+
+let fotosHojasMedicion = [];
+
+function leerImagenReducida(file, maxSide = 1400, quality = 0.78) {
+    return new Promise((resolve, reject) => {
+        if (!file || !file.type || !file.type.startsWith("image/")) {
+            reject(new Error("Selecciona un archivo de imagen válido."));
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            const img = new Image();
+
+            img.onload = () => {
+                const scale = Math.min(
+                    1,
+                    maxSide / Math.max(img.width, img.height)
+                );
+
+                const canvas = document.createElement("canvas");
+
+                canvas.width = Math.max(
+                    1,
+                    Math.round(img.width * scale)
+                );
+
+                canvas.height = Math.max(
+                    1,
+                    Math.round(img.height * scale)
+                );
+
+                const ctx = canvas.getContext("2d");
+
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                resolve({
+                    data: canvas.toDataURL("image/jpeg", quality),
+                    width: canvas.width,
+                    height: canvas.height,
+                    name: file.name
+                });
+            };
+
+            img.onerror = () => {
+                reject(new Error("No se pudo leer " + file.name));
+            };
+
+            img.src = reader.result;
+        };
+
+        reader.onerror = () => {
+            reject(new Error("Error leyendo " + file.name));
+        };
+
+        reader.readAsDataURL(file);
+    });
+}
+
+async function cargarFotosDefecto(input) {
+    const preview =
+        input.parentElement.querySelector(".photo-preview");
+
+    preview.innerHTML = "";
+    input._fotos = [];
+
+    const files = Array.from(input.files || []);
+
+    for (const file of files) {
+        try {
+            const foto = await leerImagenReducida(
+                file,
+                1000,
+                0.72
+            );
+
+            input._fotos.push(foto);
+
+            const img = document.createElement("img");
+            img.src = foto.data;
+            img.alt = "Fotografía del defecto";
+
+            // El nombre del archivo no se muestra en la vista previa.
+            img.title = "Fotografía del defecto";
+
+            preview.appendChild(img);
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+}
+
+async function cargarFotosMedicion(input) {
+    fotosHojasMedicion = [];
+
+    const preview =
+        document.getElementById("vista-fotos-medicion");
+
+    preview.innerHTML = "";
+
+    const files = Array.from(input.files || []);
+
+    for (const file of files) {
+        try {
+            const foto = await leerImagenReducida(
+                file,
+                1600,
+                0.78
+            );
+
+            fotosHojasMedicion.push(foto);
+
+            const card = document.createElement("div");
+            card.className = "photo-card";
+
+            const img = document.createElement("img");
+            img.src = foto.data;
+            img.alt = "Hoja de medición";
+
+            // No mostrar el nombre original del archivo.
+            img.title = "Hoja de medición";
+
+            const caption = document.createElement("div");
+            caption.textContent = "Hoja de medición";
+
+            card.appendChild(img);
+            card.appendChild(caption);
+
+            preview.appendChild(card);
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+}
+
+// ======================================================
+// FOTOGRAFÍAS EN PDF
+// MODIFICACIÓN: NO MOSTRAR NOMBRE NI NÚMERO DE FOTO
+// ======================================================
+
+function agregarFotosAlPDF(doc, fotos, titulo, detalle = "") {
+    fotos.forEach((foto) => {
+        // Cada fotografía ocupa su propia página.
+        // No se crea una página adicional de resumen.
+
+        doc.addPage();
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+
+        // Título de la página.
+        doc.setFontSize(13);
+        doc.setTextColor(0, 51, 102);
+        doc.text(titulo, 14, 15);
+
+        let top;
+
+        if (detalle) {
+            // Mostrar detalles del defecto, pero nunca el nombre del archivo.
+            doc.setFontSize(9);
+            doc.setTextColor(60, 60, 60);
+
+            const lineasDetalle = doc.splitTextToSize(
+                detalle,
+                pageWidth - 28
+            );
+
+            doc.text(lineasDetalle, 14, 22);
+
+            top = 22 + (lineasDetalle.length * 4) + 5;
+        } else {
+            // Sin nombre de archivo ni texto "Foto 1 de 1".
+            top = 22;
+        }
+
+        const maxW = pageWidth - 28;
+        const maxH = pageHeight - top - 14;
+
+        const ratio = Math.min(
+            maxW / foto.width,
+            maxH / foto.height
+        );
+
+        const w = foto.width * ratio;
+        const h = foto.height * ratio;
+
+        const x = (pageWidth - w) / 2;
+
+        // Insertar la fotografía sin nombre ni pie de foto.
+        doc.addImage(
+            foto.data,
+            "JPEG",
+            x,
+            top,
+            w,
+            h,
+            undefined,
+            "FAST"
+        );
+    });
+}
+
+function recolectarFotosDefectos() {
+    const fotos = [];
+
+    document.querySelectorAll("#tabla tbody tr").forEach(tr => {
+        const invoice =
+            tr.querySelector('[name="factura[]"]').value || "";
+
+        const po =
+            tr.querySelector('[name="po[]"]').value || "";
+
+        const style =
+            tr.querySelector('[name="estilo[]"]').value || "";
+
+        const color =
+            tr.querySelector('[name="color[]"]').value || "";
+
+        tr.querySelectorAll(".defect-row").forEach(dr => {
+            const input = dr.querySelector(".fotos-defecto");
+
+            const defect =
+                dr.querySelector(".codigo-defecto").value ||
+                "Defecto sin especificar";
+
+            const fotosAdjuntas =
+                input && input._fotos ? input._fotos : [];
+
+            fotosAdjuntas.forEach(foto => {
+                fotos.push({
+                    ...foto,
+
+                    // Estos detalles sí pueden aparecer en el PDF.
+                    // No se incluye el nombre del archivo.
+                    detalle:
+                        `Invoice: ${invoice} | PO: ${po} | ` +
+                        `Style: ${style} | Color: ${color} | ` +
+                        `Defect: ${defect}`
+                });
+            });
+        });
+    });
+
+    return fotos;
+}
+
+// ======================================================
+// RECOLECTAR DATOS DE AUDITORÍA
+// ======================================================
+
 function recolectarDatosParaExportar() {
-    const vendor = document.getElementById("vendor").value || "N/A";
-    const auditor = document.getElementById("auditor").value || "N/A";
+    const vendor =
+        document.getElementById("vendor").value || "N/A";
+
+    const auditor =
+        document.getElementById("auditor").value || "N/A";
+
     const fecha = new Date().toLocaleDateString();
+
     const data = [];
 
     document.querySelectorAll("#tabla tbody tr").forEach(tr => {
-        const totalQty = tr.querySelector('[name="total[]"]').value;
-        if (!totalQty || totalQty === "0") return;
+        const totalQty =
+            tr.querySelector('[name="total[]"]').value;
+
+        if (!totalQty || totalQty === "0") {
+            return;
+        }
 
         const base = {
-            "Date": fecha, "Auditor": auditor, "Vendor": vendor,
+            "Date": fecha,
+            "Auditor": auditor,
+            "Vendor": vendor,
             "Invoice": tr.querySelector('[name="factura[]"]').value || "",
             "PO": tr.querySelector('[name="po[]"]').value || "",
             "Style": tr.querySelector('[name="estilo[]"]').value || "",
@@ -271,139 +989,340 @@ function recolectarDatosParaExportar() {
             "Comments": tr.querySelector('[name="comentarios[]"]').value || ""
         };
 
-        const defectRows = tr.querySelectorAll('.defect-row');
+        const defectRows = tr.querySelectorAll(".defect-row");
+
         let tieneDefectosValidos = false;
         let primero = true;
 
         defectRows.forEach(dr => {
-            const defName = dr.querySelector('.codigo-defecto').value;
-            const defQty = dr.querySelector('.cantidad-defecto').value;
+            const defName =
+                dr.querySelector(".codigo-defecto").value;
+
+            const defQty =
+                dr.querySelector(".cantidad-defecto").value;
+
             if (defName && defQty && parseInt(defQty) > 0) {
                 tieneDefectosValidos = true;
+
                 data.push({
                     ...(primero ? base : {
-                        "Date": "", "Auditor": "", "Vendor": "", "Invoice": "", "PO": "", "Style": "", "Color": "",
-                        "Total Qty": "", "Sample": "", "Tot Major": "", "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
+                        "Date": "",
+                        "Auditor": "",
+                        "Vendor": "",
+                        "Invoice": "",
+                        "PO": "",
+                        "Style": "",
+                        "Color": "",
+                        "Total Qty": "",
+                        "Sample": "",
+                        "Tot Major": "",
+                        "Tot Minor": "",
+                        "AQL%": "",
+                        "Result": "",
+                        "Comments": ""
                     }),
+
                     "Defect Description": defName,
-                    "Def Cat": dr.querySelector('.sel-cat').value,
+                    "Def Cat": dr.querySelector(".sel-cat").value,
                     "Def Qty": defQty
                 });
+
                 primero = false;
             }
         });
 
         if (!tieneDefectosValidos) {
-            data.push({ ...base, "Defect Description": "", "Def Cat": "", "Def Qty": "" });
+            data.push({
+                ...base,
+                "Defect Description": "",
+                "Def Cat": "",
+                "Def Qty": ""
+            });
         }
     });
+
     return data;
 }
+
+// ======================================================
+// GUARDAR AUDITORÍA EN GOOGLE SHEETS
+// ======================================================
 
 async function guardarAuditoria(btn) {
     const auditor = document.getElementById("auditor").value;
     const vendor = document.getElementById("vendor").value;
-    if (!auditor) return alert("Select an auditor first.");
-    if (!vendor) return alert("Select a vendor first.");
-    if (URL_GUARDADO.includes("PEGA_AQUI")) return alert("Configura primero la URL_GUARDADO en el código.");
+
+    if (!auditor) {
+        return alert("Select an auditor first.");
+    }
+
+    if (!vendor) {
+        return alert("Select a vendor first.");
+    }
 
     const datos = recolectarDatosParaExportar();
-    if (datos.length === 0) return alert("No data to save.");
 
-    // Las filas de defectos adicionales vienen vacías (para Excel).
-    // Para la base de datos las rellenamos con los datos de su ítem.
-    const camposBase = ["Auditor","Vendor","Invoice","PO","Style","Color","Total Qty",
-                        "Sample","Tot Major","Tot Minor","AQL%","Result","Comments"];
+    if (datos.length === 0) {
+        return alert("No data to save.");
+    }
+
+    const camposBase = [
+        "Auditor",
+        "Vendor",
+        "Invoice",
+        "PO",
+        "Style",
+        "Color",
+        "Total Qty",
+        "Sample",
+        "Tot Major",
+        "Tot Minor",
+        "AQL%",
+        "Result",
+        "Comments"
+    ];
+
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
+
     const tipo = document.getElementById("product-type").value;
-    const aqlStd = (vendor === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+
+    const aqlStd =
+        vendor === "Kay & Emms Pvt ltd"
+            ? "MIL-STD-105E (4.0)"
+            : "MIL-STD-105E (2.5)";
 
     let previa = null;
+
     const rows = datos.map(d => {
         const fila = { ...d };
-        if (d["Invoice"] === "" && d["Total Qty"] === "" && previa) {
-            camposBase.forEach(c => fila[c] = previa[c]);
+
+        if (
+            d["Invoice"] === "" &&
+            d["Total Qty"] === "" &&
+            previa
+        ) {
+            camposBase.forEach(c => {
+                fila[c] = previa[c];
+            });
         } else {
             previa = d;
         }
+
         return {
-            "Audit ID": auditId, "Timestamp": timestamp, "Product Type": tipo,
-            "AQL Standard": aqlStd, ...fila
+            "Audit ID": auditId,
+            "Timestamp": timestamp,
+            "Product Type": tipo,
+            "AQL Standard": aqlStd,
+            ...fila
         };
     });
 
-    btn.disabled = true; btn.textContent = "Saving...";
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
     try {
-        // no-cors: el navegador envía los datos sin intentar leer la respuesta de Google
         await fetch(URL_GUARDADO, {
             method: "POST",
             mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
             body: JSON.stringify({ rows })
         });
-        alert(`✅ Audit sent (${rows.length} rows). ID: ${auditId}\nVerifica la pestaña "Audits" en Google Sheets.`);
+
+        alert(
+            `✅ Audit sent (${rows.length} rows). ID: ${auditId}\n` +
+            'Verifica la pestaña "Audits" en Google Sheets.'
+        );
     } catch (e) {
         alert("❌ Could not save: " + e.message);
     } finally {
-        btn.disabled = false; btn.textContent = "💾 Save Audit";
+        btn.disabled = false;
+        btn.textContent = "💾 Save Audit";
     }
 }
 
+// ======================================================
+// EXPORTAR EXCEL
+// ======================================================
+
 function descargarExcel() {
     const datos = recolectarDatosParaExportar();
-    if (datos.length === 0) return alert("No data to export.");
-    const productType = document.getElementById("product-type").value;
-    const vendorName = document.getElementById("vendor").value || "Vendor";
+
+    if (datos.length === 0) {
+        return alert("No data to export.");
+    }
+
+    const productType =
+        document.getElementById("product-type").value;
+
+    const vendorName =
+        document.getElementById("vendor").value || "Vendor";
+
     const ws = XLSX.utils.json_to_sheet(datos);
+
     const wb = XLSX.utils.book_new();
+
     XLSX.utils.book_append_sheet(wb, ws, "AuditReport");
-    XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.xlsx`);
+
+    XLSX.writeFile(
+        wb,
+        `${productType}_Audit_Report_${vendorName.replace(/\s+/g, "_")}.xlsx`
+    );
 }
 
-function descargarPDF() {
+// ======================================================
+// EXPORTAR PDF
+// ======================================================
+
+async function descargarPDF() {
     const rawData = recolectarDatosParaExportar();
-    if (rawData.length === 0) return alert("No data to export.");
+
+    if (rawData.length === 0) {
+        return alert("No data to export.");
+    }
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        return alert("No se pudo cargar la librería PDF. Revisa tu conexión.");
+    }
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4');
 
-    const productType = document.getElementById("product-type").value;
-    const vendorName = document.getElementById("vendor").value || "N/A";
-    const dateStr = new Date().toLocaleDateString('es-ES');
-    const aqlStr = (vendorName === "Kay & Emms Pvt ltd") ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+    const doc = new jsPDF("l", "mm", "a4");
 
+    const productType =
+        document.getElementById("product-type").value;
+
+    const vendorName =
+        document.getElementById("vendor").value || "N/A";
+
+    const dateStr = new Date().toLocaleDateString("es-ES");
+
+    const aqlStr =
+        vendorName === "Kay & Emms Pvt ltd"
+            ? "MIL-STD-105E (4.0)"
+            : "MIL-STD-105E (2.5)";
+
+    // Encabezado del reporte.
     doc.setFontSize(18);
     doc.setTextColor(0, 51, 102);
-    doc.text(`${productType} BLANKS AUDIT REPORT`, 14, 15);
+
+    doc.text(
+        `${productType} BLANKS AUDIT REPORT`,
+        14,
+        15
+    );
 
     doc.setFontSize(11);
     doc.setTextColor(50, 50, 50);
-    doc.text(`Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: ${aqlStr}`, 14, 22);
+
+    doc.text(
+        `Vendor: ${vendorName} | Date: ${dateStr} | AQL Standard: ${aqlStr}`,
+        14,
+        22
+    );
 
     doc.setDrawColor(0, 51, 102);
     doc.line(14, 25, 283, 25);
 
     const tableBody = rawData.map(d => [
-        d.Invoice, d.PO, d.Style, d.Color, d["Total Qty"], d.Sample,
-        d["Defect Description"] ? `${d["Defect Description"]} (${d["Def Cat"]}: ${d["Def Qty"]})` : "",
-        d["Tot Major"], d["Tot Minor"], d["AQL%"], d.Result
+        d.Invoice || "",
+        d.PO || "",
+        d.Style || "",
+        d.Color || "",
+        d["Total Qty"] || "",
+        d.Sample || "",
+        d["Defect Description"]
+            ? `${d["Defect Description"]} (${d["Def Cat"]}: ${d["Def Qty"]})`
+            : "",
+        d["Tot Major"] || "",
+        d["Tot Minor"] || "",
+        d["AQL%"] || "",
+        d.Result || ""
     ]);
 
     doc.autoTable({
         startY: 30,
-        head: [['Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl', 'Defect Details', 'Maj', 'Min', 'AQL%', 'Result']],
+
+        head: [[
+            "Inv",
+            "PO",
+            "Style",
+            "Color",
+            "Tot",
+            "Spl",
+            "Defect Details",
+            "Maj",
+            "Min",
+            "AQL%",
+            "Result"
+        ]],
+
         body: tableBody,
-        theme: 'grid',
-        styles: { fontSize: 7.5, halign: 'center', cellPadding: 2 },
-        columnStyles: { 6: { halign: 'left', cellWidth: 50 } },
-        headStyles: { fillColor: [0, 51, 102], textColor: [255, 255, 255] }
+
+        theme: "grid",
+
+        styles: {
+            fontSize: 7.5,
+            halign: "center",
+            cellPadding: 2
+        },
+
+        columnStyles: {
+            6: {
+                halign: "left",
+                cellWidth: 50
+            }
+        },
+
+        headStyles: {
+            fillColor: [0, 51, 102],
+            textColor: [255, 255, 255]
+        }
     });
 
-    doc.save(`${productType}_Audit_Report_${vendorName.replace(/\s+/g, '_')}.pdf`);
+    // Fotografías de defectos.
+    // Cada imagen tendrá su propia página.
+    // NO se muestra "Foto 1 de 1" ni el nombre del archivo.
+    const fotosDefectos = recolectarFotosDefectos();
+
+    if (fotosDefectos.length > 0) {
+        fotosDefectos.forEach(foto => {
+            agregarFotosAlPDF(
+                doc,
+                [foto],
+                "DEFECT PHOTO",
+                foto.detalle
+            );
+        });
+    }
+
+    // Fotografías de hojas de medición.
+    // Cada imagen tendrá su propia página, sin nombre de archivo.
+    if (fotosHojasMedicion.length > 0) {
+        fotosHojasMedicion.forEach(foto => {
+            agregarFotosAlPDF(
+                doc,
+                [foto],
+                "MEASUREMENT"
+            );
+        });
+    }
+
+    // Descargar el reporte.
+    const nombreArchivo =
+        `${productType}_Audit_Report_${vendorName.replace(/\s+/g, "_")}.pdf`;
+
+    doc.save(nombreArchivo);
 }
+
+// ======================================================
+// INICIALIZACIÓN
+// ======================================================
 
 window.onload = manejarCambioDeProducto;
 </script>
+
 </body>
 </html>
