@@ -339,25 +339,43 @@
         </div>
     </div>
 
+    <!-- SECCIÓN DE BÚSQUEDA AUTOMÁTICA (1ª y 2ª Auditoría) -->
+    <div class="card" id="barra-segunda">
+        <div style="font-weight:600; color:#003366; margin-bottom:10px;">
+            🔎 Buscar PO para cargar Primera y Segunda Auditoría automáticamente
+        </div>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+            <div>
+                <label for="buscar-po" style="display:block; font-size:13px;">PO:</label>
+                <input type="text" id="buscar-po" placeholder="PO" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <div>
+                <label for="buscar-estilo" style="display:block; font-size:13px;">Style (opcional):</label>
+                <input type="text" id="buscar-estilo" placeholder="Style" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
+            </div>
+            <button class="btn btn-add btn-buscar" style="background-color:#003366" onclick="buscarAmbasAuditorias()">🔍 BUSCAR Y LLENAR AUDITORÍAS</button>
+        </div>
+
+        <div style="margin-top:12px; font-size:13px;">
+            <label for="excel-fuente">📂 Buscar en un Excel local (opcional):</label>
+            <input id="excel-fuente" type="file" accept=".xlsx,.xls,.csv" onchange="cargarExcelFuente(this)">
+            <span class="photo-count">Si no cargas ningún Excel, se buscará directamente en tu Google Sheets.</span>
+        </div>
+
+        <div id="resultado-busqueda" style="margin-top:12px; font-size:13px; line-height:1.5;"></div>
+    </div>
+
     <div class="card measurement-box">
         <label for="fotos-medicion">📏 Fotos de las hojas de medición (puedes seleccionar varias):</label>
-
-        <input
-            id="fotos-medicion"
-            type="file"
-            accept="image/*"
-            multiple
-            onchange="cargarFotosMedicion(this)"
-        >
-
+        <input id="fotos-medicion" type="file" accept="image/*" multiple onchange="cargarFotosMedicion(this)">
         <div id="vista-fotos-medicion" class="measurement-preview"></div>
-
         <div class="photo-count">
-            Las fotos seleccionadas se incluirán al final del PDF.
-            Se mantienen en esta página mientras no la cierres o recargues.
+            Las fotos seleccionadas y los detalles de las mediciones se incluirán organizados al final del PDF.
         </div>
     </div>
 
+    <!-- TABLA DE AUDITORÍA 1 -->
     <div class="card table-responsive">
         <div class="audit-head">
             <div>
@@ -387,33 +405,7 @@
         </table>
     </div>
 
-    <div class="card" id="barra-segunda">
-        <div style="font-weight:600; color:#003366; margin-bottom:10px;">
-            🔎 Buscar la auditoría anterior (Segunda Auditoría / Inspección 100%)
-        </div>
-
-        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-            <div>
-                <label for="buscar-po" style="display:block; font-size:13px;">PO:</label>
-                <input type="text" id="buscar-po" placeholder="PO" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
-            </div>
-            <div>
-                <label for="buscar-estilo" style="display:block; font-size:13px;">Style:</label>
-                <input type="text" id="buscar-estilo" placeholder="Style" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
-            </div>
-            <button class="btn btn-add btn-buscar" style="background-color:#e67e22" onclick="buscarYGenerar('segunda')">🔁 SEGUNDA AUDITORÍA</button>
-            <button class="btn btn-add btn-buscar" style="background-color:#8e44ad" onclick="buscarYGenerar('100')">💯 INSPECCIÓN 100%</button>
-        </div>
-
-        <div style="margin-top:12px; font-size:13px;">
-            <label for="excel-fuente">📂 Buscar en un Excel (opcional):</label>
-            <input id="excel-fuente" type="file" accept=".xlsx,.xls,.csv" onchange="cargarExcelFuente(this)">
-            <span class="photo-count">Si no cargas ningún Excel, se busca en el Google Sheets donde se guarda con 💾 Save Audit.</span>
-        </div>
-
-        <div id="resultado-busqueda" style="margin-top:12px; font-size:13px; line-height:1.5;"></div>
-    </div>
-
+    <!-- TABLA DE SEGUNDA AUDITORÍA -->
     <div class="card table-responsive" id="card-audit2" style="display:none">
         <div class="audit-head">
             <div>
@@ -453,44 +445,22 @@
 </div>
 
 <script>
-// URL de tu Apps Script configurada correctamente:
 const URL_GUARDADO = "https://script.google.com/macros/s/AKfycbwxii8dbu70oy6cQNY5iAg7uTQs8dP3lljs_vWWrjpMMcjyXfhWUmZWM_rr7rn3mMu_/exec";
 
 const PROVEEDORES = {
     HEADWEAR: [
-        "Asia Caps (Thailand) Co., Ltd.",
-        "Asia Caps Co., Ltd.",
-        "ERA Fashion Accesory Co.",
-        "GOTOP TEXTILE COMPANY LIMITED",
-        "Eastwood ",
-        "Giant Headmost Manufacturing Corp",
-        "HENAN J&F HEADWEAR CO., LTD",
-        "Jeya Headwear",
-        "Ratone International LTD. Loc",
-        "Shiningcrown Hats Mfg., Corp.",
-        "Unimas Sportswear Ltd.",
-        "Ouray Sportswear"
+        "Asia Caps (Thailand) Co., Ltd.", "Asia Caps Co., Ltd.", "ERA Fashion Accesory Co.",
+        "GOTOP TEXTILE COMPANY LIMITED", "Eastwood ", "Giant Headmost Manufacturing Corp",
+        "HENAN J&F HEADWEAR CO., LTD", "Jeya Headwear", "Ratone International LTD. Loc",
+        "Shiningcrown Hats Mfg., Corp.", "Unimas Sportswear Ltd.", "Ouray Sportswear"
     ],
-
     APPAREL: [
-        "New Trend Vietnam Co. Ltd.",
-        "Global Knitwear Limited",
-        "New Wave Apparel",
-        "Eastwood Outdoor Enterprise (EOE)",
-        "Green Valley Manufacturing",
-        "Solis Textiles",
-        "Al-Ameera (Pvt) Ltd.",
-        "E.W. YEN JOINT STOCK COMPANY",
-        "FRUIT OF THE LOOM",
-        "M/S.J-WIN FASHIONS",
-        "Marva Exports",
-        "Metrotex Industries",
-        "Milestone Textiles",
-        "Ningbo Wollomtex Apparel Co. Ltd.",
-        "Ouray Sportswear",
-        "Kay & Emms Pvt ltd",
-        "GILDAN",
-        "NG TEXTILES GUATEMALA S.A."
+        "New Trend Vietnam Co. Ltd.", "Global Knitwear Limited", "New Wave Apparel",
+        "Eastwood Outdoor Enterprise (EOE)", "Green Valley Manufacturing", "Solis Textiles",
+        "Al-Ameera (Pvt) Ltd.", "E.W. YEN JOINT STOCK COMPANY", "FRUIT OF THE LOOM",
+        "M/S.J-WIN FASHIONS", "Marva Exports", "Metrotex Industries", "Milestone Textiles",
+        "Ningbo Wollomtex Apparel Co. Ltd.", "Ouray Sportswear", "Kay & Emms Pvt ltd",
+        "GILDAN", "NG TEXTILES GUATEMALA S.A."
     ]
 };
 
@@ -506,7 +476,6 @@ const LISTA_DEFECTOS = {
         "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
         "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"
     ],
-
     APPAREL: [
         "HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY",
         "DROPPED STITCHES", "EXCESSIVE FULLNESS", "FABRIC FLAW", "INCORRECT MEASUREMENTS",
@@ -521,47 +490,30 @@ const LISTA_DEFECTOS = {
 };
 
 const RANGOS_ESTANDAR = [
-    {min:2, max:8, muestra:2, acepta:0, rechaza:1},
-    {min:9, max:15, muestra:3, acepta:0, rechaza:1},
-    {min:16, max:25, muestra:5, acepta:0, rechaza:1},
-    {min:26, max:50, muestra:8, acepta:1, rechaza:2},
-    {min:51, max:90, muestra:13, acepta:1, rechaza:2},
-    {min:91, max:150, muestra:20, acepta:1, rechaza:2},
-    {min:151, max:280, muestra:32, acepta:2, rechaza:3},
-    {min:281, max:500, muestra:50, acepta:3, rechaza:4},
-    {min:501, max:1200, muestra:80, acepta:5, rechaza:6},
-    {min:1201, max:3200, muestra:125, acepta:7, rechaza:8},
-    {min:3201, max:10000, muestra:200, acepta:10, rechaza:11},
-    {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
+    {min:2, max:8, muestra:2, acepta:0, rechaza:1}, {min:9, max:15, muestra:3, acepta:0, rechaza:1},
+    {min:16, max:25, muestra:5, acepta:0, rechaza:1}, {min:26, max:50, muestra:8, acepta:1, rechaza:2},
+    {min:51, max:90, muestra:13, acepta:1, rechaza:2}, {min:91, max:150, muestra:20, acepta:1, rechaza:2},
+    {min:151, max:280, muestra:32, acepta:2, rechaza:3}, {min:281, max:500, muestra:50, acepta:3, rechaza:4},
+    {min:501, max:1200, muestra:80, acepta:5, rechaza:6}, {min:1201, max:3200, muestra:125, acepta:7, rechaza:8},
+    {min:3201, max:10000, muestra:200, acepta:10, rechaza:11}, {min:10001, max:35000, muestra:315, acepta:14, rechaza:15}
 ];
 
 const RANGOS_KAY_EMMS = [
-    {min:2, max:8, muestra:2, acepta:0, rechaza:1},
-    {min:9, max:15, muestra:3, acepta:0, rechaza:1},
-    {min:16, max:25, muestra:5, acepta:0, rechaza:1},
-    {min:26, max:50, muestra:8, acepta:1, rechaza:2},
-    {min:51, max:90, muestra:13, acepta:1, rechaza:2},
-    {min:91, max:150, muestra:20, acepta:2, rechaza:3},
-    {min:151, max:280, muestra:32, acepta:3, rechaza:4},
-    {min:281, max:500, muestra:50, acepta:5, rechaza:6},
-    {min:501, max:1200, muestra:80, acepta:7, rechaza:8},
-    {min:1201, max:3200, muestra:125, acepta:10, rechaza:11},
+    {min:2, max:8, muestra:2, acepta:0, rechaza:1}, {min:9, max:15, muestra:3, acepta:0, rechaza:1},
+    {min:16, max:25, muestra:5, acepta:0, rechaza:1}, {min:26, max:50, muestra:8, acepta:1, rechaza:2},
+    {min:51, max:90, muestra:13, acepta:1, rechaza:2}, {min:91, max:150, muestra:20, acepta:2, rechaza:3},
+    {min:151, max:280, muestra:32, acepta:3, rechaza:4}, {min:281, max:500, muestra:50, acepta:5, rechaza:6},
+    {min:501, max:1200, muestra:80, acepta:7, rechaza:8}, {min:1201, max:3200, muestra:125, acepta:10, rechaza:11},
     {min:3201, max:10000, muestra:200, acepta:14, rechaza:15}
 ];
 
 const RANGOS_NIVEL_III = [
-    {min:2, max:8, muestra:3, acepta:0, rechaza:1},
-    {min:9, max:15, muestra:5, acepta:0, rechaza:1},
-    {min:16, max:25, muestra:8, acepta:0, rechaza:1},
-    {min:26, max:50, muestra:13, acepta:1, rechaza:2},
-    {min:51, max:90, muestra:20, acepta:1, rechaza:2},
-    {min:91, max:150, muestra:32, acepta:2, rechaza:3},
-    {min:151, max:280, muestra:50, acepta:3, rechaza:4},
-    {min:281, max:500, muestra:80, acepta:5, rechaza:6},
-    {min:501, max:1200, muestra:125, acepta:7, rechaza:8},
-    {min:1201, max:3200, muestra:200, acepta:10, rechaza:11},
-    {min:3201, max:10000, muestra:315, acepta:14, rechaza:15},
-    {min:10001, max:35000, muestra:500, acepta:21, rechaza:22}
+    {min:2, max:8, muestra:3, acepta:0, rechaza:1}, {min:9, max:15, muestra:5, acepta:0, rechaza:1},
+    {min:16, max:25, muestra:8, acepta:0, rechaza:1}, {min:26, max:50, muestra:13, acepta:1, rechaza:2},
+    {min:51, max:90, muestra:20, acepta:1, rechaza:2}, {min:91, max:150, muestra:32, acepta:2, rechaza:3},
+    {min:151, max:280, muestra:50, acepta:3, rechaza:4}, {min:281, max:500, muestra:80, acepta:5, rechaza:6},
+    {min:501, max:1200, muestra:125, acepta:7, rechaza:8}, {min:1201, max:3200, muestra:200, acepta:10, rechaza:11},
+    {min:3201, max:10000, muestra:315, acepta:14, rechaza:15}, {min:10001, max:35000, muestra:500, acepta:21, rechaza:22}
 ];
 
 function numeroAuditoria(tr) {
@@ -570,82 +522,59 @@ function numeroAuditoria(tr) {
 }
 
 function obtenerTablaAQL(tr) {
-    if (numeroAuditoria(tr) === 2) {
-        return RANGOS_NIVEL_III;
-    }
+    if (numeroAuditoria(tr) === 2) return RANGOS_NIVEL_III;
     const vendorActual = document.getElementById("vendor").value;
-    return vendorActual === "Kay & Emms Pvt ltd"
-        ? RANGOS_KAY_EMMS
-        : RANGOS_ESTANDAR;
+    return vendorActual === "Kay & Emms Pvt ltd" ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
 }
 
 function nombreEstandar(audit, vendor) {
     if (audit === 2) {
         const t2 = document.getElementById("tabla2");
-        if (t2 && t2.dataset.modo === "100") {
-            return "100% INSPECTION";
-        }
+        if (t2 && t2.dataset.modo === "100") return "100% INSPECTION";
         return "MIL-STD-105E Level III (2.5)";
     }
-    return vendor === "Kay & Emms Pvt ltd"
-        ? "MIL-STD-105E (4.0)"
-        : "MIL-STD-105E (2.5)";
+    return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
 function manejarCambioDeProducto() {
     const tipo = document.getElementById("product-type").value;
     const vendorSel = document.getElementById("vendor");
-
     vendorSel.innerHTML = '<option value="">-- Select Vendor --</option>';
-
     PROVEEDORES[tipo].forEach(v => {
         const opt = document.createElement("option");
         opt.value = v;
         opt.textContent = v;
         vendorSel.appendChild(opt);
     });
-
     document.querySelectorAll(".audit-table tbody").forEach(tb => tb.innerHTML = "");
     agregarFila(1);
     cerrarSegundaAuditoria(true);
 }
 
 function actualizarTablaAQL() {
-    document.querySelectorAll(".audit-table tbody tr").forEach(tr => {
-        calcularFila(tr, false);
-    });
+    document.querySelectorAll(".audit-table tbody tr").forEach(tr => calcularFila(tr, false));
 }
 
 function calcularFila(tr, esCambioTotal = true) {
     const tablaAUsar = obtenerTablaAQL(tr);
     const total = parseInt(tr.querySelector('[name="total[]"]').value) || 0;
     const muestraInput = tr.querySelector('[name="muestra[]"]');
-
-    let major = 0;
-    let minor = 0;
+    let major = 0, minor = 0;
 
     tr.querySelectorAll(".defect-row").forEach(row => {
         const q = parseInt(row.querySelector(".cantidad-defecto").value) || 0;
         const categoria = row.querySelector(".sel-cat").value;
-
-        if (categoria === "MAJOR") {
-            major += q;
-        } else if (categoria === "MINOR") {
-            minor += q;
-        }
+        if (categoria === "MAJOR") major += q;
+        else if (categoria === "MINOR") minor += q;
     });
 
     tr.querySelector('[name="totalMajor[]"]').value = major;
     tr.querySelector('[name="totalMinor[]"]').value = minor;
 
     const modo100 = tr.closest("table").dataset.modo === "100";
-
-    if (modo100) {
-        muestraInput.value = total > 0 ? total : "";
-    }
+    if (modo100) muestraInput.value = total > 0 ? total : "";
 
     let muestraVal = parseInt(muestraInput.value);
-
     if (!modo100 && (esCambioTotal || isNaN(muestraVal) || muestraVal <= 0)) {
         const rango = tablaAUsar.find(r => total >= r.min && total <= r.max);
         if (rango) {
@@ -658,12 +587,9 @@ function calcularFila(tr, esCambioTotal = true) {
     }
 
     const arInput = tr.querySelector('[name="ar[]"]');
-
     if (muestraVal > 0) {
         tr.querySelector('[name="aql[]"]').value = ((major / muestraVal) * 100).toFixed(1) + "%";
-
         const rango = tablaAUsar.find(r => total >= r.min && total <= r.max) || { acepta: 0, rechaza: 1 };
-
         if (modo100) {
             arInput.value = "100% INSPECTED";
             arInput.className = "";
@@ -684,36 +610,23 @@ function calcularFila(tr, esCambioTotal = true) {
 function agregarFila(audit = 1) {
     const tbody = document.querySelector(audit === 2 ? "#tabla2 tbody" : "#tabla tbody");
     const tr = document.createElement("tr");
-
     tr.innerHTML = `
         <td><input type="text" name="factura[]" placeholder="..."></td>
         <td><input type="text" name="po[]" placeholder="..."></td>
         <td><input type="text" name="estilo[]" placeholder="..."></td>
         <td><input type="text" name="color[]" placeholder="..."></td>
         <td><input type="number" name="total[]" oninput="calcularFila(this.closest('tr'), true)"></td>
-        <td>
-            <input type="number" name="muestra[]" style="width:70px;" oninput="calcularFila(this.closest('tr'), false)" title="Puedes modificar este valor de muestra manualmente">
-        </td>
-
+        <td><input type="number" name="muestra[]" style="width:70px;" oninput="calcularFila(this.closest('tr'), false)"></td>
         <td style="width:380px">
             <div class="defectos-cont"></div>
-
-            <button
-                type="button"
-                class="btn btn-add btn-small"
-                style="width:100%; justify-content:center"
-                onclick="agregarDefectoManual(this)">
-                + Add Defect
-            </button>
+            <button type="button" class="btn btn-add btn-small" style="width:100%; justify-content:center" onclick="agregarDefectoManual(this)">+ Add Defect</button>
         </td>
-
         <td><input type="text" name="totalMajor[]" readonly></td>
         <td><input type="text" name="totalMinor[]" readonly></td>
         <td><input type="text" name="aql[]" readonly></td>
         <td><input type="text" name="ar[]" readonly></td>
         <td><textarea name="comentarios[]" placeholder="Notes..."></textarea></td>
     `;
-
     tbody.appendChild(tr);
 }
 
@@ -726,45 +639,30 @@ function cerrarSegundaAuditoria() {
 
 let fuenteExcel = null;
 
-function normKey(k) {
-    return String(k).trim().toLowerCase();
-}
+function normKey(k) { return String(k).trim().toLowerCase(); }
 
 function campo(row, nombre) {
     const n = normKey(nombre);
     for (const k in row) {
-        if (normKey(k) === n) {
-            return row[k] == null ? "" : String(row[k]).trim();
-        }
+        if (normKey(k) === n) return row[k] == null ? "" : String(row[k]).trim();
     }
     return "";
 }
 
 function escHtml(t) {
-    return String(t).replace(/[&<>"']/g, c => (
-        { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
-    ));
+    return String(t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
 function rellenarContinuaciones(rows) {
-    const base = [
-        "Date", "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO",
-        "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor",
-        "AQL%", "Result", "Comments", "Audit ID", "Timestamp", "Product Type"
-    ];
+    const base = ["Date", "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "AQL%", "Result", "Comments", "Audit ID", "Timestamp", "Product Type"];
     let previa = null;
-
     return rows.map(r => {
-        const sinBase = !campo(r, "PO") && !campo(r, "Style") &&
-            !campo(r, "Color") && !campo(r, "Invoice") && !campo(r, "Total Qty");
-
+        const sinBase = !campo(r, "PO") && !campo(r, "Style") && !campo(r, "Color") && !campo(r, "Invoice") && !campo(r, "Total Qty");
         if (sinBase && previa) {
             const o = { ...r };
             base.forEach(c => {
                 const key = Object.keys(previa).find(k => normKey(k) === normKey(c));
-                if (key !== undefined) {
-                    o[key] = previa[key];
-                }
+                if (key !== undefined) o[key] = previa[key];
             });
             return o;
         }
@@ -775,30 +673,18 @@ function rellenarContinuaciones(rows) {
 
 function esPrimeraAuditoria(r) {
     const a = campo(r, "Audit");
-    if (a) {
-        return a === "Audit 1";
-    }
+    if (a) return a === "Audit 1";
     const std = campo(r, "AQL Standard").toLowerCase();
     return !(std.includes("level iii") || std.includes("100%"));
 }
 
-function idNumerico(id) {
-    return parseInt(String(id).replace(/\D/g, "")) || 0;
-}
-
 function agruparItems(filas) {
     const items = new Map();
-
     filas.forEach(r => {
         const k = [campo(r, "Invoice"), campo(r, "PO"), campo(r, "Style"), campo(r, "Color")].join("|");
-
-        if (!items.has(k)) {
-            items.set(k, { base: r, defectos: [] });
-        }
-
+        if (!items.has(k)) items.set(k, { base: r, defectos: [] });
         const nombre = campo(r, "Defect Description");
         const qty = campo(r, "Def Qty");
-
         if (nombre || parseInt(qty) > 0) {
             items.get(k).defectos.push({
                 nombre: nombre === "UNSPECIFIED DEFECT" ? "" : nombre,
@@ -807,43 +693,18 @@ function agruparItems(filas) {
             });
         }
     });
-
     return [...items.values()];
-}
-
-function seleccionarAuditoriaPrevia(rows, po, estilo) {
-    let filas = rellenarContinuaciones(rows).filter(r =>
-        campo(r, "PO").toLowerCase() === po.toLowerCase() &&
-        (!estilo || campo(r, "Style").toLowerCase() === estilo.toLowerCase()) &&
-        esPrimeraAuditoria(r)
-    );
-
-    const ids = filas.map(r => idNumerico(campo(r, "Audit ID")));
-    const maxId = ids.length ? Math.max(...ids) : 0;
-
-    if (maxId > 0) {
-        filas = filas.filter((r, i) => ids[i] === maxId);
-    }
-
-    return filas;
 }
 
 async function cargarExcelFuente(input) {
     const out = document.getElementById("resultado-busqueda");
     const file = input.files && input.files[0];
-
-    if (!file) {
-        fuenteExcel = null;
-        out.textContent = "";
-        return;
-    }
-
+    if (!file) { fuenteExcel = null; out.textContent = ""; return; }
     try {
         const buf = await file.arrayBuffer();
         const wb = XLSX.read(buf, { type: "array" });
         const nombreHoja = wb.SheetNames.find(n => normKey(n) === "audits") || wb.SheetNames[0];
         fuenteExcel = XLSX.utils.sheet_to_json(wb.Sheets[nombreHoja], { defval: "" });
-
         out.innerHTML = `📂 Excel cargado: <b>${escHtml(file.name)}</b> (${fuenteExcel.length} filas). `;
     } catch (e) {
         fuenteExcel = null;
@@ -853,17 +714,10 @@ async function cargarExcelFuente(input) {
 }
 
 async function obtenerFilasFuente(po, estilo) {
-    if (fuenteExcel) {
-        return fuenteExcel;
-    }
-
-    const url = URL_GUARDADO +
-        "?accion=buscar&po=" + encodeURIComponent(po) +
-        "&style=" + encodeURIComponent(estilo);
-
+    if (fuenteExcel) return fuenteExcel;
+    const url = URL_GUARDADO + "?accion=buscar&po=" + encodeURIComponent(po) + "&style=" + encodeURIComponent(estilo);
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 25000);
-
     try {
         const resp = await fetch(url, { signal: ctrl.signal });
         if (!resp.ok) throw new Error("HTTP " + resp.status);
@@ -885,128 +739,113 @@ function asegurarOpcion(select, valor) {
     select.value = valor;
 }
 
-function aplicarItemsASegundaAuditoria(items, modo) {
-    const tabla2 = document.getElementById("tabla2");
-    const tbody2 = tabla2.querySelector("tbody");
-    const modoActual = tabla2.dataset.modo === "100" ? "100" : "segunda";
-
-    if (tbody2.children.length > 0 && modoActual !== modo) {
-        if (!confirm("Ya hay items. ¿Reemplazarlos?")) return null;
-        tbody2.innerHTML = "";
-    }
-
-    if (modo === "100") {
-        tabla2.dataset.modo = "100";
-        document.getElementById("titulo-audit2").textContent = "🔎 Inspección 100%";
-        document.getElementById("sub-audit2").textContent = "Se revisa el 100% de las piezas";
-    } else {
-        delete tabla2.dataset.modo;
-        document.getElementById("titulo-audit2").textContent = "🔎 Segunda Auditoría";
-        document.getElementById("sub-audit2").textContent = "Military Standard – Table Level III – AQL 2.5";
-    }
-
-    const yaExisten = new Set([...tbody2.querySelectorAll("tr")].map(tr =>
-        ["factura[]", "po[]", "estilo[]", "color[]"]
-            .map(n => tr.querySelector(`[name="${n}"]`).value.trim().toLowerCase())
-            .join("|")
-    ));
-
-    let agregados = 0;
-    let duplicados = 0;
-
-    items.forEach(item => {
-        const b = item.base;
-        const clave = [campo(b, "Invoice"), campo(b, "PO"), campo(b, "Style"), campo(b, "Color")]
-            .join("|").toLowerCase();
-
-        if (yaExisten.has(clave)) {
-            duplicados++;
-            return;
-        }
-
-        agregarFila(2);
-        const tr = tbody2.lastElementChild;
-
-        tr.querySelector('[name="factura[]"]').value = campo(b, "Invoice");
-        tr.querySelector('[name="po[]"]').value = campo(b, "PO");
-        tr.querySelector('[name="estilo[]"]').value = campo(b, "Style");
-        tr.querySelector('[name="color[]"]').value = campo(b, "Color");
-        tr.querySelector('[name="total[]"]').value = campo(b, "Total Qty");
-
-        item.defectos.forEach(d => {
-            agregarDefectoManual(tr.querySelector(".defectos-cont").nextElementSibling);
-            const fila = tr.querySelector(".defectos-cont").lastElementChild;
-            asegurarOpcion(fila.querySelector(".codigo-defecto"), d.nombre);
-            fila.querySelector(".sel-cat").value = d.cat;
-            const q = fila.querySelector(".cantidad-defecto");
-            if (d.qty) {
-                q.placeholder = "1ª: " + d.qty;
-                q.title = "Cantidad en la primera auditoría: " + d.qty;
-            }
-        });
-
-        calcularFila(tr, true);
-        yaExisten.add(clave);
-        agregados++;
-    });
-
-    document.getElementById("card-audit2").style.display = "";
-    return { agregados, duplicados };
-}
-
-async function buscarYGenerar(modo) {
+// NUEVA FUNCIÓN MAESTRA DE BÚSQUEDA PARA LLENAR AMBAS AUDITORÍAS
+async function buscarAmbasAuditorias() {
     const po = document.getElementById("buscar-po").value.trim();
     const estilo = document.getElementById("buscar-estilo").value.trim();
     const out = document.getElementById("resultado-busqueda");
-    const botones = document.querySelectorAll(".btn-buscar");
 
-    if (!po) return alert("Escribe la PO.");
+    if (!po) return alert("Escribe la PO para buscar.");
 
-    out.textContent = "⏳ Buscando...";
-    botones.forEach(b => b.disabled = true);
+    out.textContent = "⏳ Buscando auditorías en el sistema...";
 
     try {
         const rows = await obtenerFilasFuente(po, estilo);
-        const filas = seleccionarAuditoriaPrevia(rows, po, estilo);
+        const filasRellenadas = rellenarContinuaciones(rows).filter(r =>
+            campo(r, "PO").toLowerCase() === po.toLowerCase() &&
+            (!estilo || campo(r, "Style").toLowerCase() === estilo.toLowerCase())
+        );
 
-        if (filas.length === 0) {
-            out.innerHTML = `⚠️ No se encontró auditoría previa con PO <b>${escHtml(po)}</b>.`;
+        if (filasRellenadas.length === 0) {
+            out.innerHTML = `⚠️ No se encontraron registros con la PO <b>${escHtml(po)}</b>.`;
             return;
         }
 
-        const items = agruparItems(filas);
-        const resumen = aplicarItemsASegundaAuditoria(items, modo);
-        if (!resumen) return;
+        // Separar entre Audit 1 y Audit 2
+        const filasAudit1 = filasRellenadas.filter(r => esPrimeraAuditoria(r));
+        const filasAudit2 = filasRellenadas.filter(r => !esPrimeraAuditoria(r));
 
+        // Limpiar ambas tablas antes de rellenar
+        document.querySelector("#tabla tbody").innerHTML = "";
+        const tabla2 = document.getElementById("tabla2");
+        tabla2.querySelector("tbody").innerHTML = "";
+
+        let count1 = 0;
+        let count2 = 0;
+
+        // Llenar Auditoría 1
+        if (filasAudit1.length > 0) {
+            const items1 = agruparItems(filasAudit1);
+            items1.forEach(item => {
+                agregarFila(1);
+                const tr = document.querySelector("#tabla tbody").lastElementChild;
+                llenarFilaConDatos(tr, item);
+                count1++;
+            });
+        }
+
+        // Llenar Segunda Auditoría (si existe)
+        if (filasAudit2.length > 0) {
+            const items2 = agruparItems(filasAudit2);
+            tabla2.dataset.modo = "segunda";
+            document.getElementById("titulo-audit2").textContent = "🔎 Segunda Auditoría";
+            document.getElementById("sub-audit2").textContent = "Cargada automáticamente del historial";
+
+            items2.forEach(item => {
+                agregarFila(2);
+                const tr = tabla2.querySelector("tbody").lastElementChild;
+                llenarFilaConDatos(tr, item);
+                count2++;
+            });
+            document.getElementById("card-audit2").style.display = "";
+        } else {
+            document.getElementById("card-audit2").style.display = "none";
+        }
+
+        // Asignar el proveedor detectado automáticamente si está vacío
         const vendorSel = document.getElementById("vendor");
-        const vendorHallado = campo(filas[0], "Vendor");
+        const vendorHallado = campo(filasRellenadas[0], "Vendor");
         if (!vendorSel.value && vendorHallado) {
             vendorSel.value = vendorHallado;
             actualizarTablaAQL();
         }
 
-        out.innerHTML = `✅ Datos cargados correctamente. Se agregaron <b>${resumen.agregados}</b> item(s).`;
-        document.getElementById("card-audit2").scrollIntoView({ behavior: "smooth", block: "start" });
+        out.innerHTML = `✅ Búsqueda exitosa: Se cargaron <b>${count1}</b> ítem(s) en Audit 1 y <b>${count2}</b> ítem(s) en Segunda Auditoría.`;
+        document.querySelector(".container").scrollIntoView({ behavior: "smooth", block: "start" });
+
     } catch (e) {
-        out.innerHTML = `❌ Error: ${escHtml(e.message)}`;
-    } finally {
-        botones.forEach(b => b.disabled = false);
+        out.innerHTML = `❌ Error en la búsqueda: ${escHtml(e.message)}`;
     }
+}
+
+function llenarFilaConDatos(tr, item) {
+    const b = item.base;
+    tr.querySelector('[name="factura[]"]').value = campo(b, "Invoice");
+    tr.querySelector('[name="po[]"]').value = campo(b, "PO");
+    tr.querySelector('[name="estilo[]"]').value = campo(b, "Style");
+    tr.querySelector('[name="color[]"]').value = campo(b, "Color");
+    tr.querySelector('[name="total[]"]').value = campo(b, "Total Qty");
+    tr.querySelector('[name="muestra[]"]').value = campo(b, "Sample");
+
+    item.defectos.forEach(d => {
+        agregarDefectoManual(tr.querySelector(".defectos-cont").nextElementSibling);
+        const fila = tr.querySelector(".defectos-cont").lastElementChild;
+        asegurarOpcion(fila.querySelector(".codigo-defecto"), d.nombre);
+        fila.querySelector(".sel-cat").value = d.cat;
+        const q = fila.querySelector(".cantidad-defecto");
+        if (d.qty) q.value = d.qty;
+    });
+    calcularFila(tr, true);
 }
 
 function agregarDefectoManual(btn) {
     const cont = btn.previousElementSibling;
     const tipo = document.getElementById("product-type").value;
     const defOptions = LISTA_DEFECTOS[tipo].map(d => `<option value="${d}">${d}</option>`).join("");
-
     const div = document.createElement("div");
     div.className = "defect-row";
-
     div.innerHTML = `
-        <select class="codigo-defecto">
-            <option value="">-- Defect --</option>
-            ${defOptions}
-        </select>
+        <select class="codigo-defecto"><option value="">-- Defect --</option>${defOptions}</select>
         <select class="sel-cat" onchange="calcularFila(this.closest('tr'), false)">
             <option value="MAJOR">MAJOR</option>
             <option value="MINOR">MINOR</option>
@@ -1116,26 +955,27 @@ function recolectarDatosParaExportar() {
         defectRows.forEach(dr => {
             const defName = dr.querySelector(".codigo-defecto").value;
             const defQty = dr.querySelector(".cantidad-defecto").value;
+            const fotosDef = dr.querySelector(".fotos-defecto") ? (dr.querySelector(".fotos-defecto")._fotos || []) : [];
 
-            if (defName || parseInt(defQty) > 0) {
+            if (defName || parseInt(defQty) > 0 || fotosDef.length > 0) {
                 tieneDefectosValidos = true;
                 data.push({
                     ...(primero ? base : {
-                        "Date": "", "Auditor": "", "Vendor": "", "Audit": "",
-                        "AQL Standard": "", "Invoice": "", "PO": "", "Style": "",
-                        "Color": "", "Total Qty": "", "Sample": "", "Tot Major": "",
-                        "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
+                        "Date": "", "Auditor": "", "Vendor": "", "Audit": "", "AQL Standard": "",
+                        "Invoice": "", "PO": "", "Style": "", "Color": "", "Total Qty": "",
+                        "Sample": "", "Tot Major": "", "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
                     }),
                     "Defect Description": defName || "UNSPECIFIED DEFECT",
                     "Def Cat": dr.querySelector(".sel-cat").value,
-                    "Def Qty": defQty || "0"
+                    "Def Qty": defQty || "0",
+                    "FotosDef": fotosDef
                 });
                 primero = false;
             }
         });
 
         if (!tieneDefectosValidos) {
-            data.push({ ...base, "Defect Description": "", "Def Cat": "", "Def Qty": "" });
+            data.push({ ...base, "Defect Description": "", "Def Cat": "", "Def Qty": "", "FotosDef": [] });
         }
     });
 
@@ -1151,12 +991,7 @@ async function guardarAuditoria(btn) {
     const datos = recolectarDatosParaExportar();
     if (datos.length === 0) return alert("No data to save.");
 
-    const camposBase = [
-        "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO",
-        "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor",
-        "AQL%", "Result", "Comments"
-    ];
-
+    const camposBase = ["Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "AQL%", "Result", "Comments"];
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
     const tipo = document.getElementById("product-type").value;
@@ -1170,6 +1005,7 @@ async function guardarAuditoria(btn) {
             previa = d;
         }
         delete fila["Audit"];
+        delete fila["FotosDef"];
         return { "Audit ID": auditId, "Timestamp": timestamp, "Product Type": tipo, ...fila };
     });
 
@@ -1195,22 +1031,20 @@ async function guardarAuditoria(btn) {
 function descargarExcel() {
     const datos = recolectarDatosParaExportar();
     if (datos.length === 0) return alert("No data to export.");
-
     const productType = document.getElementById("product-type").value;
     const vendorName = document.getElementById("vendor").value || "Vendor";
 
-    const ws = XLSX.utils.json_to_sheet(datos);
+    const wsData = datos.map(d => ({
+        "Date": d["Date"], "Auditor": d["Auditor"], "Vendor": d["Vendor"], "Audit": d["Audit"],
+        "AQL Standard": d["AQL Standard"], "Invoice": d["Invoice"], "PO": d["PO"], "Style": d["Style"],
+        "Color": d["Color"], "Total Qty": d["Total Qty"], "Sample": d["Sample"], "Tot Major": d["Tot Major"],
+        "Tot Minor": d["Tot Minor"], "AQL%": d["AQL%"], "Result": d["Result"], "Comments": d["Comments"],
+        "Defect Description": d["Defect Description"], "Def Cat": d["Def Cat"], "Def Qty": d["Def Qty"]
+    }));
 
-    ws['!cols'] = [
-        {wch: 12}, {wch: 18}, {wch: 28}, {wch: 10}, {wch: 22},
-        {wch: 15}, {wch: 15}, {wch: 12}, {wch: 18}, {wch: 10},
-        {wch: 10}, {wch: 10}, {wch: 10}, {wch: 10}, {wch: 18},
-        {wch: 25}, {wch: 28}, {wch: 12}, {wch: 10}
-    ];
-
+    const ws = XLSX.utils.json_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "AuditReport");
-
     XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, "_")}.xlsx`);
 }
 
@@ -1219,19 +1053,19 @@ function descargarPDF() {
     if (datos.length === 0) return alert("No data to export for PDF.");
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('l', 'mm', 'a4');
+    const doc = new jsPDF('l', 'mm', 'a4'); // Horizontal (Landscape)
 
     const auditor = document.getElementById("auditor").value || "N/A";
     const vendor = document.getElementById("vendor").value || "N/A";
     const productType = document.getElementById("product-type").value;
 
-    doc.setFontSize(18);
+    doc.setFontSize(16);
     doc.setTextColor(0, 51, 102);
-    doc.text("Blanks Audit Report", 14, 18);
+    doc.text(`${productType} BLANKS AUDIT REPORT`, 14, 15);
 
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text(`Auditor: ${auditor} | Vendor: ${vendor} | Product: ${productType} | Date: ${new Date().toLocaleDateString()}`, 14, 25);
+    doc.text(`Vendor: ${vendor}  |  Auditor: ${auditor}  |  Date: ${new Date().toLocaleDateString()}`, 14, 21);
 
     const tableRows = datos.map(row => [
         row["Audit"],
@@ -1241,9 +1075,7 @@ function descargarPDF() {
         row["Color"],
         row["Total Qty"],
         row["Sample"],
-        row["Defect Description"] || "-",
-        row["Def Cat"] || "-",
-        row["Def Qty"] || "-",
+        row["Defect Description"] ? `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})` : "-",
         row["Tot Major"],
         row["Tot Minor"],
         row["AQL%"],
@@ -1252,35 +1084,54 @@ function descargarPDF() {
     ]);
 
     doc.autoTable({
-        startY: 32,
+        startY: 26,
         head: [[
-            'Audit', 'Invoice', 'PO', 'Style', 'Color', 'Tot Qty', 'Spl',
-            'Defect', 'Cat', 'D.Qty', 'Maj', 'Min', 'AQL%', 'Result', 'Comments'
+            'Audit', 'Invoice', 'PO', 'Style', 'Color', 'Tot', 'Spl',
+            'Defect Details (Cat: Qty)', 'Maj', 'Min', 'AQL%', 'Result', 'Comments'
         ]],
         body: tableRows,
         styles: { fontSize: 8, cellPadding: 3 },
-        headStyles: { fillColor: [0, 51, 102] }
+        headStyles: { fillColor: [0, 51, 102] },
+        columnStyles: { 7: { cellWidth: 70 } }
     });
 
-    if (fotosHojasMedicion && fotosHojasMedicion.length > 0) {
+    let hayFotosDefectos = datos.some(d => d.FotosDef && d.FotosDef.length > 0);
+    if (hayFotosDefectos || (fotosHojasMedicion && fotosHojasMedicion.length > 0)) {
         doc.addPage();
         doc.setFontSize(14);
         doc.setTextColor(0, 51, 102);
-        doc.text("Hojas de Medición (Measurement Sheets)", 14, 18);
+        doc.text("ANEXO: FOTOGRAFÍAS DE DEFECTOS Y HOJAS DE MEDICIÓN", 14, 18);
 
         let yPos = 25;
-        fotosHojasMedicion.forEach((foto, index) => {
-            if (yPos > 150) {
-                doc.addPage();
-                yPos = 20;
-            }
-            try {
-                doc.addImage(foto.data, 'JPEG', 14, yPos, 120, 90);
-                yPos += 100;
-            } catch (err) {
-                console.error("No se pudo adjuntar la imagen al PDF", err);
+        datos.forEach(d => {
+            if (d.FotosDef && d.FotosDef.length > 0) {
+                d.FotosDef.forEach(f => {
+                    if (yPos > 150) { doc.addPage(); yPos = 20; }
+                    doc.setFontSize(10);
+                    doc.setTextColor(50, 50, 50);
+                    doc.text(`Defect Photo - PO: ${d["PO"]} | Style: ${d["Style"]} | Defect: ${d["Defect Description"]}`, 14, yPos);
+                    yPos += 5;
+                    try {
+                        doc.addImage(f.data, 'JPEG', 14, yPos, 110, 80);
+                        yPos += 90;
+                    } catch (err) { console.error(err); }
+                });
             }
         });
+
+        if (fotosHojasMedicion && fotosHojasMedicion.length > 0) {
+            fotosHojasMedicion.forEach((foto, index) => {
+                if (yPos > 150) { doc.addPage(); yPos = 20; }
+                doc.setFontSize(10);
+                doc.setTextColor(50, 50, 50);
+                doc.text(`Measurement Sheet #${index + 1} (${foto.name || ''})`, 14, yPos);
+                yPos += 5;
+                try {
+                    doc.addImage(foto.data, 'JPEG', 14, yPos, 110, 85);
+                    yPos += 95;
+                } catch (err) { console.error(err); }
+            });
+        }
     }
 
     doc.save(`${productType}_Audit_Report_${vendor.replace(/\s+/g, "_")}.pdf`);
