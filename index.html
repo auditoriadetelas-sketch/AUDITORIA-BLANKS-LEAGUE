@@ -1155,27 +1155,81 @@ function descargarPDF() {
         doc.text(`--- ${nombreSeccion.toUpperCase()} (${estandarUsado}) ---`, 14, currentY);
         currentY += 4;
 
-        const tableRows = filasSeccion.map(row => [
-            row["Invoice"],
-            row["PO"],
-            row["Style"],
-            row["Color"],
-            row["Total Qty"],
-            row["Sample"],
-            row["Defect Description"] ? `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})` : "-",
-            row["Tot Major"],
-            row["Tot Minor"],
-            row["OQL"],
-            row["Result"]
-        ]);
+        const tableRows = [];
+        let ultimoInv = "";
+        let ultimoPo = "";
+        let ultimoEstilo = "";
+        let ultimoColor = "";
+        let ultimoTot = "";
+        let ultimoSpl = "";
+        let ultimoMaj = "";
+        let ultimoMin = "";
+        let ultimoOql = "";
+        let ultimoRes = "";
+
+        filasSeccion.forEach(row => {
+            const inv = row["Invoice"];
+            const po = row["PO"];
+            const estilo = row["Style"];
+            const color = row["Color"];
+            const tot = row["Total Qty"];
+            const spl = row["Sample"];
+            const maj = row["Tot Major"];
+            const min = row["Tot Minor"];
+            const oql = row["OQL"];
+            const res = row["Result"];
+
+            const esIgualItem = (inv === ultimoInv && po === ultimoPo && estilo === ultimoEstilo && color === ultimoColor);
+
+            const displayInv = esIgualItem ? "" : inv;
+            const displayPo = esIgualItem ? "" : po;
+            const displayEstilo = esIgualItem ? "" : estilo;
+            const displayColor = esIgualItem ? "" : color;
+            const displayTot = esIgualItem ? "" : tot;
+            const displaySpl = esIgualItem ? "" : spl;
+            const displayMaj = esIgualItem ? "" : maj;
+            const displayMin = esIgualItem ? "" : min;
+            const displayOql = esIgualItem ? "" : oql;
+            const displayRes = esIgualItem ? "" : res;
+
+            ultimoInv = inv;
+            ultimoPo = po;
+            ultimoEstilo = estilo;
+            ultimoColor = color;
+            ultimoTot = tot;
+            ultimoSpl = spl;
+            ultimoMaj = maj;
+            ultimoMin = min;
+            ultimoOql = oql;
+            ultimoRes = res;
+
+            let defectText = "-";
+            if (row["Defect Description"]) {
+                defectText = `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})`;
+            }
+
+            tableRows.push([
+                displayInv,
+                displayPo,
+                displayEstilo,
+                displayColor,
+                displayTot,
+                displaySpl,
+                defectText,
+                displayMaj,
+                displayMin,
+                displayOql,
+                displayRes
+            ]);
+        });
 
         doc.autoTable({
             startY: currentY,
             head: [[
-                'Invoice', 'PO', 'Style', 'Color', 'Tot', 'Spl',
+                'Invoice', 'PO', 'Style', 'Color', 'Tot Qty', 'Spl',
                 'Defect Details', 'Maj', 'Min', 'OQL', 'Result'
             ]],
-            body: tableRows.map(r => [r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10]]),
+            body: tableRows,
             styles: { fontSize: 8, cellPadding: 3 },
             headStyles: { fillColor: [0, 51, 102] },
             columnStyles: { 6: { cellWidth: 70 } }
