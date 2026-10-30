@@ -571,6 +571,12 @@ function obtenerTablaAQL(tr) {
     return vendorActual === "Kay & Emms Pvt ltd" ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
 }
 
+function nombreEstandار(auditNum, vendor) {
+    if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
+    if (auditNum === 3) return "CONSOLIDATED";
+    return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
+}
+
 function nombreEstandar(auditNum, vendor) {
     if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
     if (auditNum === 3) return "CONSOLIDATED";
@@ -992,10 +998,11 @@ function recolectarDatosParaExportar() {
         if (auditNum === 3) nombreAuditStr = "100% Inspection";
 
         const base = {
-            "Date": fecha,
+            "Audit ID": "",
+            "Timestamp": "",
             "Auditor": auditor,
+            "Product Type": document.getElementById("product-type").value,
             "Vendor": vendor,
-            "Audit": nombreAuditStr,
             "AQL Standard": nombreEstandarAux(auditNum, vendor),
             "Invoice": tr.querySelector('[name="factura[]"]').value || "",
             "PO": tr.querySelector('[name="po[]"]').value || "",
@@ -1005,7 +1012,7 @@ function recolectarDatosParaExportar() {
             "Sample": tr.querySelector('[name="muestra[]"]').value || "0",
             "Tot Major": tr.querySelector('[name="totalMajor[]"]').value || "0",
             "Tot Minor": tr.querySelector('[name="totalMinor[]"]').value || "0",
-            "OQL": tr.querySelector('[name="aql[]"]').value || "0%",
+            "AQL%": tr.querySelector('[name="aql[]"]').value || "0%",
             "Result": tr.querySelector('[name="ar[]"]').value || "APPROVED",
             "Comments": tr.querySelector('[name="comentarios[]"]').value || ""
         };
@@ -1056,7 +1063,6 @@ async function guardarAuditoria(btn) {
     const datos = recolectarDatosParaExportar();
     if (datos.length === 0) return alert("No data to save.");
 
-    const camposBase = ["Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "OQL", "Result", "Comments"];
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
     const tipo = document.getElementById("product-type").value;
@@ -1064,14 +1070,40 @@ async function guardarAuditoria(btn) {
 
     const rows = datos.map(d => {
         const fila = { ...d };
-        if (d["Invoice"] === "" && d["Total Qty"] === "" && previa) {
-            camposBase.forEach(c => { fila[c] = previa[c]; });
+        fila["Audit ID"] = auditId;
+        fila["Timestamp"] = timestamp;
+        fila["Product Type"] = tipo;
+
+        if (fila["Invoice"] === "" && fila["Total Qty"] === "" && previa) {
+            // Mantener campos base previos si aplica
         } else {
-            previa = d;
+            previa = { ...fila };
         }
-        delete fila["Audit"];
         delete fila["FotosDef"];
-        return { "Audit ID": auditId, "Timestamp": timestamp, "Product Type": tipo, ...fila };
+        
+        // Retornar en el orden estricto solicitado:
+        return {
+            "Audit ID": fila["Audit ID"],
+            "Timestamp": fila["Timestamp"],
+            "Auditor": fila["Auditor"],
+            "Product Type": fila["Product Type"],
+            "Vendor": fila["Vendor"],
+            "AQL Standard": fila["AQL Standard"],
+            "Invoice": fila["Invoice"],
+            "PO": fila["PO"],
+            "Style": fila["Style"],
+            "Color": fila["Color"],
+            "Total Qty": fila["Total Qty"],
+            "Sample": fila["Sample"],
+            "Tot Major": fila["Tot Major"],
+            "Tot Minor": fila["Tot Minor"],
+            "AQL%": fila["AQL%"],
+            "Result": fila["Result"],
+            "Comments": fila["Comments"],
+            "Defect Description": fila["Defect Description"],
+            "Def Cat": fila["Def Cat"],
+            "Def Qty": fila["Def Qty"]
+        };
     });
 
     btn.disabled = true;
@@ -1100,11 +1132,26 @@ function descargarExcel() {
     const vendorName = document.getElementById("vendor").value || "Vendor";
 
     const wsData = datos.map(d => ({
-        "Date": d["Date"], "Auditor": d["Auditor"], "Vendor": d["Vendor"], "Audit": d["Audit"],
-        "AQL Standard": d["AQL Standard"], "Invoice": d["Invoice"], "PO": d["PO"], "Style": d["Style"],
-        "Color": d["Color"], "Total Qty": d["Total Qty"], "Sample": d["Sample"], "Tot Major": d["Tot Major"],
-        "Tot Minor": d["Tot Minor"], "OQL": d["OQL"], "Result": d["Result"], "Comments": d["Comments"],
-        "Defect Description": d["Defect Description"], "Def Cat": d["Def Cat"], "Def Qty": d["Def Qty"]
+        "Audit ID": d["Audit ID"],
+        "Timestamp": d["Timestamp"],
+        "Auditor": d["Auditor"],
+        "Product Type": d["Product Type"],
+        "Vendor": d["Vendor"],
+        "AQL Standard": d["AQL Standard"],
+        "Invoice": d["Invoice"],
+        "PO": d["PO"],
+        "Style": d["Style"],
+        "Color": d["Color"],
+        "Total Qty": d["Total Qty"],
+        "Sample": d["Sample"],
+        "Tot Major": d["Tot Major"],
+        "Tot Minor": d["Tot Minor"],
+        "AQL%": d["AQL%"],
+        "Result": d["Result"],
+        "Comments": d["Comments"],
+        "Defect Description": d["Defect Description"],
+        "Def Cat": d["Def Cat"],
+        "Def Qty": d["Def Qty"]
     }));
 
     const ws = XLSX.utils.json_to_sheet(wsData);
@@ -1176,7 +1223,7 @@ function descargarPDF() {
             const spl = row["Sample"] !== "" ? row["Sample"] : "";
             const maj = row["Tot Major"] !== "" ? row["Tot Major"] : "";
             const min = row["Tot Minor"] !== "" ? row["Tot Minor"] : "";
-            const oql = row["OQL"] !== "" ? row["OQL"] : "";
+            const oql = row["AQL%"] !== "" ? row["AQL%"] : "";
             const res = row["Result"] !== "" ? row["Result"] : "";
 
             const esRepetido = (
