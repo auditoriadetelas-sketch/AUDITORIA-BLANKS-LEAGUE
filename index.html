@@ -392,7 +392,7 @@
                     <th>Style</th>
                     <th>Color</th>
                     <th>Tot Qty</th>
-                    <th>Sample</th>
+                    <th>Spl</th>
                     <th>Defect / Category / Qty</th>
                     <th>Maj</th>
                     <th>Min</th>
@@ -425,7 +425,7 @@
                     <th>Style</th>
                     <th>Color</th>
                     <th>Tot Qty</th>
-                    <th>Sample</th>
+                    <th>Spl</th>
                     <th>Defect / Category / Qty</th>
                     <th>Maj</th>
                     <th>Min</th>
@@ -458,7 +458,7 @@
                     <th>Style</th>
                     <th>Color</th>
                     <th>Tot Qty</th>
-                    <th>Sample</th>
+                    <th>Spl</th>
                     <th>Defect / Category / Qty</th>
                     <th>Maj</th>
                     <th>Min</th>
@@ -507,7 +507,7 @@ const LISTA_DEFECTOS = {
         "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK",
         "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
         "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
-        "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"
+        "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS"
     ],
     APPAREL: [
         "HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY",
@@ -518,7 +518,7 @@ const LISTA_DEFECTOS = {
         "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE",
         "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS",
         "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD",
-        "VISIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"
+        "VISIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS", "OTHER"
     ]
 };
 
@@ -573,7 +573,7 @@ function obtenerTablaAQL(tr) {
 
 function nombreEstandar(auditNum, vendor) {
     if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
-    if (auditNum === 3) return "100% INSPECTION";
+    if (auditNum === 3) return "CONSOLIDATED";
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
@@ -1043,7 +1043,7 @@ function recolectarDatosParaExportar() {
 
 function nombreEstandarAux(auditNum, vendor) {
     if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
-    if (auditNum === 3) return "100% INSPECTION";
+    if (auditNum === 3) return "CONSOLIDATED";
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
@@ -1156,32 +1156,73 @@ function descargarPDF() {
         currentY += 4;
 
         const tableRows = [];
+        let ultimaInv = "";
+        let ultimaPo = "";
+        let ultimoEstilo = "";
+        let ultimoColor = "";
+        let ultimoTot = "";
+        let ultimoSpl = "";
+        let ultimoMaj = "";
+        let ultimoMin = "";
+        let ultimoOql = "";
+        let ultimoRes = "";
 
         filasSeccion.forEach(row => {
+            const inv = row["Invoice"] !== "" ? row["Invoice"] : "";
+            const po = row["PO"] !== "" ? row["PO"] : "";
+            const estilo = row["Style"] !== "" ? row["Style"] : "";
+            const color = row["Color"] !== "" ? row["Color"] : "";
+            const tot = row["Total Qty"] !== "" ? row["Total Qty"] : "";
+            const spl = row["Sample"] !== "" ? row["Sample"] : "";
+            const maj = row["Tot Major"] !== "" ? row["Tot Major"] : "";
+            const min = row["Tot Minor"] !== "" ? row["Tot Minor"] : "";
+            const oql = row["OQL"] !== "" ? row["OQL"] : "";
+            const res = row["Result"] !== "" ? row["Result"] : "";
+
+            const esRepetido = (
+                inv === ultimaInv &&
+                po === ultimaPo &&
+                estilo === ultimoEstilo &&
+                color === ultimoColor &&
+                tot === ultimoTot &&
+                spl === ultimoSpl
+            );
+
+            ultimaInv = inv;
+            ultimaPo = po;
+            ultimoEstilo = estilo;
+            ultimoColor = color;
+            ultimoTot = tot;
+            ultimoSpl = spl;
+            ultimoMaj = maj;
+            ultimoMin = min;
+            ultimoOql = oql;
+            ultimoRes = res;
+
             let defectText = "-";
             if (row["Defect Description"]) {
                 defectText = `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})`;
             }
 
             tableRows.push([
-                row["Invoice"],
-                row["PO"],
-                row["Style"],
-                row["Color"],
-                row["Total Qty"],
-                row["Sample"],
+                esRepetido ? "" : inv,
+                esRepetido ? "" : po,
+                esRepetido ? "" : estilo,
+                esRepetido ? "" : color,
+                esRepetido ? "" : tot,
+                esRepetido ? "" : spl,
                 defectText,
-                row["Tot Major"],
-                row["Tot Minor"],
-                row["OQL"],
-                row["Result"]
+                esRepetido ? "" : maj,
+                esRepetido ? "" : min,
+                esRepetido ? "" : oql,
+                esRepetido ? "" : res
             ]);
         });
 
         doc.autoTable({
             startY: currentY,
             head: [[
-                'Invoice', 'PO', 'Style', 'Color', 'Tot Qty', 'Sample',
+                'Invoice', 'PO', 'Style', 'Color', 'Tot Qty', 'Spl',
                 'Defect Details', 'Maj', 'Min', 'OQL', 'Result'
             ]],
             body: tableRows,
