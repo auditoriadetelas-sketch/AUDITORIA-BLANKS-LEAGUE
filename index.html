@@ -507,7 +507,7 @@ const LISTA_DEFECTOS = {
         "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK",
         "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
         "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
-        "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"
+        "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS"
     ],
     APPAREL: [
         "HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY",
@@ -518,7 +518,7 @@ const LISTA_DEFECTOS = {
         "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE",
         "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS",
         "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD",
-        "VISIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"
+        "VISIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS", "OTHER"
     ]
 };
 
@@ -573,7 +573,7 @@ function obtenerTablaAQL(tr) {
 
 function nombreEstandar(auditNum, vendor) {
     if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
-    if (auditNum === 3) return "100% INSPECTION";
+    if (auditNum === 3) return "CONSOLIDATED";
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
@@ -635,7 +635,7 @@ function calcularFila(tr, esCambioTotal = true) {
         tr.querySelector('[name="aql[]"]').value = ((major / muestraVal) * 100).toFixed(1) + "%";
         const rango = tablaAUsar.find(r => total >= r.min && total <= r.max) || { acepta: 0, rechaza: 1 };
         if (modo100) {
-            arInput.value = "100% INSPECTED";
+            arInput.value = "CONSOLIDATED";
             arInput.className = "";
         } else if (major <= rango.acepta) {
             arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
@@ -730,7 +730,7 @@ function identificarTipoAuditoriaFila(r) {
     const a = campo(r, "Audit").toLowerCase();
     const std = campo(r, "AQL Standard").toLowerCase();
     if (a.includes("audit 2") || std.includes("level iii")) return 2;
-    if (a.includes("100%") || std.includes("100%")) return 3;
+    if (a.includes("100%") || a.includes("consolidated") || std.includes("consolidated")) return 3;
     return 1;
 }
 
@@ -989,7 +989,7 @@ function recolectarDatosParaExportar() {
 
         let nombreAuditStr = "Audit 1";
         if (auditNum === 2) nombreAuditStr = "Audit 2";
-        if (auditNum === 3) nombreAuditStr = "100% Inspection";
+        if (auditNum === 3) nombreAuditStr = "CONSOLIDATED";
 
         const base = {
             "Date": fecha,
@@ -1043,7 +1043,7 @@ function recolectarDatosParaExportar() {
 
 function nombreEstandarAux(auditNum, vendor) {
     if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
-    if (auditNum === 3) return "100% INSPECTION";
+    if (auditNum === 3) return "CONSOLIDATED";
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
