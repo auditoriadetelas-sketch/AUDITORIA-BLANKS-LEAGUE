@@ -392,7 +392,7 @@
                     <th>Style</th>
                     <th>Color</th>
                     <th>Tot Qty</th>
-                    <th>Spl</th>
+                    <th>Sample</th>
                     <th>Defect / Category / Qty</th>
                     <th>Maj</th>
                     <th>Min</th>
@@ -425,7 +425,7 @@
                     <th>Style</th>
                     <th>Color</th>
                     <th>Tot Qty</th>
-                    <th>Spl</th>
+                    <th>Sample</th>
                     <th>Defect / Category / Qty</th>
                     <th>Maj</th>
                     <th>Min</th>
@@ -458,7 +458,7 @@
                     <th>Style</th>
                     <th>Color</th>
                     <th>Tot Qty</th>
-                    <th>Spl</th>
+                    <th>Sample</th>
                     <th>Defect / Category / Qty</th>
                     <th>Maj</th>
                     <th>Min</th>
@@ -507,7 +507,7 @@ const LISTA_DEFECTOS = {
         "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK",
         "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
         "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
-        "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS"
+        "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE"
     ],
     APPAREL: [
         "HOLES", "CUTS", "OPEN SEAM", "BAD APPEARANCE", "BROKEN STITCHES", "DIRTY",
@@ -518,7 +518,7 @@ const LISTA_DEFECTOS = {
         "SHADDING PARTS", "SHORES", "SKIPPED STITCHES", "SPI OUT OF TOLERANE",
         "TIGHT TENSION STITCHES", "TWISTED GARMENT", "UNEVEN GATERING", "UNEVEN PARTS",
         "UNEVEN STITCHES MARGEN", "UNSECURE COMPONENT", "UNTRIMMED THREAD",
-        "VISIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS", "OTHER"
+        "VISIBLE TACK STITCH", "WEAVY SEAM", "WRONG COLOR THREAD", "OTHER"
     ]
 };
 
@@ -573,7 +573,7 @@ function obtenerTablaAQL(tr) {
 
 function nombreEstandar(auditNum, vendor) {
     if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
-    if (auditNum === 3) return "CONSOLIDATED";
+    if (auditNum === 3) return "100% INSPECTION";
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
@@ -635,7 +635,7 @@ function calcularFila(tr, esCambioTotal = true) {
         tr.querySelector('[name="aql[]"]').value = ((major / muestraVal) * 100).toFixed(1) + "%";
         const rango = tablaAUsar.find(r => total >= r.min && total <= r.max) || { acepta: 0, rechaza: 1 };
         if (modo100) {
-            arInput.value = "CONSOLIDATED";
+            arInput.value = "100% INSPECTED";
             arInput.className = "";
         } else if (major <= rango.acepta) {
             arInput.value = `APPROVED (${rango.acepta}/${rango.rechaza})`;
@@ -730,7 +730,7 @@ function identificarTipoAuditoriaFila(r) {
     const a = campo(r, "Audit").toLowerCase();
     const std = campo(r, "AQL Standard").toLowerCase();
     if (a.includes("audit 2") || std.includes("level iii")) return 2;
-    if (a.includes("100%") || a.includes("consolidated") || std.includes("consolidated")) return 3;
+    if (a.includes("100%") || std.includes("100%")) return 3;
     return 1;
 }
 
@@ -989,7 +989,7 @@ function recolectarDatosParaExportar() {
 
         let nombreAuditStr = "Audit 1";
         if (auditNum === 2) nombreAuditStr = "Audit 2";
-        if (auditNum === 3) nombreAuditStr = "CONSOLIDATED";
+        if (auditNum === 3) nombreAuditStr = "100% Inspection";
 
         const base = {
             "Date": fecha,
@@ -1043,7 +1043,7 @@ function recolectarDatosParaExportar() {
 
 function nombreEstandarAux(auditNum, vendor) {
     if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
-    if (auditNum === 3) return "CONSOLIDATED";
+    if (auditNum === 3) return "100% INSPECTION";
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
@@ -1156,77 +1156,32 @@ function descargarPDF() {
         currentY += 4;
 
         const tableRows = [];
-        let ultimoInv = "";
-        let ultimoPo = "";
-        let ultimoEstilo = "";
-        let ultimoColor = "";
-        let ultimoTot = "";
-        let ultimoSpl = "";
-        let ultimoMaj = "";
-        let ultimoMin = "";
-        let ultimoOql = "";
-        let ultimoRes = "";
 
         filasSeccion.forEach(row => {
-            const inv = row["Invoice"];
-            const po = row["PO"];
-            const estilo = row["Style"];
-            const color = row["Color"];
-            const tot = row["Total Qty"];
-            const spl = row["Sample"];
-            const maj = row["Tot Major"];
-            const min = row["Tot Minor"];
-            const oql = row["OQL"];
-            const res = row["Result"];
-
-            const esIgualItem = (inv === ultimoInv && po === ultimoPo && estilo === ultimoEstilo && color === ultimoColor);
-
-            const displayInv = esIgualItem ? "" : inv;
-            const displayPo = esIgualItem ? "" : po;
-            const displayEstilo = esIgualItem ? "" : estilo;
-            const displayColor = esIgualItem ? "" : color;
-            const displayTot = esIgualItem ? "" : tot;
-            const displaySpl = esIgualItem ? "" : spl;
-            const displayMaj = esIgualItem ? "" : maj;
-            const displayMin = esIgualItem ? "" : min;
-            const displayOql = esIgualItem ? "" : oql;
-            const displayRes = esIgualItem ? "" : res;
-
-            ultimoInv = inv;
-            ultimoPo = po;
-            ultimoEstilo = estilo;
-            ultimoColor = color;
-            ultimoTot = tot;
-            ultimoSpl = spl;
-            ultimoMaj = maj;
-            ultimoMin = min;
-            ultimoOql = oql;
-            ultimoRes = res;
-
             let defectText = "-";
             if (row["Defect Description"]) {
                 defectText = `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})`;
             }
 
             tableRows.push([
-                displayInv,
-                displayPo,
-                displayEstilo,
-                displayColor,
-                displayTot,
-                displaySpl,
+                row["Invoice"],
+                row["PO"],
+                row["Style"],
+                row["Color"],
+                row["Total Qty"],
+                row["Sample"],
                 defectText,
-                displayMaj,
-                displayMin,
-                displayOql,
-                displayRes
+                row["Tot Major"],
+                row["Tot Minor"],
+                row["OQL"],
+                row["Result"]
             ]);
         });
 
         doc.autoTable({
             startY: currentY,
             head: [[
-                'Invoice', 'PO', 'Style', 'Color', 'Tot Qty', 'Spl',
+                'Invoice', 'PO', 'Style', 'Color', 'Tot Qty', 'Sample',
                 'Defect Details', 'Maj', 'Min', 'OQL', 'Result'
             ]],
             body: tableRows,
