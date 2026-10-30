@@ -380,7 +380,7 @@
         <div class="audit-head">
             <div>
                 <h2 class="audit-title">🔎 Audit 1</h2>
-                <p class="audit-sub" id="sub-audit1">Standard table AQL 2.5 (Kay &amp; Emms: AQL 4.0)</p>
+                <p class="audit-sub">Standard table AQL 2.5 (Kay &amp; Emms: AQL 4.0)</p>
             </div>
             <button class="btn btn-add btn-small" onclick="agregarFila(1)">➕ Add Item</button>
         </div>
@@ -410,7 +410,7 @@
         <div class="audit-head">
             <div>
                 <h2 class="audit-title">🔎 Segunda Auditoría</h2>
-                <p class="audit-sub" id="sub-audit2">Military Standard – Table Level III – AQL 2.5</p>
+                <p class="audit-sub">Military Standard – Table Level III – AQL 2.5</p>
             </div>
             <div style="display:flex; gap:8px;">
                 <button class="btn btn-add btn-small" style="background-color:#e67e22" onclick="agregarFila(2)">➕ Add Item</button>
@@ -443,7 +443,7 @@
         <div class="audit-head">
             <div>
                 <h2 class="audit-title">🔎 Inspección 100%</h2>
-                <p class="audit-sub" id="sub-audit3">Revisión total de piezas (100% Inspected)</p>
+                <p class="audit-sub">Revisión total de piezas (100% Inspected)</p>
             </div>
             <div style="display:flex; gap:8px;">
                 <button class="btn btn-add btn-small" style="background-color:#8e44ad" onclick="agregarFila(3)">➕ Add Item</button>
@@ -572,21 +572,9 @@ function obtenerTablaAQL(tr) {
 }
 
 function nombreEstandar(auditNum, vendor) {
-    if (auditNum === 2) return "Military Standard – Table Level III – AQL 2.5";
-    if (auditNum === 3) return "100% Inspection";
-    return vendor === "Kay & Emms Pvt ltd" ? "Standard table AQL 4.0 (Kay & Emms)" : "Standard table AQL 2.5";
-}
-
-function actualizarSubtitulosEstandar() {
-    const vendor = document.getElementById("vendor").value;
-    const sub1 = document.getElementById("sub-audit1");
-    if (sub1) sub1.textContent = nombreEstandar(1, vendor);
-    
-    const sub2 = document.getElementById("sub-audit2");
-    if (sub2) sub2.textContent = nombreEstandar(2, vendor);
-
-    const sub3 = document.getElementById("sub-audit3");
-    if (sub3) sub3.textContent = nombreEstandar(3, vendor);
+    if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
+    if (auditNum === 3) return "100% INSPECTION";
+    return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
 function manejarCambioDeProducto() {
@@ -605,11 +593,9 @@ function manejarCambioDeProducto() {
     agregarFila(1);
     cerrarTablaExtra(2);
     cerrarTablaExtra(3);
-    actualizarSubtitulosEstandar();
 }
 
 function actualizarTablaAQL() {
-    actualizarSubtitulosEstandar();
     document.querySelectorAll(".audit-table tbody tr").forEach(tr => calcularFila(tr, false));
 }
 
@@ -646,7 +632,7 @@ function calcularFila(tr, esCambioTotal = true) {
 
     const arInput = tr.querySelector('[name="ar[]"]');
     if (muestraVal > 0) {
-        tr.querySelector('[name="oql[]"]').value = ((major / muestraVal) * 100).toFixed(1) + "%";
+        tr.querySelector('[name="aql[]"]').value = ((major / muestraVal) * 100).toFixed(1) + "%";
         const rango = tablaAUsar.find(r => total >= r.min && total <= r.max) || { acepta: 0, rechaza: 1 };
         if (modo100) {
             arInput.value = "100% INSPECTED";
@@ -659,7 +645,7 @@ function calcularFila(tr, esCambioTotal = true) {
             arInput.className = "ar-rechaza";
         }
     } else {
-        tr.querySelector('[name="oql[]"]').value = "";
+        tr.querySelector('[name="aql[]"]').value = "";
         arInput.value = "";
         arInput.className = "";
     }
@@ -683,7 +669,7 @@ function agregarFila(auditNum = 1) {
         </td>
         <td><input type="text" name="totalMajor[]" readonly></td>
         <td><input type="text" name="totalMinor[]" readonly></td>
-        <td><input type="text" name="oql[]" readonly></td>
+        <td><input type="text" name="aql[]" readonly></td>
         <td><input type="text" name="ar[]" readonly></td>
         <td><textarea name="comentarios[]" placeholder="Notes..."></textarea></td>
     `;
@@ -723,14 +709,14 @@ function escHtml(t) {
 }
 
 function rellenarContinuaciones(rows) {
-    const base = ["Date", "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "OQL", "Result", "Comments", "Audit ID", "Timestamp", "Product Type"];
+    const base = ["Date", "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "AQL%", "Result", "Comments", "Audit ID", "Timestamp", "Product Type"];
     let previa = null;
     return rows.map(r => {
         const sinBase = !campo(r, "PO") && !campo(r, "Style") && !campo(r, "Color") && !campo(r, "Invoice") && !campo(r, "Total Qty");
         if (sinBase && previa) {
             const o = { ...r };
             base.forEach(c => {
-                const key = Object.keys(previa).find(k => normKey(k) === normKey(c) || normKey(c) === "oql" && normKey(k) === "aql%");
+                const key = Object.keys(previa).find(k => normKey(k) === normKey(c));
                 if (key !== undefined) o[key] = previa[key];
             });
             return o;
@@ -908,7 +894,6 @@ function manejarCambioDeProductoSinLimpiar() {
         });
     }
     if (valorActual) asegurarOpcion(vendorSel, valorActual);
-    actualizarSubtitulosEstandar();
 }
 
 function agregarDefectoManual(btn) {
@@ -1011,7 +996,7 @@ function recolectarDatosParaExportar() {
             "Auditor": auditor,
             "Vendor": vendor,
             "Audit": nombreAuditStr,
-            "AQL Standard": nombreEstandارAux(auditNum, vendor),
+            "AQL Standard": nombreEstandarAux(auditNum, vendor),
             "Invoice": tr.querySelector('[name="factura[]"]').value || "",
             "PO": tr.querySelector('[name="po[]"]').value || "",
             "Style": tr.querySelector('[name="estilo[]"]').value || "",
@@ -1020,7 +1005,7 @@ function recolectarDatosParaExportar() {
             "Sample": tr.querySelector('[name="muestra[]"]').value || "0",
             "Tot Major": tr.querySelector('[name="totalMajor[]"]').value || "0",
             "Tot Minor": tr.querySelector('[name="totalMinor[]"]').value || "0",
-            "OQL": tr.querySelector('[name="oql[]"]').value || "0%",
+            "OQL": tr.querySelector('[name="aql[]"]').value || "0%",
             "Result": tr.querySelector('[name="ar[]"]').value || "APPROVED",
             "Comments": tr.querySelector('[name="comentarios[]"]').value || ""
         };
@@ -1059,10 +1044,10 @@ function recolectarDatosParaExportar() {
     return data;
 }
 
-function nombreEstandارAux(auditNum, vendor) {
-    if (auditNum === 2) return "Military Standard – Table Level III – AQL 2.5";
-    if (auditNum === 3) return "100% Inspection";
-    return vendor === "Kay & Emms Pvt ltd" ? "Standard table AQL 4.0 (Kay & Emms)" : "Standard table AQL 2.5";
+function nombreEstandarAux(auditNum, vendor) {
+    if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
+    if (auditNum === 3) return "100% INSPECTION";
+    return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
 async function guardarAuditoria(btn) {
@@ -1138,9 +1123,10 @@ function descargarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF('l', 'mm', 'a4');
 
-    const auditor = document.getElementById("auditor").value || "N/A";
     const vendor = document.getElementById("vendor").value || "N/A";
     const productType = document.getElementById("product-type").value;
+    let estiloStr = "";
+    let poStr = "";
 
     doc.setFontSize(16);
     doc.setTextColor(0, 51, 102);
@@ -1148,41 +1134,53 @@ function descargarPDF() {
 
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    doc.text(`Vendor: ${vendor}  |  Auditor: ${auditor}  |  Date: ${new Date().toLocaleDateString()}`, 14, 21);
+    // SIN NOMBRE DE AUDITOR EN LA CABECERA
+    doc.text(`Vendor: ${vendor}  |  Date: ${new Date().toLocaleDateString()}`, 14, 21);
 
     const gruposSecciones = {};
     datos.forEach(row => {
         const tipo = row["Audit"] || "Audit 1";
         if (!gruposSecciones[tipo]) gruposSecciones[tipo] = [];
         gruposSecciones[tipo].push(row);
+        if (!estiloStr && row["Style"]) estiloStr = row["Style"];
+        if (!poStr && row["PO"]) poStr = row["PO"];
     });
 
     let currentY = 26;
 
     Object.keys(gruposSecciones).forEach((nombreSeccion) => {
         const filasSeccion = gruposSecciones[nombreSeccion];
-        const estandardUsado = filasSeccion[0]["AQL Standard"] || "";
 
         if (currentY > 170) { doc.addPage(); currentY = 20; }
-        doc.setFontSize(12);
+        
+        // MOSTRAR EL ESTÁNDAR / TABLA UTILIZADA EN EL TÍTULO DE CADA SECCIÓN
+        const estandarUsado = filasSeccion[0]["AQL Standard"] || "";
+        doc.setFontSize(11);
         doc.setTextColor(0, 51, 102);
-        doc.text(`${nombreSeccion.toUpperCase()} — (${estandardUsado})`, 14, currentY);
+        doc.text(`--- ${nombreSeccion.toUpperCase()} (${estandarUsado}) ---`, 14, currentY);
         currentY += 4;
 
-        const tableRows = filasSeccion.map(row => [
-            row["Invoice"],
-            row["PO"],
-            row["Style"],
-            row["Color"],
-            row["Total Qty"],
-            row["Sample"],
-            row["Defect Description"] ? `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})` : "-",
-            row["Tot Major"],
-            row["Tot Minor"],
-            row["OQL"],
-            row["Result"],
-            row["Comments"]
-        ]);
+        const tableRows = [];
+        filasSeccion.forEach(row => {
+            let defectText = "-";
+            if (row["Defect Description"]) {
+                defectText = `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})`;
+            }
+
+            tableRows.push([
+                row["Invoice"],
+                row["PO"],
+                row["Style"],
+                row["Color"],
+                row["Total Qty"],
+                row["Sample"],
+                defectText,
+                row["Tot Major"],
+                row["Tot Minor"],
+                row["OQL"],
+                row["Result"]
+            ]);
+        });
 
         doc.autoTable({
             startY: currentY,
@@ -1190,7 +1188,7 @@ function descargarPDF() {
                 'Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl',
                 'Defect Details', 'Maj', 'Min', 'OQL', 'Result'
             ]],
-            body: tableRows.map(r => [r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10]]),
+            body: tableRows,
             styles: { fontSize: 8, cellPadding: 3 },
             headStyles: { fillColor: [0, 51, 102] },
             columnStyles: { 6: { cellWidth: 70 } }
@@ -1238,13 +1236,15 @@ function descargarPDF() {
         }
     }
 
-    doc.save(`${productType}_Audit_Report_${vendor.replace(/\s+/g, "_")}.pdf`);
+    // FORMATO DE NOMBRE DE DESCARGA: estilo - vendor - po number
+    const safeEstilo = (estiloStr || "Estilo").replace(/[\/\\?%*:|"<>]/g, "-");
+    const safeVendor = (vendor || "Vendor").replace(/[\/\\?%*:|"<>]/g, "-");
+    const safePo = (poStr || "PO").replace(/[\/\\?%*:|"<>]/g, "-");
+
+    doc.save(`${safeEstilo} - ${safeVendor} - ${safePo}.pdf`);
 }
 
-window.onload = () => {
-    manejarCambioDeProducto();
-    actualizarSubtitulosEstandar();
-};
+window.onload = manejarCambioDeProducto;
 </script>
 
 </body>
