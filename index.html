@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -709,7 +709,7 @@ function escHtml(t) {
 }
 
 function rellenarContinuaciones(rows) {
-    const base = ["Date", "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "AQL%", "Result", "Comments", "Audit ID", "Timestamp", "Product Type"];
+    const base = ["Date", "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "OQL", "Result", "Comments", "Audit ID", "Timestamp", "Product Type"];
     let previa = null;
     return rows.map(r => {
         const sinBase = !campo(r, "PO") && !campo(r, "Style") && !campo(r, "Color") && !campo(r, "Invoice") && !campo(r, "Total Qty");
@@ -1012,29 +1012,26 @@ function recolectarDatosParaExportar() {
 
         const defectRows = tr.querySelectorAll(".defect-row");
         let tieneDefectosValidos = false;
-        let primero = true;
 
-        defectRows.forEach(dr => {
-            const defName = dr.querySelector(".codigo-defecto").value;
-            const defQty = dr.querySelector(".cantidad-defecto").value;
-            const fotosDef = dr.querySelector(".fotos-defecto") ? (dr.querySelector(".fotos-defecto")._fotos || []) : [];
+        if (defectRows.length > 0) {
+            defectRows.forEach(dr => {
+                const defName = dr.querySelector(".codigo-defecto").value;
+                const defQty = dr.querySelector(".cantidad-defecto").value;
+                const defCat = dr.querySelector(".sel-cat").value;
+                const fotosDef = dr.querySelector(".fotos-defecto") ? (dr.querySelector(".fotos-defecto")._fotos || []) : [];
 
-            if (defName || parseInt(defQty) > 0 || fotosDef.length > 0) {
-                tieneDefectosValidos = true;
-                data.push({
-                    ...(primero ? base : {
-                        "Date": "", "Auditor": "", "Vendor": "", "Audit": "", "AQL Standard": "",
-                        "Invoice": "", "PO": "", "Style": "", "Color": "", "Total Qty": "",
-                        "Sample": "", "Tot Major": "", "Tot Minor": "", "OQL": "", "Result": "", "Comments": ""
-                    }),
-                    "Defect Description": defName || "UNSPECIFIED DEFECT",
-                    "Def Cat": dr.querySelector(".sel-cat").value,
-                    "Def Qty": defQty || "0",
-                    "FotosDef": fotosDef
-                });
-                primero = false;
-            }
-        });
+                if (defName || parseInt(defQty) > 0 || fotosDef.length > 0) {
+                    tieneDefectosValidos = true;
+                    data.push({
+                        ...base,
+                        "Defect Description": defName || "UNSPECIFIED DEFECT",
+                        "Def Cat": defCat,
+                        "Def Qty": defQty || "0",
+                        "FotosDef": fotosDef
+                    });
+                }
+            });
+        }
 
         if (!tieneDefectosValidos) {
             data.push({ ...base, "Defect Description": "", "Def Cat": "", "Def Qty": "", "FotosDef": [] });
@@ -1134,7 +1131,6 @@ function descargarPDF() {
 
     doc.setFontSize(9);
     doc.setTextColor(100, 100, 100);
-    // SIN NOMBRE DE AUDITOR EN LA CABECERA
     doc.text(`Vendor: ${vendor}  |  Date: ${new Date().toLocaleDateString()}`, 14, 21);
 
     const gruposSecciones = {};
@@ -1153,7 +1149,6 @@ function descargarPDF() {
 
         if (currentY > 170) { doc.addPage(); currentY = 20; }
         
-        // MOSTRAR EL ESTÁNDAR / TABLA UTILIZADA EN EL TÍTULO DE CADA SECCIÓN
         const estandarUsado = filasSeccion[0]["AQL Standard"] || "";
         doc.setFontSize(11);
         doc.setTextColor(0, 51, 102);
@@ -1161,7 +1156,33 @@ function descargarPDF() {
         currentY += 4;
 
         const tableRows = [];
+        let ultimaInv = "";
+        let ultimaPo = "";
+        let ultimoEstilo = "";
+        let ultimoColor = "";
+        let ultimoTot = "";
+        let ultimoSpl = "";
+        let ultimoMaj = "";
+        let ultimoMin = "";
+        let ultimoOql = "";
+        let ultimoRes = "";
+
         filasSeccion.forEach(row => {
+            const inv = row["Invoice"] !== "" ? row["Invoice"] : "";
+            const po = row["PO"] !== "" ? row["PO"] : "";
+            const estilo = row["Style"] !== "" ? row["Style"] : "";
+            const color = row["Color"] !== "" ? row["Color"] : "";
+            const tot = row["Total Qty"] !== "" ? row["Total Qty"] : "";
+            const spl = row["Sample"] !== "" ? row["Sample"] : "";
+            const maj = row["Tot Major"] !== "" ? row["Tot Major"] : "";
+            const min = row["Tot Minor"] !== "" ? row["Tot Minor"] : "";
+            const oql = row["OQL"] !== "" ? row["OQL"] : "";
+            const res = row["Result"] !== "" ? row["Result"] : "";
+
+            const showInv = inv && inv !== ultimaInv ? inv : (inv ? "" : "");
+            // Lógica para mostrar los datos principales en la primera línea del ítem y dejar en blanco en las líneas subsiguientes de defectos
+            const isFirstOfGroup = (inv !== "" || po !== "");
+
             let defectText = "-";
             if (row["Defect Description"]) {
                 defectText = `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})`;
@@ -1177,7 +1198,7 @@ function descargarPDF() {
                 defectText,
                 row["Tot Major"],
                 row["Tot Minor"],
-                row["OQL"],
+                    row["OQL"],
                 row["Result"]
             ]);
         });
@@ -1236,7 +1257,6 @@ function descargarPDF() {
         }
     }
 
-    // FORMATO DE NOMBRE DE DESCARGA: estilo - vendor - po number
     const safeEstilo = (estiloStr || "Estilo").replace(/[\/\\?%*:|"<>]/g, "-");
     const safeVendor = (vendor || "Vendor").replace(/[\/\\?%*:|"<>]/g, "-");
     const safePo = (poStr || "PO").replace(/[\/\\?%*:|"<>]/g, "-");
