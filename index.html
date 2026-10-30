@@ -339,10 +339,10 @@
         </div>
     </div>
 
-    <!-- SECCIÓN DE BÚSQUEDA Y BOTONES DE SEGUNDA AUDITORÍA / 100% -->
+    <!-- SECCIÓN DE BÚSQUEDA Y GESTIÓN DE MÚLTIPLES AUDITORÍAS -->
     <div class="card" id="barra-segunda">
         <div style="font-weight:600; color:#003366; margin-bottom:10px;">
-            🔎 Buscar la auditoría anterior (Segunda Auditoría / Inspección 100%)
+            🔎 Búsqueda y Apertura de Auditorías / Inspecciones por PO
         </div>
 
         <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
@@ -354,14 +354,15 @@
                 <label for="buscar-estilo" style="display:block; font-size:13px;">Style:</label>
                 <input type="text" id="buscar-estilo" placeholder="Style" style="padding:8px; border:1px solid #ccc; border-radius:6px;">
             </div>
-            <button class="btn btn-add btn-buscar" style="background-color:#e67e22" onclick="buscarYGenerar('segunda')">🔁 SEGUNDA AUDITORÍA</button>
-            <button class="btn btn-add btn-buscar" style="background-color:#8e44ad" onclick="buscarYGenerar('100')">💯 INSPECCIÓN 100%</button>
+            <button class="btn btn-add btn-buscar" style="background-color:#003366" onclick="buscarYCargarTodo()">🔍 BUSCAR TODO</button>
+            <button class="btn btn-add btn-buscar" style="background-color:#e67e22" onclick="abrirTablaExtra(2)">🔁 + HABILITAR 2ª AUDITORÍA</button>
+            <button class="btn btn-add btn-buscar" style="background-color:#8e44ad" onclick="abrirTablaExtra(3)">💯 + HABILITAR INSPECCIÓN 100%</button>
         </div>
 
         <div style="margin-top:12px; font-size:13px;">
             <label for="excel-fuente">📂 Buscar en un Excel (opcional):</label>
             <input id="excel-fuente" type="file" accept=".xlsx,.xls,.csv" onchange="cargarExcelFuente(this)">
-            <span class="photo-count">Si no cargas ningún Excel, se busca en el Google Sheets donde se guarda con 💾 Save Audit.</span>
+            <span class="photo-count">Si no cargas ningún Excel, se busca en el Google Sheets vinculado.</span>
         </div>
 
         <div id="resultado-busqueda" style="margin-top:12px; font-size:13px; line-height:1.5;"></div>
@@ -371,12 +372,10 @@
         <label for="fotos-medicion">📏 Fotos de las hojas de medición (puedes seleccionar varias):</label>
         <input id="fotos-medicion" type="file" accept="image/*" multiple onchange="cargarFotosMedicion(this)">
         <div id="vista-fotos-medicion" class="measurement-preview"></div>
-        <div class="photo-count">
-            Las fotos seleccionadas y los detalles de las mediciones se incluirán organizados al final del PDF.
-        </div>
+        <div class="photo-count">Las fotos seleccionadas se incluirán organizadas al final del PDF.</div>
     </div>
 
-    <!-- TABLA DE AUDITORÍA 1 -->
+    <!-- TABLA 1: AUDIT 1 -->
     <div class="card table-responsive">
         <div class="audit-head">
             <div>
@@ -385,7 +384,7 @@
             </div>
             <button class="btn btn-add btn-small" onclick="agregarFila(1)">➕ Add Item</button>
         </div>
-        <table id="tabla" class="audit-table" data-audit="1">
+        <table id="tabla1" class="audit-table" data-audit="1">
             <thead>
                 <tr>
                     <th>Invoice</th>
@@ -406,19 +405,52 @@
         </table>
     </div>
 
-    <!-- TABLA DE SEGUNDA AUDITORÍA / 100% -->
+    <!-- TABLA 2: SEGUNDA AUDITORÍA (Nivel III) -->
     <div class="card table-responsive" id="card-audit2" style="display:none">
         <div class="audit-head">
             <div>
-                <h2 class="audit-title" id="titulo-audit2">🔎 Segunda Auditoría</h2>
-                <p class="audit-sub" id="sub-audit2">Military Standard – Table Level III – AQL 2.5</p>
+                <h2 class="audit-title">🔎 Segunda Auditoría</h2>
+                <p class="audit-sub">Military Standard – Table Level III – AQL 2.5</p>
             </div>
             <div style="display:flex; gap:8px;">
                 <button class="btn btn-add btn-small" style="background-color:#e67e22" onclick="agregarFila(2)">➕ Add Item</button>
-                <button class="btn btn-pdf btn-small" onclick="cerrarSegundaAuditoria()">🗑️ Quitar</button>
+                <button class="btn btn-pdf btn-small" onclick="cerrarTablaExtra(2)">🗑️ Quitar</button>
             </div>
         </div>
         <table id="tabla2" class="audit-table" data-audit="2">
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th>PO</th>
+                    <th>Style</th>
+                    <th>Color</th>
+                    <th>Tot Qty</th>
+                    <th>Spl</th>
+                    <th>Defect / Category / Qty</th>
+                    <th>Maj</th>
+                    <th>Min</th>
+                    <th>AQL%</th>
+                    <th>Result</th>
+                    <th>Comments</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- TABLA 3: INSPECCIÓN 100% -->
+    <div class="card table-responsive" id="card-audit3" style="display:none">
+        <div class="audit-head">
+            <div>
+                <h2 class="audit-title">🔎 Inspección 100%</h2>
+                <p class="audit-sub">Revisión total de piezas (100% Inspected)</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-add btn-small" style="background-color:#8e44ad" onclick="agregarFila(3)">➕ Add Item</button>
+                <button class="btn btn-pdf btn-small" onclick="cerrarTablaExtra(3)">🗑️ Quitar</button>
+            </div>
+        </div>
+        <table id="tabla3" class="audit-table" data-audit="3" data-modo="100">
             <thead>
                 <tr>
                     <th>Invoice</th>
@@ -525,21 +557,23 @@ const RANGOS_NIVEL_III = [
 
 function numeroAuditoria(tr) {
     const t = tr.closest("table");
-    return t && t.dataset.audit === "2" ? 2 : 1;
+    if (!t) return 1;
+    if (t.id === "tabla2") return 2;
+    if (t.id === "tabla3") return 3;
+    return parseInt(t.dataset.audit) || 1;
 }
 
 function obtenerTablaAQL(tr) {
-    if (numeroAuditoria(tr) === 2) return RANGOS_NIVEL_III;
+    const num = numeroAuditoria(tr);
+    if (num === 2) return RANGOS_NIVEL_III;
+    if (num === 3) return []; // 100%
     const vendorActual = document.getElementById("vendor").value;
     return vendorActual === "Kay & Emms Pvt ltd" ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
 }
 
-function nombreEstandar(audit, vendor) {
-    if (audit === 2) {
-        const t2 = document.getElementById("tabla2");
-        if (t2 && t2.dataset.modo === "100") return "100% INSPECTION";
-        return "MIL-STD-105E Level III (2.5)";
-    }
+function nombreEstandar(auditNum, vendor) {
+    if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
+    if (auditNum === 3) return "100% INSPECTION";
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
@@ -547,15 +581,18 @@ function manejarCambioDeProducto() {
     const tipo = document.getElementById("product-type").value;
     const vendorSel = document.getElementById("vendor");
     vendorSel.innerHTML = '<option value="">-- Select Vendor --</option>';
-    PROVEEDORES[tipo].forEach(v => {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v;
-        vendorSel.appendChild(opt);
-    });
+    if (PROVEEDORES[tipo]) {
+        PROVEEDORES[tipo].forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v;
+            vendorSel.appendChild(opt);
+        });
+    }
     document.querySelectorAll(".audit-table tbody").forEach(tb => tb.innerHTML = "");
     agregarFila(1);
-    cerrarSegundaAuditoria(true);
+    cerrarTablaExtra(2);
+    cerrarTablaExtra(3);
 }
 
 function actualizarTablaAQL() {
@@ -578,7 +615,7 @@ function calcularFila(tr, esCambioTotal = true) {
     tr.querySelector('[name="totalMajor[]"]').value = major;
     tr.querySelector('[name="totalMinor[]"]').value = minor;
 
-    const modo100 = tr.closest("table").dataset.modo === "100";
+    const modo100 = numeroAuditoria(tr) === 3 || tr.closest("table").dataset.modo === "100";
     if (modo100) muestraInput.value = total > 0 ? total : "";
 
     let muestraVal = parseInt(muestraInput.value);
@@ -614,8 +651,10 @@ function calcularFila(tr, esCambioTotal = true) {
     }
 }
 
-function agregarFila(audit = 1) {
-    const tbody = document.querySelector(audit === 2 ? "#tabla2 tbody" : "#tabla tbody");
+function agregarFila(auditNum = 1) {
+    const selector = auditNum === 2 ? "#tabla2 tbody" : (auditNum === 3 ? "#tabla3 tbody" : "#tabla1 tbody");
+    const tbody = document.querySelector(selector);
+    if (!tbody) return;
     const tr = document.createElement("tr");
     tr.innerHTML = `
         <td><input type="text" name="factura[]" placeholder="..."></td>
@@ -637,11 +676,20 @@ function agregarFila(audit = 1) {
     tbody.appendChild(tr);
 }
 
-function cerrarSegundaAuditoria() {
-    const tabla2 = document.getElementById("tabla2");
-    tabla2.querySelector("tbody").innerHTML = "";
-    delete tabla2.dataset.modo;
-    document.getElementById("card-audit2").style.display = "none";
+function abrirTablaExtra(num) {
+    const card = document.getElementById(`card-audit${num}`);
+    if (card) card.style.display = "";
+    const tbody = document.querySelector(`#tabla${num} tbody`);
+    if (tbody && tbody.children.length === 0) {
+        agregarFila(num);
+    }
+}
+
+function cerrarTablaExtra(num) {
+    const card = document.getElementById(`card-audit${num}`);
+    if (card) card.style.display = "none";
+    const tbody = document.querySelector(`#tabla${num} tbody`);
+    if (tbody) tbody.innerHTML = "";
 }
 
 let fuenteExcel = null;
@@ -678,11 +726,12 @@ function rellenarContinuaciones(rows) {
     });
 }
 
-function esPrimeraAuditoria(r) {
-    const a = campo(r, "Audit");
-    if (a) return a === "Audit 1";
+function identificarTipoAuditoriaFila(r) {
+    const a = campo(r, "Audit").toLowerCase();
     const std = campo(r, "AQL Standard").toLowerCase();
-    return !(std.includes("level iii") || std.includes("100%"));
+    if (a.includes("audit 2") || std.includes("level iii")) return 2;
+    if (a.includes("100%") || std.includes("100%")) return 3;
+    return 1;
 }
 
 function idNumerico(id) { return parseInt(String(id).replace(/\D/g, "")) || 0; }
@@ -703,24 +752,6 @@ function agruparItems(filas) {
         }
     });
     return [...items.values()];
-}
-
-function seleccionarAuditoriaPrevia(rows, po, estilo, tipoBusqueda) {
-    let filas = rellenarContinuaciones(rows).filter(r =>
-        campo(r, "PO").toLowerCase() === po.toLowerCase() &&
-        (!estilo || campo(r, "Style").toLowerCase() === estilo.toLowerCase())
-    );
-
-    if (tipoBusqueda === "primera") {
-        filas = filas.filter(r => esPrimeraAuditoria(r));
-    } else {
-        filas = filas.filter(r => !esPrimeraAuditoria(r));
-    }
-
-    const ids = filas.map(r => idNumerico(campo(r, "Audit ID")));
-    const maxId = ids.length ? Math.max(...ids) : 0;
-    if (maxId > 0) filas = filas.filter((r, i) => ids[i] === maxId);
-    return filas;
 }
 
 async function cargarExcelFuente(input) {
@@ -766,25 +797,13 @@ function asegurarOpcion(select, valor) {
     select.value = valor;
 }
 
-function aplicarItemsATabla(items, auditNum, modo) {
-    const tabla = auditNum === 2 ? document.getElementById("tabla2") : document.getElementById("tabla");
+function aplicarItemsATabla(items, auditNum) {
+    const tabla = document.getElementById(`tabla${auditNum}`);
+    if (!tabla) return;
     const tbody = tabla.querySelector("tbody");
-
-    if (auditNum === 2) {
-        if (modo === "100") {
-            tabla.dataset.modo = "100";
-            document.getElementById("titulo-audit2").textContent = "🔎 Inspección 100%";
-            document.getElementById("sub-audit2").textContent = "Se revisa el 100% de las piezas";
-        } else {
-            delete tabla.dataset.modo;
-            document.getElementById("titulo-audit2").textContent = "🔎 Segunda Auditoría";
-            document.getElementById("sub-audit2").textContent = "Military Standard – Table Level III – AQL 2.5";
-        }
-    }
+    if (auditNum >= 2) abrirTablaExtra(auditNum);
 
     tbody.innerHTML = "";
-    let agregados = 0;
-
     items.forEach(item => {
         const b = item.base;
         agregarFila(auditNum);
@@ -806,64 +825,80 @@ function aplicarItemsATabla(items, auditNum, modo) {
         });
 
         calcularFila(tr, true);
-        agregados++;
     });
-
-    if (auditNum === 2) {
-        document.getElementById("card-audit2").style.display = "";
-    }
-    return agregados;
 }
 
-async function buscarYGenerar(modo) {
+async function buscarYCargarTodo() {
     const po = document.getElementById("buscar-po").value.trim();
     const estilo = document.getElementById("buscar-estilo").value.trim();
     const out = document.getElementById("resultado-busqueda");
-    const botones = document.querySelectorAll(".btn-buscar");
 
-    if (!po) return alert("Escribe la PO.");
-    out.textContent = "⏳ Buscando en el sistema...";
-    botones.forEach(b => b.disabled = true);
+    if (!po) return alert("Escribe la PO para buscar.");
+    out.textContent = "⏳ Buscando auditorías en el sistema...";
 
     try {
         const rows = await obtenerFilasFuente(po, estilo);
-        
-        // 1. Cargar obligatoriamente Audit 1 arriba
-        const filasAudit1 = seleccionarAuditoriaPrevia(rows, po, estilo, "primera");
-        if (filasAudit1.length > 0) {
-            const items1 = agruparItems(filasAudit1);
-            aplicarItemsATabla(items1, 1, "primera");
+        const filasRellenadas = rellenarContinuaciones(rows).filter(r =>
+            campo(r, "PO").toLowerCase() === po.toLowerCase() &&
+            (!estilo || campo(r, "Style").toLowerCase() === estilo.toLowerCase())
+        );
+
+        if (filasRellenadas.length === 0) {
+            out.innerHTML = `⚠️ No se encontraron registros con la PO <b>${escHtml(po)}</b>.`;
+            return;
         }
 
-        // 2. Cargar Audit 2 o 100% abajo según el botón presionado
-        const filasAudit2 = seleccionarAuditoriaPrevia(rows, po, estilo, "segunda");
-        let agregados2 = 0;
-        if (filasAudit2.length > 0) {
-            const items2 = agruparItems(filasAudit2);
-            agregados2 = aplicarItemsATabla(items2, 2, modo);
-        } else {
-            const filasBase = seleccionarAuditoriaPrevia(rows, po, estilo, "primera");
-            if (filasBase.length > 0) {
-                const itemsBase = agruparItems(filasBase);
-                itemsBase.forEach(i => i.defectos = []);
-                agregados2 = aplicarItemsATabla(itemsBase, 2, modo);
-            }
+        // Sincronizar tipo de producto y proveedor
+        const tipoHallado = campo(filasRellenadas[0], "Product Type").toUpperCase();
+        if (tipoHallado && (tipoHallado === "HEADWEAR" || tipoHallado === "APPAREL")) {
+            document.getElementById("product-type").value = tipoHallado;
+            manejarCambioDeProductoSinLimpiar();
         }
 
         const vendorSel = document.getElementById("vendor");
-        const vendorHallado = campo(rows[0], "Vendor");
-        if (!vendorSel.value && vendorHallado) {
-            vendorSel.value = vendorHallado;
+        const vendorHallado = campo(filasRellenadas[0], "Vendor");
+        if (vendorHallado) {
+            asegurarOpcion(vendorSel, vendorHallado);
             actualizarTablaAQL();
         }
 
-        out.innerHTML = `✅ Datos cargados correctamente. Audit 1 y ${modo === '100' ? 'Inspección 100%' : 'Segunda Auditoría'} listas.`;
-        document.getElementById(modo === '100' || modo === 'segunda' ? "card-audit2" : "tabla").scrollIntoView({ behavior: "smooth", block: "start" });
+        // Limpiar todas las tablas
+        document.querySelector("#tabla1 tbody").innerHTML = "";
+        cerrarTablaExtra(2);
+        cerrarTablaExtra(3);
+
+        // Agrupar y separar por tipo de auditoría
+        const grupos = { 1: [], 2: [], 3: [] };
+        filasRellenadas.forEach(r => {
+            const tipo = identificarTipoAuditoriaFila(r);
+            grupos[tipo].push(r);
+        });
+
+        if (grupos[1].length > 0) aplicarItemsATabla(agruparItems(grupos[1]), 1);
+        if (grupos[2].length > 0) aplicarItemsATabla(agruparItems(grupos[2]), 2);
+        if (grupos[3].length > 0) aplicarItemsATabla(agruparItems(grupos[3]), 3);
+
+        out.innerHTML = `✅ Búsqueda exitosa: Se cargaron los bloques correspondientes para la PO <b>${escHtml(po)}</b>.`;
+        document.querySelector(".container").scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (e) {
-        out.innerHTML = `❌ Error: ${escHtml(e.message)}`;
-    } finally {
-        botones.forEach(b => b.disabled = false);
+        out.innerHTML = `❌ Error en la búsqueda: ${escHtml(e.message)}`;
     }
+}
+
+function manejarCambioDeProductoSinLimpiar() {
+    const tipo = document.getElementById("product-type").value;
+    const vendorSel = document.getElementById("vendor");
+    const valorActual = vendorSel.value;
+    vendorSel.innerHTML = '<option value="">-- Select Vendor --</option>';
+    if (PROVEEDORES[tipo]) {
+        PROVEEDORES[tipo].forEach(v => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v;
+            vendorSel.appendChild(opt);
+        });
+    }
+    if (valorActual) asegurarOpcion(vendorSel, valorActual);
 }
 
 function agregarDefectoManual(btn) {
@@ -957,12 +992,16 @@ function recolectarDatosParaExportar() {
         const totalQty = tr.querySelector('[name="total[]"]').value;
         if (!totalQty || totalQty === "0") return;
 
+        let nombreAuditStr = "Audit 1";
+        if (auditNum === 2) nombreAuditStr = "Audit 2";
+        if (auditNum === 3) nombreAuditStr = "100% Inspection";
+
         const base = {
             "Date": fecha,
             "Auditor": auditor,
             "Vendor": vendor,
-            "Audit": "Audit " + auditNum,
-            "AQL Standard": nombreEstandar(auditNum, vendor),
+            "Audit": nombreAuditStr,
+            "AQL Standard": nombreEstandارAux(auditNum, vendor),
             "Invoice": tr.querySelector('[name="factura[]"]').value || "",
             "PO": tr.querySelector('[name="po[]"]').value || "",
             "Style": tr.querySelector('[name="estilo[]"]').value || "",
@@ -971,7 +1010,7 @@ function recolectarDatosParaExportar() {
             "Sample": tr.querySelector('[name="muestra[]"]').value || "0",
             "Tot Major": tr.querySelector('[name="totalMajor[]"]').value || "0",
             "Tot Minor": tr.querySelector('[name="totalMinor[]"]').value || "0",
-            "OQL": tr.querySelector('[name="aql[]"]').value || "0%",
+            "AQL%": tr.querySelector('[name="aql[]"]').value || "0%",
             "Result": tr.querySelector('[name="ar[]"]').value || "APPROVED",
             "Comments": tr.querySelector('[name="comentarios[]"]').value || ""
         };
@@ -991,7 +1030,7 @@ function recolectarDatosParaExportar() {
                     ...(primero ? base : {
                         "Date": "", "Auditor": "", "Vendor": "", "Audit": "", "AQL Standard": "",
                         "Invoice": "", "PO": "", "Style": "", "Color": "", "Total Qty": "",
-                        "Sample": "", "Tot Major": "", "Tot Minor": "", "OQL": "", "Result": "", "Comments": ""
+                        "Sample": "", "Tot Major": "", "Tot Minor": "", "AQL%": "", "Result": "", "Comments": ""
                     }),
                     "Defect Description": defName || "UNSPECIFIED DEFECT",
                     "Def Cat": dr.querySelector(".sel-cat").value,
@@ -1008,6 +1047,12 @@ function recolectarDatosParaExportar() {
     });
 
     return data;
+}
+
+function nombreEstandارAux(auditNum, vendor) {
+    if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
+    if (auditNum === 3) return "100% INSPECTION";
+    return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
 async function guardarAuditoria(btn) {
@@ -1095,32 +1140,54 @@ function descargarPDF() {
     doc.setTextColor(100, 100, 100);
     doc.text(`Vendor: ${vendor}  |  Auditor: ${auditor}  |  Date: ${new Date().toLocaleDateString()}`, 14, 21);
 
-    const tableRows = datos.map(row => [
-        row["Audit"],
-        row["Invoice"],
-        row["PO"],
-        row["Style"],
-        row["Color"],
-        row["Total Qty"],
-        row["Sample"],
-        row["Defect Description"] ? `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})` : "-",
-        row["Tot Major"],
-        row["Tot Minor"],
-        row["OQL"],
-        row["Result"],
-        row["Comments"]
-    ]);
+    // Agrupar los datos por tipo de auditoría para generar cuadros (tablas) separados en el PDF
+    const gruposSecciones = {};
+    datos.forEach(row => {
+        const tipo = row["Audit"] || "Audit 1";
+        if (!gruposSecciones[tipo]) gruposSecciones[tipo] = [];
+        gruposSecciones[tipo].push(row);
+    });
 
-    doc.autoTable({
-        startY: 26,
-        head: [[
-            'Audit', 'Invoice', 'PO', 'Style', 'Color', 'Tot', 'Spl',
-            'Defect Details (Cat: Qty)', 'Maj', 'Min', 'AQL%', 'Result', 'Comments'
-        ]],
-        body: tableRows,
-        styles: { fontSize: 8, cellPadding: 3 },
-        headStyles: { fillColor: [0, 51, 102] },
-        columnStyles: { 7: { cellWidth: 70 } }
+    let currentY = 26;
+
+    Object.keys(gruposSecciones).forEach((nombreSeccion) => {
+        const filasSeccion = gruposSecciones[nombreSeccion];
+
+        // Título del cuadro/sección dentro del PDF
+        if (currentY > 170) { doc.addPage(); currentY = 20; }
+        doc.setFontSize(12);
+        doc.setTextColor(0, 51, 102);
+        doc.text(`--- ${nombreSeccion.toUpperCase()} ---`, 14, currentY);
+        currentY += 4;
+
+        const tableRows = filasSeccion.map(row => [
+            row["Invoice"],
+            row["PO"],
+            row["Style"],
+            row["Color"],
+            row["Total Qty"],
+            row["Sample"],
+            row["Defect Description"] ? `${row["Defect Description"]} (${row["Def Cat"]}: ${row["Def Qty"]})` : "-",
+            row["Tot Major"],
+            row["Tot Minor"],
+            row["AQL%"],
+            row["Result"],
+            row["Comments"]
+        ]);
+
+        doc.autoTable({
+            startY: currentY,
+            head: [[
+                'Inv', 'PO', 'Style', 'Color', 'Tot', 'Spl',
+                'Defect Details', 'Maj', 'Min', 'AQL%', 'Result'
+            ]],
+            body: tableRows.map(r => [r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10]]),
+            styles: { fontSize: 8, cellPadding: 3 },
+            headStyles: { fillColor: [0, 51, 102] },
+            columnStyles: { 6: { cellWidth: 70 } }
+        });
+
+        currentY = doc.lastAutoTable.finalY + 10;
     });
 
     let hayFotosDefectos = datos.some(d => d.FotosDef && d.FotosDef.length > 0);
