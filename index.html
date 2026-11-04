@@ -505,7 +505,7 @@ const LISTA_DEFECTOS = {
         "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS",
         "INCORRECT CAP COLOR", "VISORS CROOKED/OFF-CENTER", "STITCHING ON BRIM", "POOR CONSTRUCTION ",
         "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK",
-        "DEFECTIVE STRAP BBUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
+        "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
         "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
         "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS"
     ],
@@ -1053,7 +1053,9 @@ async function guardarAuditoria(btn) {
     if (datos.length === 0) return alert("No data to save.");
 
     const auditId = "AUD-" + Date.now();
-    const timestamp = new Date().toISOString();
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const timestamp = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
     const tipo = document.getElementById("product-type").value;
     let previa = null;
 
@@ -1119,7 +1121,9 @@ function descargarExcel() {
     const productType = document.getElementById("product-type").value;
     const vendorName = document.getElementById("vendor").value || "Vendor";
     const auditId = "AUD-" + Date.now();
-    const timestamp = new Date().toISOString();
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const timestamp = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
     let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "", ultimoTot = "";
 
@@ -1298,7 +1302,6 @@ function descargarPDF() {
 
     let hayFotosDefectos = datos.some(d => d.FotosDef && d.FotosDef.length > 0);
     if (hayFotosDefectos || (fotosHojasMedicion && fotosHojasMedicion.length > 0)) {
-        // Recorrer fotos de defectos (1 foto por página)
         datos.forEach(d => {
             if (d.FotosDef && d.FotosDef.length > 0) {
                 d.FotosDef.forEach((f, idx) => {
@@ -1312,11 +1315,10 @@ function descargarPDF() {
                     doc.text(`PO: ${d["PO"] || "N/A"}  |  Style: ${d["Style"] || "N/A"}  |  Defect: ${d["Defect Description"] || "N/A"} (${d["Def Cat"] || ""})`, 14, 22);
 
                     try {
-                        // En orientacion Horizontal A4: Ancho = 297mm, Alto = 210mm
                         const imgW = f.width || 1000;
                         const imgH = f.height || 750;
-                        const maxW = 269; // 297 - 28
-                        const maxH = 165; // 210 - 45
+                        const maxW = 269;
+                        const maxH = 165;
                         const ratio = Math.min(maxW / imgW, maxH / imgH);
                         const finalW = imgW * ratio;
                         const finalH = imgH * ratio;
@@ -1329,7 +1331,6 @@ function descargarPDF() {
             }
         });
 
-        // Recorrer fotos de hojas de medicion (1 foto por página)
         if (fotosHojasMedicion && fotosHojasMedicion.length > 0) {
             fotosHojasMedicion.forEach((foto, index) => {
                 doc.addPage();
