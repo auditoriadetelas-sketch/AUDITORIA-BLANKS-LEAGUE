@@ -505,7 +505,7 @@ const LISTA_DEFECTOS = {
         "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS",
         "INCORRECT CAP COLOR", "VISORS CROOKED/OFF-CENTER", "STITCHING ON BRIM", "POOR CONSTRUCTION ",
         "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK",
-        "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
+        "DEFECTIVE STRAP BBUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
         "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
         "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS"
     ],
@@ -569,12 +569,6 @@ function obtenerTablaAQL(tr) {
     if (num === 3) return []; // 100%
     const vendorActual = document.getElementById("vendor").value;
     return vendorActual === "Kay & Emms Pvt ltd" ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
-}
-
-function nombreEstandار(auditNum, vendor) {
-    if (auditNum === 2) return "MIL-STD-105E Level III (2.5)";
-    if (auditNum === 3) return "CONSOLIDATED";
-    return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
 function nombreEstandar(auditNum, vendor) {
@@ -985,17 +979,12 @@ async function cargarFotosMedicion(input) {
 function recolectarDatosParaExportar() {
     const vendor = document.getElementById("vendor").value || "N/A";
     const auditor = document.getElementById("auditor").value || "N/A";
-    const fecha = new Date().toLocaleDateString();
     const data = [];
 
     document.querySelectorAll(".audit-table tbody tr").forEach(tr => {
         const auditNum = numeroAuditoria(tr);
         const totalQty = tr.querySelector('[name="total[]"]').value;
         if (!totalQty || totalQty === "0") return;
-
-        let nombreAuditStr = "Audit 1";
-        if (auditNum === 2) nombreAuditStr = "Audit 2";
-        if (auditNum === 3) nombreAuditStr = "100% Inspection";
 
         const base = {
             "Audit ID": "",
@@ -1081,7 +1070,6 @@ async function guardarAuditoria(btn) {
         }
         delete fila["FotosDef"];
         
-        // Retornar en el orden estricto solicitado:
         return {
             "Audit ID": fila["Audit ID"],
             "Timestamp": fila["Timestamp"],
@@ -1130,33 +1118,60 @@ function descargarExcel() {
     if (datos.length === 0) return alert("No data to export.");
     const productType = document.getElementById("product-type").value;
     const vendorName = document.getElementById("vendor").value || "Vendor";
+    const auditId = "AUD-" + Date.now();
+    const timestamp = new Date().toISOString();
 
-    const wsData = datos.map(d => ({
-        "Audit ID": d["Audit ID"],
-        "Timestamp": d["Timestamp"],
-        "Auditor": d["Auditor"],
-        "Product Type": d["Product Type"],
-        "Vendor": d["Vendor"],
-        "AQL Standard": d["AQL Standard"],
-        "Invoice": d["Invoice"],
-        "PO": d["PO"],
-        "Style": d["Style"],
-        "Color": d["Color"],
-        "Total Qty": d["Total Qty"],
-        "Sample": d["Sample"],
-        "Tot Major": d["Tot Major"],
-        "Tot Minor": d["Tot Minor"],
-        "AQL%": d["AQL%"],
-        "Result": d["Result"],
-        "Comments": d["Comments"],
-        "Defect Description": d["Defect Description"],
-        "Def Cat": d["Def Cat"],
-        "Def Qty": d["Def Qty"]
-    }));
+    let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "", ultimoTot = "";
+
+    const wsData = datos.map(d => {
+        const inv = d["Invoice"] || "";
+        const po = d["PO"] || "";
+        const estilo = d["Style"] || "";
+        const color = d["Color"] || "";
+        const tot = d["Total Qty"] || "";
+
+        const esMismoItem = (
+            inv === ultimaInv &&
+            po === ultimaPo &&
+            estilo === ultimoEstilo &&
+            color === ultimoColor &&
+            tot === ultimoTot &&
+            tot !== ""
+        );
+
+        ultimaInv = inv;
+        ultimaPo = po;
+        ultimoEstilo = estilo;
+        ultimoColor = color;
+        ultimoTot = tot;
+
+        return {
+            "Audit ID": auditId,
+            "Timestamp": timestamp,
+            "Auditor": d["Auditor"],
+            "Product Type": d["Product Type"],
+            "Vendor": d["Vendor"],
+            "AQL Standard": d["AQL Standard"],
+            "Invoice": esMismoItem ? "" : inv,
+            "PO": esMismoItem ? "" : po,
+            "Style": esMismoItem ? "" : estilo,
+            "Color": esMismoItem ? "" : color,
+            "Total Qty": esMismoItem ? "" : (parseFloat(tot) || tot),
+            "Sample": esMismoItem ? "" : (parseFloat(d["Sample"]) || d["Sample"]),
+            "Tot Major": esMismoItem ? "" : (parseFloat(d["Tot Major"]) || 0),
+            "Tot Minor": esMismoItem ? "" : (parseFloat(d["Tot Minor"]) || 0),
+            "AQL%": esMismoItem ? "" : d["AQL%"],
+            "Result": esMismoItem ? "" : d["Result"],
+            "Comments": esMismoItem ? "" : d["Comments"],
+            "Defect Description": d["Defect Description"],
+            "Def Cat": d["Def Cat"],
+            "Def Qty": d["Def Qty"] ? (parseFloat(d["Def Qty"]) || d["Def Qty"]) : ""
+        };
+    });
 
     const ws = XLSX.utils.json_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "AuditReport");
+    XLSX.utils.book_append_sheet(wb, ws, "Audits");
     XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, "_")}.xlsx`);
 }
 
@@ -1283,38 +1298,61 @@ function descargarPDF() {
 
     let hayFotosDefectos = datos.some(d => d.FotosDef && d.FotosDef.length > 0);
     if (hayFotosDefectos || (fotosHojasMedicion && fotosHojasMedicion.length > 0)) {
-        doc.addPage();
-        doc.setFontSize(14);
-        doc.setTextColor(0, 51, 102);
-        doc.text("ANEXO: FOTOGRAFÍAS DE DEFECTOS Y HOJAS DE MEDICIÓN", 14, 18);
-
-        let yPos = 25;
+        // Recorrer fotos de defectos (1 foto por página)
         datos.forEach(d => {
             if (d.FotosDef && d.FotosDef.length > 0) {
-                d.FotosDef.forEach(f => {
-                    if (yPos > 150) { doc.addPage(); yPos = 20; }
+                d.FotosDef.forEach((f, idx) => {
+                    doc.addPage();
+                    doc.setFontSize(14);
+                    doc.setTextColor(0, 51, 102);
+                    doc.text("ANEXO: FOTOGRAFÍA DE DEFECTO", 14, 15);
+
                     doc.setFontSize(10);
                     doc.setTextColor(50, 50, 50);
-                    doc.text(`Defect Photo - PO: ${d["PO"]} | Style: ${d["Style"]} | Defect: ${d["Defect Description"]}`, 14, yPos);
-                    yPos += 5;
+                    doc.text(`PO: ${d["PO"] || "N/A"}  |  Style: ${d["Style"] || "N/A"}  |  Defect: ${d["Defect Description"] || "N/A"} (${d["Def Cat"] || ""})`, 14, 22);
+
                     try {
-                        doc.addImage(f.data, 'JPEG', 14, yPos, 110, 80);
-                        yPos += 90;
+                        // En orientacion Horizontal A4: Ancho = 297mm, Alto = 210mm
+                        const imgW = f.width || 1000;
+                        const imgH = f.height || 750;
+                        const maxW = 269; // 297 - 28
+                        const maxH = 165; // 210 - 45
+                        const ratio = Math.min(maxW / imgW, maxH / imgH);
+                        const finalW = imgW * ratio;
+                        const finalH = imgH * ratio;
+                        const posX = 14 + (maxW - finalW) / 2;
+                        const posY = 27 + (maxH - finalH) / 2;
+
+                        doc.addImage(f.data, 'JPEG', posX, posY, finalW, finalH);
                     } catch (err) { console.error(err); }
                 });
             }
         });
 
+        // Recorrer fotos de hojas de medicion (1 foto por página)
         if (fotosHojasMedicion && fotosHojasMedicion.length > 0) {
             fotosHojasMedicion.forEach((foto, index) => {
-                if (yPos > 150) { doc.addPage(); yPos = 20; }
+                doc.addPage();
+                doc.setFontSize(14);
+                doc.setTextColor(0, 51, 102);
+                doc.text("ANEXO: HOJA DE MEDICIÓN", 14, 15);
+
                 doc.setFontSize(10);
                 doc.setTextColor(50, 50, 50);
-                doc.text(`Measurement Sheet #${index + 1} (${foto.name || ''})`, 14, yPos);
-                yPos += 5;
+                doc.text(`Measurement Sheet #${index + 1} (${foto.name || 'File'})`, 14, 22);
+
                 try {
-                    doc.addImage(foto.data, 'JPEG', 14, yPos, 110, 85);
-                    yPos += 95;
+                    const imgW = foto.width || 1200;
+                    const imgH = foto.height || 1600;
+                    const maxW = 269;
+                    const maxH = 165;
+                    const ratio = Math.min(maxW / imgW, maxH / imgH);
+                    const finalW = imgW * ratio;
+                    const finalH = imgH * ratio;
+                    const posX = 14 + (maxW - finalW) / 2;
+                    const posY = 27 + (maxH - finalH) / 2;
+
+                    doc.addImage(foto.data, 'JPEG', posX, posY, finalW, finalH);
                 } catch (err) { console.error(err); }
             });
         }
