@@ -1070,7 +1070,7 @@ async function guardarAuditoria(btn) {
         }
         delete fila["FotosDef"];
         
-        // RETORNAR OBJETO CON PROPIEDADES EN EL ORDEN ESTRICTO EXACTO
+        // OBJETOS CON PROPIEDADES EN ORDEN EXPLICITO
         return {
             "Audit ID": fila["Audit ID"],
             "Timestamp": fila["Timestamp"],
@@ -1124,7 +1124,7 @@ function descargarExcel() {
 
     let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "", ultimoTot = "";
 
-    const wsData = datos.map(d => {
+    const rowsArray = datos.map(d => {
         const inv = d["Invoice"] || "";
         const po = d["PO"] || "";
         const estilo = d["Style"] || "";
@@ -1146,32 +1146,39 @@ function descargarExcel() {
         ultimoColor = color;
         ultimoTot = tot;
 
-        // RETORNAR OBJETO CON PROPIEDADES EN EL ORDEN ESTRICTO EXACTO
-        return {
-            "Audit ID": auditId,
-            "Timestamp": timestamp,
-            "Auditor": d["Auditor"],
-            "Product Type": d["Product Type"],
-            "Vendor": d["Vendor"],
-            "AQL Standard": d["AQL Standard"],
-            "Invoice": esMismoItem ? "" : inv,
-            "PO": esMismoItem ? "" : po,
-            "Style": esMismoItem ? "" : estilo,
-            "Color": esMismoItem ? "" : color,
-            "Total Qty": esMismoItem ? "" : (parseFloat(tot) || tot),
-            "Sample": esMismoItem ? "" : (parseFloat(d["Sample"]) || d["Sample"]),
-            "Tot Major": esMismoItem ? "" : (parseFloat(d["Tot Major"]) || 0),
-            "Tot Minor": esMismoItem ? "" : (parseFloat(d["Tot Minor"]) || 0),
-            "AQL%": esMismoItem ? "" : d["AQL%"],
-            "Result": esMismoItem ? "" : d["Result"],
-            "Comments": esMismoItem ? "" : d["Comments"],
-            "Defect Description": d["Defect Description"],
-            "Def Cat": d["Def Cat"],
-            "Def Qty": d["Def Qty"] ? (parseFloat(d["Def Qty"]) || d["Def Qty"]) : ""
-        };
+        return [
+            auditId,
+            timestamp,
+            d["Auditor"],
+            d["Product Type"],
+            d["Vendor"],
+            d["AQL Standard"],
+            esMismoItem ? "" : inv,
+            esMismoItem ? "" : po,
+            esMismoItem ? "" : estilo,
+            esMismoItem ? "" : color,
+            esMismoItem ? "" : (parseFloat(tot) || tot),
+            esMismoItem ? "" : (parseFloat(d["Sample"]) || d["Sample"]),
+            esMismoItem ? "" : (parseFloat(d["Tot Major"]) || 0),
+            esMismoItem ? "" : (parseFloat(d["Tot Minor"]) || 0),
+            esMismoItem ? "" : d["AQL%"],
+            esMismoItem ? "" : d["Result"],
+            esMismoItem ? "" : d["Comments"],
+            d["Defect Description"],
+            d["Def Cat"],
+            d["Def Qty"] ? (parseFloat(d["Def Qty"]) || d["Def Qty"]) : ""
+        ];
     });
 
-    const ws = XLSX.utils.json_to_sheet(wsData);
+    // ENCABEZADOS EXACTOS EN ORDEN ESTRICTO PARA AO_TO_SHEET
+    const headers = [
+        "Audit ID", "Timestamp", "Auditor", "Product Type", "Vendor", "AQL Standard",
+        "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor",
+        "AQL%", "Result", "Comments", "Defect Description", "Def Cat", "Def Qty"
+    ];
+
+    const wsData = [headers, ...rowsArray];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Audits");
     XLSX.writeFile(wb, `${productType}_Audit_Report_${vendorName.replace(/\s+/g, "_")}.xlsx`);
