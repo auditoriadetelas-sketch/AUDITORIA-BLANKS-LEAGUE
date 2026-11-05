@@ -566,7 +566,7 @@ function numeroAuditoria(tr) {
 function obtenerTablaAQL(tr) {
     const num = numeroAuditoria(tr);
     if (num === 2) return RANGOS_NIVEL_III;
-    if (num === 3) return [];
+    if (num === 3) return []; // 100%
     const vendorActual = document.getElementById("vendor").value;
     return vendorActual === "Kay & Emms Pvt ltd" ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
 }
@@ -1053,9 +1053,7 @@ async function guardarAuditoria(btn) {
     if (datos.length === 0) return alert("No data to save.");
 
     const auditId = "AUD-" + Date.now();
-    const now = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    const timestamp = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const timestamp = new Date().toISOString(); // Formato ISO original exacto
     const tipo = document.getElementById("product-type").value;
     let previa = null;
 
@@ -1072,6 +1070,7 @@ async function guardarAuditoria(btn) {
         }
         delete fila["FotosDef"];
         
+        // ORDEN ESTRICTO DE COLUMNAS (Idéntico al inicio para evitar desfases)
         return {
             "Audit ID": fila["Audit ID"],
             "Timestamp": fila["Timestamp"],
@@ -1121,9 +1120,7 @@ function descargarExcel() {
     const productType = document.getElementById("product-type").value;
     const vendorName = document.getElementById("vendor").value || "Vendor";
     const auditId = "AUD-" + Date.now();
-    const now = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    const timestamp = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const timestamp = new Date().toISOString(); // Formato ISO original exacto
 
     let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "", ultimoTot = "";
 
@@ -1149,6 +1146,7 @@ function descargarExcel() {
         ultimoColor = color;
         ultimoTot = tot;
 
+        // ORDEN ESTRICTO DE COLUMNAS PARA EXCEL (Idéntico al inicio)
         return {
             "Audit ID": auditId,
             "Timestamp": timestamp,
@@ -1285,7 +1283,7 @@ function descargarPDF() {
             ]);
         });
 
-        doc.autoTable({
+    doc.autoTable({
             startY: currentY,
             head: [[
                 'Invoice', 'PO', 'Style', 'Color', 'Tot Qty', 'Spl',
