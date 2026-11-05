@@ -566,7 +566,7 @@ function numeroAuditoria(tr) {
 function obtenerTablaAQL(tr) {
     const num = numeroAuditoria(tr);
     if (num === 2) return RANGOS_NIVEL_III;
-    if (num === 3) return []; // 100%
+    if (num === 3) return [];
     const vendorActual = document.getElementById("vendor").value;
     return vendorActual === "Kay & Emms Pvt ltd" ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
 }
@@ -1066,7 +1066,7 @@ async function guardarAuditoria(btn) {
         fila["Product Type"] = tipo;
 
         if (fila["Invoice"] === "" && fila["Total Qty"] === "" && previa) {
-            // Mantener campos base previos si aplica
+            // Mantener campos base previos
         } else {
             previa = { ...fila };
         }
