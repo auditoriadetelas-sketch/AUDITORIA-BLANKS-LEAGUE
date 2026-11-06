@@ -1070,7 +1070,7 @@ async function guardarAuditoria(btn) {
         }
         delete fila["FotosDef"];
         
-        // ORDEN ESTRICTO EXACTO DE LAS 20 COLUMNAS PARA GOOGLE SHEETS
+        // ORDEN EXACTO CORREGIDO Y ALINEADO CON LAS 20 COLUMNAS
         return {
             "Audit ID": fila["Audit ID"],
             "Timestamp": fila["Timestamp"],
@@ -1170,7 +1170,6 @@ function descargarExcel() {
         ];
     });
 
-    // ENCABEZADOS EXACTOS EN EL ORDEN ESTRICTO REQUERIDO
     const headers = [
         "Audit ID", "Timestamp", "Auditor", "Product Type", "Vendor", "AQL Standard",
         "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor",
