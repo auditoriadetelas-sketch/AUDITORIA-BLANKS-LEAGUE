@@ -1040,6 +1040,7 @@ function nombreEstandarAux(auditNum, vendor) {
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
+// GUARDAR AUDITORÍA EN GOOGLE SHEETS (EVITA REPETIR DATOS EN FILAS SECUNDARIAS DE UN MISMO ÍTEM)
 async function guardarAuditoria(btn) {
     const auditorVal = document.getElementById("auditor").value;
     const productTypeVal = document.getElementById("product-type").value;
@@ -1054,7 +1055,27 @@ async function guardarAuditoria(btn) {
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
 
+    let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "";
+
     const rows = datos.map(d => {
+        const inv = d["Invoice"] || "";
+        const po = d["PO"] || "";
+        const estilo = d["Style"] || "";
+        const color = d["Color"] || "";
+
+        const esMismoItem = (
+            inv === ultimaInv &&
+            po === ultimaPo &&
+            estilo === ultimoEstilo &&
+            color === ultimoColor &&
+            inv !== ""
+        );
+
+        ultimaInv = inv;
+        ultimaPo = po;
+        ultimoEstilo = estilo;
+        ultimoColor = color;
+
         return [
             auditId,                           // 1. Audit ID (Col A)
             timestamp,                         // 2. Timestamp (Col B)
@@ -1062,17 +1083,17 @@ async function guardarAuditoria(btn) {
             productTypeVal,                    // 4. Product Type (Col D)
             vendorVal,                         // 5. Vendor (Col E)
             d["AQL Standard"] || "",           // 6. AQL Standard (Col F)
-            d["Invoice"] || "",                // 7. Invoice (Col G)
-            d["PO"] || "",                     // 8. PO (Col H)
-            d["Style"] || "",                  // 9. Style (Col I)
-            d["Color"] || "",                  // 10. Color (Col J)
-            d["Total Qty"] || "",              // 11. Total Qty (Col K)
-            d["Sample"] || "0",                // 12. Sample (Col L)
-            d["Tot Major"] || "0",             // 13. Tot Major (Col M)
-            d["Tot Minor"] || "0",             // 14. Tot Minor (Col N)
-            d["AQL%"] || "0%",                 // 15. AQL% (Col O)
-            d["Result"] || "APPROVED",         // 16. Result (Col P)
-            d["Comments"] || "",               // 17. Comments (Col Q)
+            esMismoItem ? "" : inv,            // 7. Invoice (Col G)
+            esMismoItem ? "" : po,             // 8. PO (Col H)
+            esMismoItem ? "" : estilo,         // 9. Style (Col I)
+            esMismoItem ? "" : color,          // 10. Color (Col J)
+            "",                                // 11. Total Qty (Col K) - Oculto/En blanco en segundas filas
+            "",                                // 12. Sample (Col L) - Oculto/En blanco en segundas filas
+            esMismoItem ? "" : (d["Tot Major"] || "0"), // 13. Tot Major (Col M)
+            esMismoItem ? "" : (d["Tot Minor"] || "0"), // 14. Tot Minor (Col N)
+            "",                                // 15. AQL% (Col O) - Oculto/En blanco
+            "",                                // 16. Result (Col P) - Oculto/En blanco
+            esMismoItem ? "" : (d["Comments"] || ""), // 17. Comments (Col Q)
             d["Defect Description"] || "",     // 18. Defect Description (Col R)
             d["Def Cat"] || "",                // 19. Def Cat (Col S)
             d["Def Qty"] || "0"                // 20. Def Qty (Col T)
