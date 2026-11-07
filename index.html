@@ -1040,42 +1040,43 @@ function nombreEstandarAux(auditNum, vendor) {
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
-// ARREGLO PLANO ESTRICTO DE 20 ELEMENTOS (ELIMINA CUALQUIER DESFASE)
+// GUARDA CADA FILA EN UN ARREGLO PLANO DE 20 POSICIONES FIJAS (SIN NINGÚN DESFASE)
 async function guardarAuditoria(btn) {
-    const selAuditor = document.getElementById("auditor").value;
-    const selVendor = document.getElementById("vendor").value;
-    if (!selAuditor) return alert("Select an auditor first.");
-    if (!selVendor) return alert("Select a vendor first.");
+    const auditorVal = document.getElementById("auditor").value;
+    const productTypeVal = document.getElementById("product-type").value;
+    const vendorVal = document.getElementById("vendor").value;
+
+    if (!auditorVal) return alert("Select an auditor first.");
+    if (!vendorVal) return alert("Select a vendor first.");
 
     const datos = recolectarDatosParaExportar();
     if (datos.length === 0) return alert("No data to save.");
 
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
-    const tipo = document.getElementById("product-type").value;
 
     const rows = datos.map(d => {
         return [
-            auditId,                     // 1. Audit ID
-            timestamp,                   // 2. Timestamp
-            d["Auditor"] || selAuditor,  // 3. Auditor
-            tipo,                        // 4. Product Type
-            d["Vendor"] || selVendor,    // 5. Vendor
-            d["AQL Standard"] || "",     // 6. AQL Standard
-            d["Invoice"] || "",          // 7. Invoice
-            d["PO"] || "",               // 8. PO
-            d["Style"] || "",            // 9. Style
-            d["Color"] || "",            // 10. Color
-            d["Total Qty"] || "",        // 11. Total Qty
-            d["Sample"] || "0",          // 12. Sample
-            d["Tot Major"] || "0",       // 13. Tot Major
-            d["Tot Minor"] || "0",       // 14. Tot Minor
-            d["AQL%"] || "0%",           // 15. AQL%
-            d["Result"] || "APPROVED",   // 16. Result
-            d["Comments"] || "",         // 17. Comments
-            d["Defect Description"] || "", // 18. Defect Description
-            d["Def Cat"] || "",          // 19. Def Cat
-            d["Def Qty"] || "0"          // 20. Def Qty
+            auditId,                           // 1. Audit ID (Col A)
+            timestamp,                         // 2. Timestamp (Col B)
+            auditorVal,                        // 3. Auditor (Col C)
+            productTypeVal,                    // 4. Product Type (Col D)
+            vendorVal,                         // 5. Vendor (Col E)
+            d["AQL Standard"] || "",           // 6. AQL Standard (Col F)
+            d["Invoice"] || "",                // 7. Invoice (Col G)
+            d["PO"] || "",                     // 8. PO (Col H)
+            d["Style"] || "",                  // 9. Style (Col I)
+            d["Color"] || "",                  // 10. Color (Col J)
+            d["Total Qty"] || "",              // 11. Total Qty (Col K)
+            d["Sample"] || "0",                // 12. Sample (Col L)
+            d["Tot Major"] || "0",             // 13. Tot Major (Col M)
+            d["Tot Minor"] || "0",             // 14. Tot Minor (Col N)
+            d["AQL%"] || "0%",                 // 15. AQL% (Col O)
+            d["Result"] || "APPROVED",         // 16. Result (Col P)
+            d["Comments"] || "",               // 17. Comments (Col Q)
+            d["Defect Description"] || "",     // 18. Defect Description (Col R)
+            d["Def Cat"] || "",                // 19. Def Cat (Col S)
+            d["Def Qty"] || "0"                // 20. Def Qty (Col T)
         ];
     });
 
