@@ -1040,7 +1040,6 @@ function nombreEstandarAux(auditNum, vendor) {
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
-// GUARDA CADA FILA EN UN ARREGLO PLANO DE 20 POSICIONES FIJAS (SIN NINGÚN DESFASE)
 async function guardarAuditoria(btn) {
     const auditorVal = document.getElementById("auditor").value;
     const productTypeVal = document.getElementById("product-type").value;
@@ -1106,35 +1105,35 @@ function descargarExcel() {
     const vendorName = document.getElementById("vendor").value || "Vendor";
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
+    const auditorVal = document.getElementById("auditor").value || "";
 
-    let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "", ultimoTot = "";
+    let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "", ultimoCom = "";
 
     const rowsArray = datos.map(d => {
         const inv = d["Invoice"] || "";
         const po = d["PO"] || "";
         const estilo = d["Style"] || "";
         const color = d["Color"] || "";
-        const tot = d["Total Qty"] || "";
+        const com = d["Comments"] || "";
 
         const esMismoItem = (
             inv === ultimaInv &&
             po === ultimaPo &&
             estilo === ultimoEstilo &&
             color === ultimoColor &&
-            tot === ultimoTot &&
-            tot !== ""
+            inv !== ""
         );
 
         ultimaInv = inv;
         ultimaPo = po;
         ultimoEstilo = estilo;
         ultimoColor = color;
-        ultimoTot = tot;
+        ultimoCom = com;
 
         return [
             auditId,
             timestamp,
-            d["Auditor"],
+            auditorVal,
             productType,
             d["Vendor"],
             d["AQL Standard"],
@@ -1142,13 +1141,13 @@ function descargarExcel() {
             esMismoItem ? "" : po,
             esMismoItem ? "" : estilo,
             esMismoItem ? "" : color,
-            esMismoItem ? "" : (parseFloat(tot) || tot),
-            esMismoItem ? "" : (parseFloat(d["Sample"]) || d["Sample"]),
-            esMismoItem ? "" : (parseFloat(d["Tot Major"]) || 0),
-            esMismoItem ? "" : (parseFloat(d["Tot Minor"]) || 0),
-            esMismoItem ? "" : d["AQL%"],
-            esMismoItem ? "" : d["Result"],
-            esMismoItem ? "" : d["Comments"],
+            "", // Total Qty Oculto / En blanco
+            "", // Sample Oculto / En blanco
+            d["Tot Major"] ? (parseFloat(d["Tot Major"]) || 0) : "0",
+            d["Tot Minor"] ? (parseFloat(d["Tot Minor"]) || 0) : "0",
+            "", // AQL% / OQL Oculto / En blanco
+            "", // Result Oculto / En blanco
+            esMismoItem ? "" : com,
             d["Defect Description"],
             d["Def Cat"],
             d["Def Qty"] ? (parseFloat(d["Def Qty"]) || d["Def Qty"]) : ""
