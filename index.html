@@ -1107,14 +1107,13 @@ function descargarExcel() {
     const timestamp = new Date().toISOString();
     const auditorVal = document.getElementById("auditor").value || "";
 
-    let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "", ultimoCom = "";
+    let ultimaInv = "", ultimaPo = "", ultimoEstilo = "", ultimoColor = "";
 
     const rowsArray = datos.map(d => {
         const inv = d["Invoice"] || "";
         const po = d["PO"] || "";
         const estilo = d["Style"] || "";
         const color = d["Color"] || "";
-        const com = d["Comments"] || "";
 
         const esMismoItem = (
             inv === ultimaInv &&
@@ -1128,7 +1127,6 @@ function descargarExcel() {
         ultimaPo = po;
         ultimoEstilo = estilo;
         ultimoColor = color;
-        ultimoCom = com;
 
         return [
             auditId,
@@ -1141,13 +1139,13 @@ function descargarExcel() {
             esMismoItem ? "" : po,
             esMismoItem ? "" : estilo,
             esMismoItem ? "" : color,
-            "", // Total Qty Oculto / En blanco
-            "", // Sample Oculto / En blanco
-            d["Tot Major"] ? (parseFloat(d["Tot Major"]) || 0) : "0",
-            d["Tot Minor"] ? (parseFloat(d["Tot Minor"]) || 0) : "0",
-            "", // AQL% / OQL Oculto / En blanco
-            "", // Result Oculto / En blanco
-            esMismoItem ? "" : com,
+            "", // Total Qty en blanco para evitar repetición
+            "", // Sample en blanco para evitar repetición
+            esMismoItem ? "" : (d["Tot Major"] ? (parseFloat(d["Tot Major"]) || 0) : "0"), // Tot Major solo en la primera fila del ítem
+            esMismoItem ? "" : (d["Tot Minor"] ? (parseFloat(d["Tot Minor"]) || 0) : "0"), // Tot Minor solo en la primera fila del ítem
+            "", // AQL% / OQL en blanco
+            "", // Result en blanco
+            "", // Comments en blanco
             d["Defect Description"],
             d["Def Cat"],
             d["Def Qty"] ? (parseFloat(d["Def Qty"]) || d["Def Qty"]) : ""
