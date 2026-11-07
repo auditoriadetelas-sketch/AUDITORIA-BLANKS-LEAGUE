@@ -709,7 +709,7 @@ function escHtml(t) {
 }
 
 function rellenarContinuaciones(rows) {
-    const base = ["Date", "Auditor", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "OQL", "Result", "Comments", "Audit ID", "Timestamp", "Product Type"];
+    const base = ["Date", "Auditor", "Product Type", "Vendor", "Audit", "AQL Standard", "Invoice", "PO", "Style", "Color", "Total Qty", "Sample", "Tot Major", "Tot Minor", "OQL", "Result", "Comments", "Audit ID", "Timestamp"];
     let previa = null;
     return rows.map(r => {
         const sinBase = !campo(r, "PO") && !campo(r, "Style") && !campo(r, "Color") && !campo(r, "Invoice") && !campo(r, "Total Qty");
@@ -977,8 +977,9 @@ async function cargarFotosMedicion(input) {
 }
 
 function recolectarDatosParaExportar() {
-    const vendor = document.getElementById("vendor").value || "N/A";
-    const auditor = document.getElementById("auditor").value || "N/A";
+    const selAuditor = document.getElementById("auditor").value || "N/A";
+    const selProductType = document.getElementById("product-type").value || "N/A";
+    const selVendor = document.getElementById("vendor").value || "N/A";
     const data = [];
 
     document.querySelectorAll(".audit-table tbody tr").forEach(tr => {
@@ -989,10 +990,10 @@ function recolectarDatosParaExportar() {
         const base = {
             "Audit ID": "",
             "Timestamp": "",
-            "Auditor": auditor,
-            "Product Type": document.getElementById("product-type").value,
-            "Vendor": vendor,
-            "AQL Standard": nombreEstandarAux(auditNum, vendor),
+            "Auditor": selAuditor,
+            "Product Type": selProductType,
+            "Vendor": selVendor,
+            "AQL Standard": nombreEstandarAux(auditNum, selVendor),
             "Invoice": tr.querySelector('[name="factura[]"]').value || "",
             "PO": tr.querySelector('[name="po[]"]').value || "",
             "Style": tr.querySelector('[name="estilo[]"]').value || "",
@@ -1044,33 +1045,24 @@ function nombreEstandarAux(auditNum, vendor) {
 }
 
 async function guardarAuditoria(btn) {
-    const auditor = document.getElementById("auditor").value;
-    const vendor = document.getElementById("vendor").value;
-    if (!auditor) return alert("Select an auditor first.");
-    if (!vendor) return alert("Select a vendor first.");
+    const selAuditor = document.getElementById("auditor").value;
+    const selVendor = document.getElementById("vendor").value;
+    if (!selAuditor) return alert("Select an auditor first.");
+    if (!selVendor) return alert("Select a vendor first.");
 
     const datos = recolectarDatosParaExportar();
     if (datos.length === 0) return alert("No data to save.");
 
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
-    const tipo = document.getElementById("product-type").value;
-    let previa = null;
 
     const rows = datos.map(d => {
         const fila = { ...d };
         fila["Audit ID"] = auditId;
         fila["Timestamp"] = timestamp;
-        fila["Product Type"] = tipo;
-
-        if (fila["Invoice"] === "" && fila["Total Qty"] === "" && previa) {
-            // Mantener campos base previos
-        } else {
-            previa = { ...fila };
-        }
         delete fila["FotosDef"];
         
-        // ORDEN EXACTO CORREGIDO Y ALINEADO CON LAS 20 COLUMNAS
+        // ORDEN ESTRICTO E INALTERABLE DE LAS 20 COLUMNAS PARA GOOGLE SHEETS
         return {
             "Audit ID": fila["Audit ID"],
             "Timestamp": fila["Timestamp"],
