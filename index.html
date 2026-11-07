@@ -478,7 +478,7 @@
 </div>
 
 <script>
-const URL_GUARDADO = "https://script.google.com/macros/s/AKfycbwxii8dbu70oy6cQNY5iAg7uTQs8dP3lljs_vWWrjpMMcjyXfhWUmZWM_rr7rn3mMu_/exec";
+const URL_GUARDADO = "https://script.google.com/macros/s/AKfycbztOFof_4cDwQK16hEguoUD9-Qgt2FTlxjhWYyWPgEoWeeEMTvAyYN0d_ytk-XP158P/exec";
 
 const PROVEEDORES = {
     HEADWEAR: [
@@ -505,7 +505,7 @@ const LISTA_DEFECTOS = {
         "PLEAT", "DROPPED STITCH", "BROKEN STITCH", "SKIPPED STITCH", "SHADE BETWEEN PARTS",
         "INCORRECT CAP COLOR", "VISORS CROOKED/OFF-CENTER", "STITCHING ON BRIM", "POOR CONSTRUCTION ",
         "BROKEN VISOR", "RIPPLING ON SEAMS", "UNSEWED / MISSING EYELET", "DEFECTIVE PLASTIC SNAP BACK",
-        "DEFECTIVE STRAP BBUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
+        "DEFECTIVE STRAP BUCKLE", "DEFECTIVE STRAP VELCRO", "INCORRECT WASH EFFECT", "WASH UNSIGHTLY STREAKS",
         "DISALIGNED VISOR", "STICKER RESIDUE", "DAMAGED CAUSED BY HANGTAG", "IMPROPER ROPE TENSION",
         "SWEATBAND SHOWING", "SHOWING MESH BELOW CROWN EDGE", "SEVERAL MAJOR DEFECTS", "DYEING/WASHING STAINS"
     ],
@@ -566,7 +566,7 @@ function numeroAuditoria(tr) {
 function obtenerTablaAQL(tr) {
     const num = numeroAuditoria(tr);
     if (num === 2) return RANGOS_NIVEL_III;
-    if (num === 3) return []; // 100%
+    if (num === 3) return [];
     const vendorActual = document.getElementById("vendor").value;
     return vendorActual === "Kay & Emms Pvt ltd" ? RANGOS_KAY_EMMS : RANGOS_ESTANDAR;
 }
@@ -978,7 +978,6 @@ async function cargarFotosMedicion(input) {
 
 function recolectarDatosParaExportar() {
     const selAuditor = document.getElementById("auditor").value || "N/A";
-    const selProductType = document.getElementById("product-type").value || "N/A";
     const selVendor = document.getElementById("vendor").value || "N/A";
     const data = [];
 
@@ -988,10 +987,7 @@ function recolectarDatosParaExportar() {
         if (!totalQty || totalQty === "0") return;
 
         const base = {
-            "Audit ID": "",
-            "Timestamp": "",
             "Auditor": selAuditor,
-            "Product Type": selProductType,
             "Vendor": selVendor,
             "AQL Standard": nombreEstandarAux(auditNum, selVendor),
             "Invoice": tr.querySelector('[name="factura[]"]').value || "",
@@ -1044,6 +1040,7 @@ function nombreEstandarAux(auditNum, vendor) {
     return vendor === "Kay & Emms Pvt ltd" ? "MIL-STD-105E (4.0)" : "MIL-STD-105E (2.5)";
 }
 
+// ARREGLO PLANO ESTRICTO DE 20 ELEMENTOS (ELIMINA CUALQUIER DESFASE)
 async function guardarAuditoria(btn) {
     const selAuditor = document.getElementById("auditor").value;
     const selVendor = document.getElementById("vendor").value;
@@ -1055,36 +1052,31 @@ async function guardarAuditoria(btn) {
 
     const auditId = "AUD-" + Date.now();
     const timestamp = new Date().toISOString();
+    const tipo = document.getElementById("product-type").value;
 
     const rows = datos.map(d => {
-        const fila = { ...d };
-        fila["Audit ID"] = auditId;
-        fila["Timestamp"] = timestamp;
-        delete fila["FotosDef"];
-        
-        // ORDEN ESTRICTO EXACTO DE LAS 20 COLUMNAS MATCHING GOOGLE SHEETS
-        return {
-            "Audit ID": fila["Audit ID"],
-            "Timestamp": fila["Timestamp"],
-            "Auditor": fila["Auditor"],
-            "Product Type": fila["Product Type"],
-            "Vendor": fila["Vendor"],
-            "AQL Standard": fila["AQL Standard"],
-            "Invoice": fila["Invoice"],
-            "PO": fila["PO"],
-            "Style": fila["Style"],
-            "Color": fila["Color"],
-            "Total Qty": fila["Total Qty"],
-            "Sample": fila["Sample"],
-            "Tot Major": fila["Tot Major"],
-            "Tot Minor": fila["Tot Minor"],
-            "AQL%": fila["AQL%"],
-            "Result": fila["Result"],
-            "Comments": fila["Comments"],
-            "Defect Description": fila["Defect Description"],
-            "Def Cat": fila["Def Cat"],
-            "Def Qty": fila["Def Qty"]
-        };
+        return [
+            auditId,                     // 1. Audit ID
+            timestamp,                   // 2. Timestamp
+            d["Auditor"] || selAuditor,  // 3. Auditor
+            tipo,                        // 4. Product Type
+            d["Vendor"] || selVendor,    // 5. Vendor
+            d["AQL Standard"] || "",     // 6. AQL Standard
+            d["Invoice"] || "",          // 7. Invoice
+            d["PO"] || "",               // 8. PO
+            d["Style"] || "",            // 9. Style
+            d["Color"] || "",            // 10. Color
+            d["Total Qty"] || "",        // 11. Total Qty
+            d["Sample"] || "0",          // 12. Sample
+            d["Tot Major"] || "0",       // 13. Tot Major
+            d["Tot Minor"] || "0",       // 14. Tot Minor
+            d["AQL%"] || "0%",           // 15. AQL%
+            d["Result"] || "APPROVED",   // 16. Result
+            d["Comments"] || "",         // 17. Comments
+            d["Defect Description"] || "", // 18. Defect Description
+            d["Def Cat"] || "",          // 19. Def Cat
+            d["Def Qty"] || "0"          // 20. Def Qty
+        ];
     });
 
     btn.disabled = true;
@@ -1142,7 +1134,7 @@ function descargarExcel() {
             auditId,
             timestamp,
             d["Auditor"],
-            d["Product Type"],
+            productType,
             d["Vendor"],
             d["AQL Standard"],
             esMismoItem ? "" : inv,
